@@ -1,11 +1,16 @@
-// n为串长, 回文半径输出到p数组中，数组要开串长的两倍
-void manacher(const char *t, int n) {
-	static char s[MAXN * 2];
-	for (int i = n; i; i--) s[i * 2] = t[i];
-	for (int i = 0; i <= n; i++) s[i * 2 + 1] = '#';
-	s[0] = '$'; s[(n + 1) * 2] = '\0'; n = n * 2 + 1;
-	int mx = 0, j = 0;
+void read() { // 两倍空间
+	s[0] = '~', s[++n] = '|';
+	char c = getchar();
+	while (c < 'a' || c > 'z') c = getchar();
+	while ('a' <= c && c <= 'z')
+		s[++n] = c, s[++n] = '|', c = getchar();
+}
+void manacher() {
+	int mx = 0, mid = -1, ans = 0;
 	for (int i = 1; i <= n; i++) {
-		p[i] = (mx > i ? min(p[j * 2 - i], mx - i) : 1);
-		while (s[i - p[i]] == s[i + p[i]]) p[i]++;
-		if (i + p[i] > mx) { mx = i + p[i]; j = i; } } }
+		if (i <= mx) h[i] = min(h[(mid << 1) - i], mx - i + 1);
+		else h[i] = 1;
+		while (s[i - h[i]] == s[i + h[i]]) ++h[i];
+		if (h[i] + i - 1 > mx) mx = h[i] + i - 1, mid = i;
+	}
+}

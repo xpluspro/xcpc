@@ -1,47 +1,63 @@
-// 记得初始化 mn; 维护虚子树：access link cut pushup
-int fa[MX], ch[MX][2], w[MX], mn[MX], mark[MX];
-int get(int x) {return x == ch[fa[x]][1];}
-int nrt(int x) {return get(x) || x == ch[fa[x]][0];}
-void pushup(int x) {
-	mn[x] = w[x];
-	if (lch(x)) mn[x] = min(mn[x], mn[lch(x)]);
-	if (rch(x)) mn[x] = min(mn[x], mn[rch(x)]); }
-void rev(int x) {mark[x] ^= 1, swap(lch(x), rch(x));}
-void pushdown(int x) {
-	if (mark[x]) {
-		if (lch(x)) rev(lch(x));
-		if (rch(x)) rev(rch(x));
-		mark[x] = false; } }
+namespace LCT {
+#define ls(x) c[x][0]
+#define rs(x) c[x][1]
+int val[N], ans[N], c[N][2], f[N], rev[N];
+void push_up(int x) { ans[x] = max({ans[ls(x)], ans[rs(x)], val[x]}); }
+void opt(int x) { swap(ls(x), rs(x)), rev[x] ^= 1; }
+void push_down(int x) { if (rev[x]) opt(ls(x)), opt(rs(x)), rev[x] = 0; }
+bool nrt(int x) { return ls(f[x]) == x || rs(f[x]) == x; }
+bool get(int x) { return x == rs(f[x]); }
 void rot(int x) {
-	int f = fa[x], gf = fa[f];
-	int which = get(x), W = ch[x][!which];
-	if (nrt(f)) ch[gf][ch[gf][1] == f] = x;
-	ch[x][!which] = f, ch[f][which] = W;
-	if (W) fa[W] = f;
-	fa[f] = x, fa[x] = gf;
-	pushup(f); }
+	int y = f[x], z = f[y], t = get(x), w = c[x][t ^ 1];
+	if (nrt(y)) c[z][get(y)] = x;
+	c[x][t ^ 1] = y, c[y][t] = w;
+	if (w) f[w] = y;
+	f[y] = x, f[x] = z; push_up(y);
+}
+void push_all(int x) { if (nrt(x)) push_all(f[x]); push_down(x); }
 void splay(int x) {
-	static int stk[MX];
-	int f = x, dep = 0; stk[++dep] = f;
-	while (nrt(f)) stk[++dep] = f = fa[f];
-	while (dep) pushdown(stk[dep--]);
+	push_all(x);
 	while (nrt(x)) {
-		if (nrt(f = fa[x])) rot(get(x) == get(f) ? f : x);
+		int y = f[x];
+		if (nrt(y)) rot(get(x) == get(y) ? y : x);
 		rot(x);
-	} pushup(x); }
-void access(int x) {
-	for(int y = 0 ; x ; x = fa[y = x])
-		splay(x), rch(x) = y, pushup(x); }
-void makeroot(int x) {access(x), splay(x), rev(x);}
-void split(int x, int y) {makeroot(x), access(y), splay(y);}
-int findroot(int x) {
+	}
+	push_up(x);
+}
+void access(int x) { for (int y = 0; x; y = x, x = f[x]) splay(x), rs(x) = y, push_up(x); }
+void mkrt(int x) { access(x); splay(x); opt(x); }
+int findrt(int x) {
 	access(x), splay(x);
-	while (lch(x)) pushdown(x), x = lch(x);
-	return splay(x), x;	}
-void link(int x, int y) {
-	makeroot(x);
-	if (findroot(y) != x) fa[x] = y; }
-void cut(int x, int y) {
-	makeroot(x);
-	if (findroot(y) != x || fa[y] != x || lch(y)) return;
-	rch(x) = fa[y] = 0, pushup(x); }
+	while (ls(x)) push_down(x), x = ls(x);
+	splay(x); return x;
+}
+void split(int x, int y) { mkrt(x), access(y), splay(y); }
+bool reach(int x, int y) { mkrt(x); return findrt(y) == x; }
+void link(int x, int y) { if (!reach(x, y)) f[x] = y; }
+void cut(int x, int y) { if (reach(x, y) && f[y] == x && !ls(y)) f[y] = rs(x) = 0; }
+// 维护子树信息、树的直径。F[x]：splay 子树深度最小的点往下最大深度
+void push_up_subtree(int x) {
+	siz[x] = siz[ls(x)] + siz[rs(x)] + 1;
+	F[x] = max(F[ls(x)], F[rs(x)] + siz[ls(x)] + 1);
+	G[x] = max(G[rs(x)], G[ls(x)] + siz[rs(x)] + 1);
+	if (s[x].size()) {
+		F[x] = max(F[x], *(--s[x].end()) + 1 + siz[ls(x)]);
+		G[x] = max(G[x], *(--s[x].end()) + 1 + siz[rs(x)]);
+	}
+}
+void opt_subtree(int x) { swap(ls(x), rs(x)), swap(F[x], G[x]), rev[x] ^= 1; }
+void access_subtree(int x) {
+	for (int y = 0; x; y = x, x = f[x]) {
+		splay(x);
+		if (rs(x)) s[x].insert(F[rs(x)]);
+		if (rs(x) = y) s[x].erase(s[x].find(F[y]));
+		push_up_subtree(x);
+	}
+}
+void link_subtree(int x, int y) {
+	mkrt(x);
+	if (findrt(y) != x) mkrt(y), f[x] = y, s[y].insert(F[x]);
+}
+#undef ls
+#undef rs
+}

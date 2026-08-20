@@ -1,29 +1,33 @@
-struct SAM{
-int tot,fail[MM],len[MM],t[MM][26];
-SAM(){tot=1;}
-int insert(int c,int last){
-	if(t[last][c]){
-		int p=last,q=t[p][c];
-		if(len[p]+1==len[q])return q;
-		else { int nq=++tot;
-			fail[nq]=fail[q];fail[q]=nq;
-			len[nq]=len[p]+1;memcpy(t[nq],t[q],sizeof(t[q]));
-			for(;p && t[p][c]==q;p=fail[p])t[p][c]=nq;
-			//可以直接复制下面的代码。
-			return nq; } }
-	int p=last,np=++tot;
-	len[np]=len[p]+1;
-	for(;p && !t[p][c];p=fail[p])t[p][c]=np;
-	if(!p)fail[np]=1;
-	else {
-		int q=t[p][c];
-		if(len[q]==len[p]+1)fail[np]=q;
-		else { int nq=++tot;
-			fail[nq]=fail[q];fail[q]=nq;
-			len[nq]=len[p]+1;memcpy(t[nq],t[q],sizeof(t[q]));
-			for(;p && t[p][c]==q;p=fail[p])t[p][c]=nq;
-			fail[np]=nq; } }
-	return np; } }sam;
-// scanf("%s",st+1);int slen=strlen(st+1);
-// int last=1;
-// for(int j=1;j<=slen;j++)last=sam.insert(st[j]-'a',last);
+struct SAM {
+	int ch[MAXN << 1][26], f[MAXN << 1], len[MAXN << 1], tot = 1;
+	int ins(int c, int last) {
+		c -= 'a';
+		int cur, p;
+		if (ch[last][c]) {
+			p = last, cur = ch[p][c];
+			if (len[p] + 1 == len[cur]) return cur;
+			int q = cur, clone = ++tot;
+			for (int i = 0; i < 26; i++) ch[clone][i] = ch[q][i];
+			len[clone] = len[p] + 1;
+			f[clone] = f[q], f[q] = clone;
+			for (; p && ch[p][c] == q; p = f[p]) ch[p][c] = clone;
+			return clone;
+		}
+		p = last, cur = ++tot;
+		len[cur] = len[p] + 1;
+		for (; p && !ch[p][c]; p = f[p]) ch[p][c] = cur;
+		if (!p) { f[cur] = 1; return cur; }
+		int q = ch[p][c];
+		if (len[p] + 1 == len[q]) { f[cur] = q; return cur; }
+		int clone = ++tot;
+		for (int i = 0; i < 26; i++) ch[clone][i] = ch[q][i];
+		len[clone] = len[p] + 1;
+		f[clone] = f[q], f[q] = f[cur] = clone;
+		for (; p && ch[p][c] == q; p = f[p]) ch[p][c] = clone;
+		return cur;
+	}
+	void ins(char *s) {
+		int last = 1;
+		for (int i = 0; s[i]; i++) last = ins(s[i], last);
+	}
+} sam;

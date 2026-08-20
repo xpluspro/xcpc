@@ -1,18 +1,18 @@
-int last, mxl[N * 2], par[N * 2], sam_cnt;
-array <int, 26> go[N * 2];
-void extend(int c) {
-	int p = last, np = ++sam_cnt; mxl[np] = mxl[p] + 1;
-	while (p && !go[p][c]) { go[p][c] = np; p = par[p]; }
-	if (!p) par[np] = 1; else { int q = go[p][c];
-		if (mxl[q] == mxl[p] + 1) par[np] = q;
-		else { int nq = ++sam_cnt; mxl[nq] = mxl[p] + 1;
-			go[nq] = go[q];
-			par[nq] = par[q]; par[np] = par[q] = nq;
-			while (p && go[p][c] == q) { go[p][c] = nq;
-				p = par[p]; } } } last = np; }
-void init() { last = sam_cnt = 1; }
-int c[N], q[N * 2]; 
-void solve() { // 跑完得到的q是一个合法的拓扑序, c 记得清空
-	for (int i = 1; i <= sam_cnt; i++) c[mxl[i] + 1]++;
-	for (int i = 1; i <= n; i++) c[i] += c[i - 1]; // n: 串长
-	for (int i = 1; i <= sam_cnt; i++) q[++c[mxl[i]]] = i;}
+struct SAM { // 别忘记空间是两倍，改字符集记得全改了
+	int last = 1, tot = 1;
+	int ch[MAXN << 1][26], len[MAXN << 1], f[MAXN << 1];
+	void ins(char c) {
+		c -= 'a';
+		int p = last, cur = last = ++tot;
+		len[cur] = len[p] + 1;
+		for (; p && !ch[p][c]; p = f[p]) ch[p][c] = cur;
+		if (!p) { f[cur] = 1; return; }
+		int q = ch[p][c];
+		if (len[q] == len[p] + 1) { f[cur] = q; return; }
+		int clone = ++tot;
+		for (int i = 0; i < 26; i++) ch[clone][i] = ch[q][i];
+		f[clone] = f[q], len[clone] = len[p] + 1;
+		f[q] = f[cur] = clone;
+		for (; p && ch[p][c] == q; p = f[p]) ch[p][c] = clone;
+	}
+} sam;

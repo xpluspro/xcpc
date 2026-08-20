@@ -22,17 +22,8 @@
 \subsubsection{差分约束}
 $x_r - x_l \leq c:$\texttt{add(l, r, c)}
 $x_r - x_l \geq c:$\texttt{add(r, l, -c)}
-\begin{comment}
-\subsubsection{斯坦纳树}\
-		在一个无向带权图$G=(V,E)$中, 将指定的$k$个点连通的一颗树称为\textbf{斯坦纳树}, 边权总和最小的斯坦纳树称为最小斯坦纳树. 
-		\par 我们可以用DP+SPFA的方法求解斯坦纳树. 用$F_{i,state}$表示以$i$为根, 指定集合中的点的联通状态为$state$的生成树的最小总权值, 有两种转移方程. 
-		\par 第一种, 通过两个子集合并进行转移, 即$F_{i,state}=min(F_{i,subset1} + F_{i,subset2})$, 这一部分使用DP完成. 
-		\par 第二种, 在当前的联通状态下, 对该联通状态进行松弛操作, 即${F_{i,state}=min(F_{i,state},F_{j,state}+w(i,j))}$, 这一部分使用SPFA完成. 
-        \par 时间复杂度$O(V*3^k+cE*2^k)$, $c$为SPFA复杂度中的常数. 
-
 \subsubsection{李超线段树}
         添加若干条线段或直线$(a_i,b_i)\to (a_j,b_j)$, 每次求$[l,r]$上最上面的那条线段的值. 思想是让线段树中一个节点只对应一条直线, 如果在这个区间加入一条直线, 如果一段比原来的优, 一段比原来的劣, 那么判断一下两条线的交点, 判断哪条直线可以完全覆盖一段一半的区间, 把它保留, 另一条直线下传到另一半区间. 时间复杂度$O(n \log n)$. 
-\end{comment}
 \subsubsection{Segment Tree Beats}
         区间 $\min$, 区间求和. 维护最大值$m$, 严格次大值$s$以及最大值个数$t$. 现在假设我们要让区间$[L,R]$对$x$取$\min$, 先在线段树中定位若干个节点, 对于每个节点分三种情况讨论: 1, 当$m\leq x$时直接退出; 2, 当$se<x<ma$时, 只会影响到所有最大值, 所以把$num$加上$t*(x-ma)$, 把$ma$更新为$x$, 打上标记退出; 3, 当$se\geq x$时递归. 均摊$O(\log^2n)$. 
 \subsubsection{二分图}
@@ -75,17 +66,10 @@ $x_r - x_l \geq c:$\texttt{add(r, l, -c)}
 	建超级源SS2汇TT2, 连边SS2$\to$S1,SS2$\to$T2,T1$\to$TT2,S2$\to$TT2, 设最大流为x2.
 	则最大流中水流量$\frac{x1+x2}{2}$, 油流量$\frac{x1-x2}{2}$.
 \end{comment}
-\begin{comment}
-\subsubsection{割点于割边}
-        \paragraph{割点 割边} 一个点$u$是割点, 当且仅当: 1. $u$为非树根且有树边$(u,v)$满足$dfn_u\leq low_v$; 2. u为树根且有多于一个的子树. 一条无向边$(u,v)$是桥, 当且仅当$(u,v)$是树边, 且满足$dfn_u<low_v$. 
-
-\subsubsection{2-SAT}
-    如果选$A$就必须选$B$就从$A$向$B$连一条边, 如果两个只能选一个的条件在同一个强连通分量中就不合法. 输出可行方案可以比较$X$和$X’$的$bl$的大小, 大的选$X’$. 建图优化一般考虑前后缀的合并. 
 \subsubsection{三元环}\
                对于无向边$(u,v)$, 如果$\mathrm{deg}_u<\mathrm{deg}_v$, 那么连有向边$(u,v)$(以点标号为第二关键字). 枚举$x$ 暴力即可.时间复杂度$O(m\sqrt{m})$. 
 \subsubsection{图同构}
                 令$F_t(i)=(F_{t-1}(i)*A+\sum_{i\to j} F_{t-1}(j)*B+\sum_{j\to i} F_{t-1}(j)*C+D*(i-a)) \bmod P$, 枚举点$a$, 迭代$K$次后求得的就是$a$点所对应的$hash$值, 其中$K,A,B,C,D,P$为$hash$参数, 可自选. 
-\end{comment}
 \subsubsection{竞赛图 Landau's Theorem}
     $n$个点竞赛图点按出度按升序排序, 前$i$个点的出度之和不小于$\frac{i(i-1)}{2}$, 度数总和等于$\frac{n(n-1)}{2}$. 否则可以用优先队列构造出方案.
 

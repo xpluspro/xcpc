@@ -52,7 +52,7 @@
 \pagestyle{fancy}
 \setlength{\headsep}{0.1cm}
 
-\chead{Nemesis}
+\chead{Natsuhi Kage}
 \rhead{Page \thepage}
 \lhead{上海交通大学 Shanghai Jiao Tong University}
  
@@ -265,9 +265,9 @@
 				%\inputminted{cpp}{src/Geometry/长方体表面两点最短距离.cpp}
 				\subsection{圆上整点}
 					\inputminted{cpp}{src/Geometry/圆上整点.cpp}
-				\subsection{三相之力}
+				\subsection{三角形}
 				\inputminted{cpp}{src/Geometry/三角形.cpp}
-				\subsection{相关公式}
+				\subsection{相关公式：三角形心，海伦公式，欧拉定理，内接球，外接圆}
 					\input{src/Geometry/Formula(Saga).tex}
 				\subsection{三维几何基础操作}
 					\inputminted{cpp}{src/Geometry/三维几何.cpp}
@@ -294,8 +294,8 @@
 					\inputminted{cpp}{src/TreeandGraph/KM.cpp}
 				\subsection{欧拉回路}
 				\inputminted{cpp}{src/TreeandGraph/欧拉回路.cpp}
-				%\subsection{Blossom 一般图带权最大匹配 $O(|V|^3)$}
-				%\inputminted{cpp}{src/TreeandGraph/Blossom.cpp}
+				\subsection{Blossom 一般图最大匹配 $O(|V||E|)$}
+					\inputminted{cpp}{src/TreeandGraph/Blossom.cpp}
 				\subsection{2-SAT, 强连通分量 / Bitset Kosaraju}
 					\inputminted{cpp}{src/TreeandGraph/2-sat.cpp}
 					\inputminted{cpp}{src/TreeandGraph/kosaraju.cpp}
@@ -303,6 +303,8 @@
 					\inputminted{cpp}{src/TreeandGraph/Tarjan.cpp}
 				\subsection{Dominator Tree 支配树}
 					\inputminted{cpp}{src/TreeandGraph/支配树.cpp}
+				\subsection{环计数}
+					\inputminted{cpp}{src/TreeandGraph/环计数.cpp}
 				%\subsection{最大团}
 				%\inputminted{cpp}{src/TreeandGraph/MaximumClique.cpp}
 				\subsection{Dinic 最大流}
@@ -323,7 +325,9 @@
 				%\subsection{树同构}
 				%\inputminted{cpp}{src/TreeandGraph/树同构.cpp}
 				\subsection{虚树}
-				\inputminted{cpp}{src/TreeandGraph/虚树.cpp}
+					\inputminted{cpp}{src/TreeandGraph/虚树.cpp}
+				\subsection{树哈希}
+					\inputminted{cpp}{src/TreeandGraph/TreeHash.cpp}
 				%\subsection{动态最小生成树}
 				%\inputminted{cpp}{src/TreeandGraph/DynamicMST.cpp}
 				\input{src/tbr/网络流总结.tex}
@@ -336,10 +340,8 @@
 					\inputminted{cpp}{src/TreeandGraph/弦图.cpp}
 				\subsection{Minimum Mean Cycle 最小平均值环 $O(n^2)$}
 					\inputminted{cpp}{src/TreeandGraph/MeanCycle.cpp}
-				\subsection{一般图最大匹配 - Blossom}
-					\inputminted{cpp}{src/TreeandGraph/Blossom.cpp}
-				% \subsection{斯坦纳树}
-				% 	\inputminted{cpp}{src/TreeandGraph/斯坦纳树.cpp}
+				\subsection{斯坦纳树}
+					\inputminted{cpp}{src/TreeandGraph/斯坦纳树.cpp}
 				%\subsection{Cactus 仙人掌}
 					%\inputminted{cpp}{src/TreeandGraph/cactus.cpp}
 				\subsection{图论结论}
@@ -355,21 +357,25 @@
 					\input{src/TreeandGraph/shanghai19.tex}
 
 			\section{Data Structure}
+				\subsection{bitset}
+					\inputminted{cpp}{src/DataStructure/bitset.cpp}
+				\subsection{FHQ treap}
+					\inputminted{cpp}{src/DataStructure/FHQ.cpp}
+				\subsection{RangeBIT}
+					\inputminted{cpp}{src/DataStructure/RangeBIT.cpp}
+				\subsection{李超线段树}
+					\inputminted{cpp}{src/DataStructure/李超线段树.cpp}
+				\subsection{莫队二次离线}
+					\inputminted{cpp}{src/DataStructure/莫队二次离线.cpp}
+				\subsection{线段树分裂}
+					\inputminted{cpp}{src/DataStructure/线段树分裂.cpp}
+				\subsection{左偏树}
+					\inputminted{cpp}{src/DataStructure/左偏树.cpp}
 				\subsection{非递归线段树}
-					% \subsubsection{区间加，区间求和}
-					% 	\inputminted{cpp}{src/DataStructure/非递归线段树求和.cpp}
 					\subsubsection{区间加，区间求最大值}
 						\inputminted{cpp}{src/DataStructure/非递归线段树求最大值.cpp}
-				\subsection{点分治}
-					\inputminted{cpp}{src/DataStructure/点分治.cpp}
-				% \subsection{KD 树}
-				% 	\inputminted{cpp}{src/DataStructure/KD tree.cpp}
 				\subsection{LCT 动态树}
 					\inputminted{cpp}{src/DataStructure/LCT.cpp}
-				\subsection{可持久化 Treap}
-					\inputminted{cpp}{src/DataStructure/可持久化treap-zmc.cpp}
-				% \subsection{有旋 Treap}
-				% 	\inputminted{cpp}{src/DataStructure/有旋treap.cpp}
 			
 			\section{String}
 				\subsection{最小表示法}
@@ -387,25 +393,21 @@
 					\inputminted{cpp}{src/String/Lyndon Word.cpp}
 				\subsection{后缀自动机}
 					\inputminted{cpp}{src/String/SAM.cpp}
+				\subsection{广义后缀自动机}
+					\inputminted{cpp}{src/String/generalizedSAM.cpp}
 				\subsection{SAMSA \& 后缀树}
 					\inputminted{cpp}{src/String/SAMSA.cpp}
 				\subsection{后缀数组}
 					\inputminted{cpp}{src/String/SA.cpp}
-				\subsection{Suffix Balanced Tree 后缀平衡树}
-					\inputminted{cpp}{src/String/后缀平衡树.cpp}
 				%\subsection{Total LCS 子串对目标求 LCS}
 				%\inputminted{cpp}{src/String/Total LCS.cpp}
-				\subsection{广义在线 SAM}
-				\inputminted{cpp}{src/String/generalizedSAM.cpp}
 				\subsection{回文树}
 					0 的子树是长为偶数的串, 1 的子树是长为奇数的. 0 代表空串, 1 没有意义.
 					\inputminted{cpp}{src/String/PAM.cpp}
-				\subsection{Runs}
-					\inputminted{cpp}{src/String/Runs.cpp}
 				%\subsection{双端插入回文树 (zjj)}
 				%\inputminted{cpp}{src/String/PAM_bidirectional.cpp}
-				\subsection{字符串 Hash}
-				\texttt{\input{|"python src/Miscellany/randomprimes.py 3e2 1e6 1e12 1e13 2e13 1e15 1e17 5e17 1e18 2e18"}}
+				\subsection{字符串 Hash 类}
+				\texttt{\input{|"python src/Miscellany/randomprimes.py 1e12 1e13 2e13 1e15 1e17 1e18"}}
 				\inputminted{cpp}{src/String/hash.cpp}	
 				\subsection{String Conclusions}
 					\input{src/tbr/string-Conclusions.tex}
@@ -433,13 +435,11 @@
 					\inputminted{cpp}{src/Math/平方剩余.cpp}
 				% \subsection{BSGS 离散对数}
 				% \inputminted{cpp}{src/Math/BSGS.cpp}
-				\subsection{线性同余不等式}
-					\inputminted{cpp}{src/Math/线性同余不等式.cpp}
-				% \subsection{min25 筛}
-				% \inputminted{cpp}{src/Math/TEES.cpp}
 				\subsection{原根}
 				% \inputminted{cpp}{src/Math/原根.cpp
 					\input{src/tbr/阶和原根.tex}
+				\subsection{min25筛}
+					\inputminted{cpp}{src/Math/min25筛.cpp}
 				\subsection{FFT}
 					\inputminted{cpp}{src/Math/FFT.cpp}
 				\subsection{NTT}
@@ -530,7 +530,7 @@
 					\inputminted[highlightlines={4,15,17,18}]{cpp}{src/DataStructure/hashmap.cpp}
 				\subsection{基数排序}
 					\inputminted{cpp}{src/Miscellany/RadixSort.cpp}
-				\subsection{Hacks: O3, 读入优化, Bitset, builtin}
+				\subsection{Hacks: 指令集, 读入优化, Bitset, builtin, 随机种子}
 					\inputminted{cpp}{src/Miscellany/hack.cpp}
 				\subsection{试机赛与纪律文件}
 				\begin{spacing}{0.3}
@@ -553,10 +553,9 @@
 					}
 				\end{small}
 				\input{src/TipsandHints/Addon.tex}
-				\subsection*{Vimrc, Bashrc}
-				\inputminted{vim}{src/Miscellany/vimrc}
+				% \subsection*{Vimrc, Bashrc}
+				% \inputminted{vim}{src/Miscellany/vimrc}
 				\inputminted{sh}{src/Miscellany/bashrc}
-				VSCode: 打开自动保存
 		% insert Miscellany/Grid_Paper.pdf
 		% \newpage
 		%	\subsection*{Delaunay 三角剖分}
@@ -586,19 +585,6 @@
 		\end{spacing}
 		\endgroup
 	\end{multicols}
-	\newpage
-	\includegraphics{src/Miscellany/Grid_Paper.pdf}
-	
-	\begin{multicols}{2}
-		\begin{spacing}{0.6}
-		\begin{small}
-	\input{src/Math/stl_numeric.tex}
-		\end{small}
-	\end{spacing}
-	\end{multicols}
-	% \begin{center}
-	% 	\LARGE{Good Luck \&\& Have Fun!}
-	% \end{center}
 	
 \end{document}
 %THE SCL ENDS
