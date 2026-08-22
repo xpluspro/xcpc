@@ -1,48 +1,34 @@
 % !TEX root = ../main.tex
+% 封面信息只需在这里填写，main.tex 无须改动。
+\newcommand{\FinalizationDate}{\underline{\makebox[38mm][c]{2026年9月}}}
+\newcommand{\TeamMemberOne}{\underline{\makebox[52mm][c]{许嘉昊}}}
+\newcommand{\TeamMemberTwo}{\underline{\makebox[52mm][c]{郭金赓}}}
+\newcommand{\TeamMemberThree}{\underline{\makebox[52mm][c]{曾逸轩}}}
 
-\setCJKfamilyfont{hei}{SimHei}[Scale=0.9]
-\setCJKfamilyfont{sun}{Source Han Serif SC Medium}[Scale=0.8]
-\setCJKfamilyfont{pixel}{Fusion Pixel 12px Proportional zh_hans}
-\newcommand{\hei}{\CJKfamily{hei}\selectfont}
-\newcommand{\sun}{\CJKfamily{sun}\selectfont}
-\newcommand{\pixel}{\fontspec{Fusion Pixel 12px Proportional zh_hans}\CJKfamily{pixel}\selectfont}
-\vspace*{0.5cm}
-
-% 2025 ：532
-\begin{picture}(400,60)(0,0)
-    \put(40, 0){\includegraphics[width=220\unitlength]{cover/sjtubannerred.pdf}}
-    \put(280,32){\fontsize{21.6}{1}\fontspec[]{Fusion Pixel 12px Proportional zh_hans}\color{black}ICPC World Finals 2024}
-    \put(280, 6){\fontsize{23}{1}\fontspec[]{Fusion Pixel 12px Proportional zh_hans}\color{black}Standard Code Library}
-\end{picture}
-
-\vspace*{0.5cm}
-
-\centerline{{\fontsize{72}{1}{\fontspec{Fusion Pixel 12px Proportional zh_hans}{Nemesis}}}}
-\vspace*{0.5cm}
- \begin{figure*}[h]
-     \centering
-     \includegraphics[trim={0.1cm 0.1cm 0.1cm 0.1cm},clip]{cover/jokerzjj_grid.pdf}
- \end{figure*}
-\vspace*{0.25cm}
+\thispagestyle{empty}
 \begin{center}
-{\LARGE
-\begin{tabular}{lp{0.5in}rr}
-\rule{0pt}{16pt} {\pixel \LARGE Coach} & & {\pixel{教练}} \\
-\midrule
-\rule{0pt}{16pt} Yong Yu & & {\sun 俞勇} \\
-\rule{0pt}{16pt} Siyu Sun & & {\sun 孙司宇} \\
-\rule{0pt}{16pt} Boren Tan & & {\sun 谭博仁} \\
-\rule{0pt}{16pt} Shangfei Yang & & {\sun 杨尚霏} \\
-\\
-\rule{0pt}{16pt} {\pixel \LARGE Contestant} & & {\pixel{队员}} \\
-\midrule
-\rule{0pt}{16pt} Zonghan Yang & & {\sun 杨宗翰} \\
-\rule{0pt}{16pt} Mingchi Zhang & & {\sun 张明驰} \\
-\rule{0pt}{16pt} Jianjun Zhang & & {\sun 张建军} \\
-\end{tabular}
-{\includegraphics[width=14mm]{cover/fish_seal.png}}
-}
+  \vspace*{42mm}
+
+  {\fontsize{48pt}{58pt}\selectfont\bfseries 键落星辰\par}
+
+  \vspace{8mm}
+  \rule{0.62\textwidth}{0.8pt}
+  \vspace{8mm}
+
+  {\LARGE ACM 算法竞赛模板\par}
+
+  \vfill
+
+  \begin{minipage}{105mm}
+    \large
+    \renewcommand{\arraystretch}{1.8}
+    \begin{tabular}{@{}p{30mm}l@{}}
+      定稿时间： & \FinalizationDate \\
+      队员：     & \TeamMemberOne \\
+                 & \TeamMemberTwo \\
+                 & \TeamMemberThree
+    \end{tabular}
+  \end{minipage}
+
+  \vspace*{38mm}
 \end{center}
-\vspace*{1cm}
-\centerline{\pixel Last Commit: \input{|"python cover/info.py"}}
-\newpage
