@@ -1,15 +1,15 @@
 struct hull { // upper hull, left to right
-set <point> a; LL tot;
+set<P> a; LD tot;
 hull () {tot = 0;}
-LL calc(auto it) {
+LD calc(auto it) {
 	auto u = it == a.begin() ? a.end() : prev(it);
 	auto v = next(it);
-	LL ret = 0;
-	if (u != a.end()) ret += det(*u, *it);
-	if (v != a.end()) ret += det(*it, *v);
-	if (u != a.end() && v != a.end()) ret -= det(*u, *v);
+	LD ret = 0;
+	if (u != a.end()) ret += *u ^ *it;
+	if (v != a.end()) ret += *it ^ *v;
+	if (u != a.end() && v != a.end()) ret -= *u ^ *v;
 	return ret; }
-void insert (point p) {
+void insert (P p) {
 	if (!a.size()) { a.insert (p); return; }
 	auto it = a.lower_bound (p);
 	bool out;

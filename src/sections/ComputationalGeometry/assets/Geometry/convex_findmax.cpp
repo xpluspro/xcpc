@@ -1,4 +1,4 @@
-int n; vector <point> a; // 可以封装成一个 struct
+int n; vp a; // 可以封装成一个 struct
 bool inside (cp u) { // 点在凸包内
 	int l = 1, r = n - 2;
 	while (l < r) {
@@ -19,7 +19,7 @@ pair<int, int> get_tan(cp u) { // 求切线
  return // 严格在凸包外；需要边界上时，特判 a[n-1] -> a[0]
  {search([&](cp x, cp y){return turn(u, y, x) > 0;}),
   search([&](cp x, cp y){return turn(u, x, y) > 0;})};}
-point at (int i) { return a[i % n]; } 
+P at (int i) { return a[i % n]; }
 int inter (cp u, cp v, int l, int r) {
 	int sl = turn(u, v, at(l));
 	while (l + 1 < r) {
@@ -28,9 +28,9 @@ int inter (cp u, cp v, int l, int r) {
 		else r = m;	} return l % n; }
 bool get_inter(cp u, cp v, int &i, int &j) { // 求直线交点
 	int p0 = search([&](cp x, cp y){
-	 return det(v - u, x - u) < det(v - u, y - u);}),
+	 return ((v - u) ^ (x - u)) < ((v - u) ^ (y - u));}),
 	p1 = search([&](cp x, cp y) {
-	 return det(v - u, x - u) > det(v - u, y - u);});
+	 return ((v - u) ^ (x - u)) > ((v - u) ^ (y - u));});
 	if (turn(u, v, a[p0]) * turn(u, v, a[p1]) < 0) {
 		if (p0 > p1) swap(p0, p1);
 		i = inter (u, v, p0, p1);
@@ -38,13 +38,13 @@ bool get_inter(cp u, cp v, int &i, int &j) { // 求直线交点
 		return true; } else return false; }
 LD near (cp u, int l, int r) {
 	if (l > r) r += n;
-	int sl = sgn (dot(u - at(l), at(l + 1) - at(l)));
-	LD ret = p2s (u, {at(l), at(l + 1)});
+	int sl = sgn ((u - at(l)) * (at(l + 1) - at(l)));
+	LD ret = point_to_segment(u, {at(l), at(l + 1)});
 	while (l + 1 < r) {
 		int m = (l + r) / 2;
-		if (sl == sgn (dot(u - at(m), at(m + 1) - at(m))))
+		if (sl == sgn ((u - at(m)) * (at(m + 1) - at(m))))
 			l = m; else r = m; }
-   return min(ret, p2s(u, {at(l), at(l + 1)})); }
+   return min(ret, point_to_segment(u, {at(l), at(l + 1)})); }
 LD get_near (cp u) { // 求凸包外点到凸包最近点
 	if (inside(u)) return 0;
 	auto [x, y] = get_tan(u);

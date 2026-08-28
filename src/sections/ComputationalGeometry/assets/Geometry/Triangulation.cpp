@@ -1,4 +1,4 @@
-vector <array <int, 3>> tri;
+vector<array<int, 3>> tri;
 void solve () {
 	list <int> l;
 	for (int k = 0; k < n; k++) l.push_back(k);
