@@ -1,3 +1,4 @@
+// 该算法的正确性无法保证
 int n, m, mat[N], vis[N]; vector<int> E[N];
 bool dfs(int tim, int x) {
 	shuffle(E[x].begin(), E[x].end(), rng);

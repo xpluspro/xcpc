@@ -1,23 +1,23 @@
 struct circle { point c; LD r;};
 bool in_circle(cp a, const circle &b) {
 	return sgn(b.r - dis(b.c, a)) >= 0; }
-circle make_circle(cp a, cp b) { // 以 a b 为直径的圆
-	point p = (a + b) / 2;
-	return {p, dis(a, p)}; }
+circle make_circle(cp u, cp v) {
+	point p = (u + v) / 2;
+	return {p, dis(u, p)}; }
 circle make_circle(cp a, cp b, cp c) { // 三点共线 inf / nan
 	point bc = c - b, ca = a - c, ab = b - a;
 	point o = (b + c - bc.rot90()*dot(ca,ab)/det(ca,ab)) / 2;
-	return {o, dis(o, a)}; } // 检查上一行正负号
+	return {o, dis(o, a)}; }
 circle min_circle (vector <point> p) { // 最小覆盖圆
  circle ret({0, 0}, 0);
  shuffle (p.begin (), p.end (), rng);
- for (int i = 0; i < (int) p.size (); i++)
+ for (int i = 0; i < (int) p.size (); ++i)
   if (!in_circle(p[i], ret)) {
    ret = circle (p[i], 0);
-   for (int j = 0; j < i; j++) if (!in_circle(p[j], ret)) {
-    ret = make_circle (p[i], p[j]);
-    for (int k = 0; k < j; k++) if (!in_circle(p[k], ret))
-     ret = make_circle (p[i], p[j], p[k]);
+   for (int j = 0; j < i; ++j) if (!in_circle(p[j], ret)) {
+	ret = make_circle (p[i], p[j]);
+	for (int k = 0; k < j; ++k) if (!in_circle(p[k], ret))
+	 ret = make_circle (p[i], p[j], p[k]);
   } } return ret; }
 pair <point, point> line_circle_inter (cl a, circle c) {
 	LD d = p2l (c.c, a);
@@ -47,7 +47,7 @@ vector <point> circle_inter (circle a, circle b) { // 圆交点
 	LD h = sqrt (sqr (a.r) - sqr (x));
 	if (sgn (h) == 0) return {a.c + r * x};
 	return {a.c + r * x + r.rot90 () * h,
-	        a.c + r * x - r.rot90 () * h}; }
+			a.c + r * x - r.rot90 () * h}; }
 // 返回按照顺时针方向
 vector <point> tangent (cp a, circle b) {
 	return circle_inter (make_circle (a, b.c), b); }

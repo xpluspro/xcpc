@@ -6,11 +6,11 @@ bool inside (cp u) { // 点在凸包内
 		if (turn(a[0], a[mid], u) >= 0) l = mid;
 		else r = mid - 1; }
 	return turn (a[0], a[l], u) >= 0
-	    && turn (a[l], a[l + 1], u) >= 0
-	    && turn (a[l + 1], a[0], u) >= 0; }
+		&& turn (a[l], a[l + 1], u) >= 0
+		&& turn (a[l + 1], a[0], u) >= 0; }
 int search (auto f) { // 凸包求极值，需要 C++17
-	int l = 0, r = n - 1;
-	int d = f(a[r], a[l]) ? (swap(l, r), -1) : 1;
+	int l = 0, r = n - 1, d = 1;
+	if (f(a[r], a[l])) swap(l, r), d = -1;
 	while (d * (r - l) > 1) {
 		int mid = (l + r) / 2;
 		if (f(a[mid], a[l]) && f(a[mid], a[mid - d])) l = mid;

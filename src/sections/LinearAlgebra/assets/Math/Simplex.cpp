@@ -37,11 +37,11 @@ void output() {
 	for (int i = n + 1; i <= n + m; i++) tp[id[i]] = i - n;
 	for (int i = 1; i <=n; i++) printf("%.9lf ", tp[i] ? a[tp[i]][0] : 0);}
 }using namespace Simplex;
-int main() { int K; read(n); read(m); read(K);
-for (int i = 1; i <= n; i++) {LD x; scanf("%lf", &x); a[0][i] = x;}
+int main() { int K; cin >> n >> m >> K;
+for (int i = 1; i <= n; i++) {LD x; cin >> x; a[0][i] = x;}
 for (int i = 1; i <= m; i++) {LD x;
-	for (int j = 1; j <= n; j++) scanf("%lf", &x), a[i][j] = -x; 
-	scanf("%lf", &x); a[i][0] = x;}
+	for (int j = 1; j <= n; j++) cin >> x, a[i][j] = -x;
+	cin >> x; a[i][0] = x;}
 if (solve()) { printf("%.9lf\n", (LD)ans()); if (K) output();}}
 // 标准型: maximize $\bf c^Tx$, subject to $\bf Ax\leq b$ and $\bf x\geq 0$
 // 对偶型: minimize $\bf b^Ty$, subject to $\bf A^Tx\geq c$ and $\bf y\geq 0$

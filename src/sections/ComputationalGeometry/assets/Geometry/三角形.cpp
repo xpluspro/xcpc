@@ -18,6 +18,6 @@ point fermat_point (cp a, cp b, cp c) {
 	else if (sgn (cosb + 0.5) < 0) mid = b;
 	else if (sgn (cosc + 0.5) < 0) mid = c;
 	else if (sgn (det(b - a, c - a)) < 0)
-	     mid = line_inter ({a, b + (c - b).rot (sq3)}, {b, c + (a - c).rot (sq3)});
+		 mid = line_inter ({a, b + (c - b).rot (sq3)}, {b, c + (a - c).rot (sq3)});
 	else mid = line_inter ({a, c + (b - c).rot (sq3)}, {c, b + (a - b).rot (sq3)});
 	return mid; } // minimize(|A-x|+|B-x|+|C-x|)

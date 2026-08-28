@@ -6,8 +6,8 @@ void solve () {
 		if (turn(u, v, w) <= 0) return false;
 		for (auto i : l)
 			if (turn(u, v, p[i]) == 1 &&
-			    turn(v, w, p[i]) == 1 &&
-			    turn(w, u, p[i]) == 1) return false;
+				turn(v, w, p[i]) == 1 &&
+				turn(w, u, p[i]) == 1) return false;
 		return true; };
 	for (auto it = l.begin(); l.size() > 3; ) {
 		auto u = (it == l.begin() ? prev(l.end()) : prev(it));

@@ -8,7 +8,7 @@ T get(const ULL &x) const {
 		if (id[i] == x) return val[i]; }
 	return 0; }
 T& operator [] (const ULL &x) {
-	for (int i = int(x % P), j = 1;       ; i = (i + j) % P, j = (j + 2) % P) {
+	for (int i = int(x % P), j = 1;	   ; i = (i + j) % P, j = (j + 2) % P) {
 		if (id[i] == x) return val[i];
 		else if (id[i] == -1llu) {
 			id[i] = x;

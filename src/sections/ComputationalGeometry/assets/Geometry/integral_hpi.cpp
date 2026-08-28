@@ -6,7 +6,7 @@ struct line : point {
 	LD operator () (cp a) const{return dot(a, *this) + z;}};
 point line_inter (cl u, cl v) {
 return point(det({u.z, u.y}, {v.z, v.y}),
-             det({u.x, u.z}, {v.x, v.z}) ) / -det(u, v); }
+			 det({u.x, u.z}, {v.x, v.z}) ) / -det(u, v); }
 LD dis (cl l, cp x = {0, 0}) { return l(x) / l.len(); }
 bool is_para(cl x, cl y) { return !sgn(det(x, y)); } 
 LD det(cl a, cl b, cl c) {
@@ -20,7 +20,7 @@ return half(a) == half(b) ? sgn(det(a,b))>0 : half(b)>0;}
 // 用以上函数替换 HPI 函数，需要 half(point)
 line perp(cl l) { return {l.y, -l.x, 0}; } // 垂直
 line para(cl l, cp o) { // 过一点平行
-    return {l.x, l.y, l.z - l(o)}; }
+	return {l.x, l.y, l.z - l(o)}; }
 point proj(cp x, cl l) {return x - l * (l(x)/l.len2());}
 point refl(cp x, cl l) {return x - l * (l(x)/l.len2())*2;}
 bool is_perp(cl x, cl y) { return !sgn(dot(x, y)); }

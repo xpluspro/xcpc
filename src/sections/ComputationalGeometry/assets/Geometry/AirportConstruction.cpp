@@ -19,11 +19,11 @@ bool in_polygon (cp u, cp v) {
 			bool good = true, left = turn (ii, jj, kk) >= 0;
 			for (auto x : {u, v})
 				if (left)
-					good &=    turn(ii, jj, x) >= 0
-					        && turn(jj, kk, x) >= 0;
+					good &=	turn(ii, jj, x) >= 0
+							&& turn(jj, kk, x) >= 0;
 				else
 					good &= !(   turn(jj, x, kk) > 0
-					          && turn(jj, ii, x) > 0);
+							  && turn(jj, ii, x) > 0);
 			if (!good) return 0;
 		} } return 1; }
 LD get_far (int uid, int vid) {
@@ -38,16 +38,16 @@ LD get_far (int uid, int vid) {
 			LD s2 = det(jj - ii, v - ii);
 			if (sgn(s1 - s2) && sgn(s1) != sgn(s2 - s1))
 				far = min(far,
-				          dis(u, line_inter({ii,jj},{u,v})));}
+						  dis(u, line_inter({ii,jj},{u,v})));}
 		if (j != uid && point_on_ray (jj, {u, v})) {
 			bool good = turn(ii, jj, kk) <= 0;
 			for (auto x : {u - (jj - u), jj + (jj - u)})
 				good &= !(   turn(ii, jj, x) > 0
-				          && turn(jj, kk, x) > 0);
+						  && turn(jj, kk, x) > 0);
 			if (!good) far = min(far, dis(u, jj));
 		} } return far; }
 void work() {
-    for (int i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++) if (i != j) {
 			if (!in_polygon(p[i], p[j])) continue;
 			LD ret = get_far(i,j)+get_far(j,i)-dis(p[i],p[j]);

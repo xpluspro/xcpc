@@ -1,7 +1,7 @@
 // Complexity: init O(n^2log) query O(n^2logk)
 // Requirement: const LOG const MOD
 // Example: In: {1, 3} {2, 1} an = 2an-1 + an-2
-//          Out: calc(3) = 7
+//		  Out: calc(3) = 7
 typedef vector<int> poly;
 struct LinearRec {
 	int n; poly first, trans; vector<poly> bin;

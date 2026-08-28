@@ -11,7 +11,7 @@ point line_inter(cl a, cl b) { // 直线交点
 vector <point> cut (const vector<point> &c, line l) {
 	vector <point> ret; // 线切凸包
 	int n = (int) c.size(); if (!n) return ret;
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; ++i) {
 		int j = (i + 1) % n;
 		if (turn (l.s, l.t, c[i]) >= 0) ret.push_back(c[i]);
 		if (two_side (c[i], c[j], l))
@@ -24,7 +24,7 @@ bool inter_judge(cl a,cl b) { // 线段判非严格交
 	if (pos (b.s, a) || pos (b.t, a)) return true;
 	if (pos (a.s, b) || pos (a.t, b)) return true;
 	return two_side (a.s, a.t, b)
-	    && two_side (b.s, b.t, a); }
+		&& two_side (b.s, b.t, a); }
 point proj_to_line (cp a, cl b) { // 点在直线投影
 	point st = b.t - b.s;
 	return b.s + st * (dot(a - b.s, st) / dot(st, st));}
@@ -44,7 +44,7 @@ bool ray_inter_judge(line a, line b) { // 射线判交
 	s2 = det(a.t - a.s, b.t - a.s);
 	if (sgn(s1) == 0 && sgn(s2) == 0) {
 		return sgn(dot(a.t - a.s, b.s - a.s)) >= 0
-		    || sgn(dot(b.t - b.s, a.s - b.s)) >= 0; }
+			|| sgn(dot(b.t - b.s, a.s - b.s)) >= 0; }
 	if (!sgn(s1 - s2) || sgn(s1) == sgn(s2 - s1)) return 0;
 	swap(a, b);
 	s1 = det(a.t - a.s, b.s - a.s);

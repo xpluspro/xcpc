@@ -20,7 +20,7 @@ vector <point> hpi(vector <line> h) { // 半平面交
   if(r - l < 2) return {};
   vector <point> ret(r - l + 1);
   for(int i = l; i <= r; i++) 
-    ret[i - l] = line_inter(q[i], q[i == r ? l : i + 1]);
+	ret[i - l] = line_inter(q[i], q[i == r ? l : i + 1]);
   return ret; }
 // 空集会在队列里留下一个开区域；开区域会被判定为空集。
 // 为了保证正确性，一定要加足够大的框，尽可能避免零面积区域。
