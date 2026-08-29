@@ -42,10 +42,12 @@ bool ray_intersection_judge(cl a, cl b) {
 	return point_on_ray(p, a) && point_on_ray(p, b);
 }
 LD point_to_line(cp a, cl b) {
+	if (b.s == b.t) return (a - b.s).len();
 	return fabsl((b.t - b.s) ^ (a - b.s)) / (b.t - b.s).len();
 }
 P project_to_line(cp a, cl b) {
 	P d = b.t - b.s;
+	if (b.s == b.t) return b.s;
 	return b.s + d * ((a - b.s) * d / d.len2());
 }
 LD point_to_segment(cp a, cl b) {
@@ -54,4 +56,9 @@ LD point_to_segment(cp a, cl b) {
 		&& sgn((a - b.t) * (b.s - b.t)) >= 0)
 		return point_to_line(a, b);
 	return min((a - b.s).len(), (a - b.t).len());
+}
+LD segment_to_segment(cl a, cl b) {
+	if (intersection_judge(a, b)) return 0;
+	return min({point_to_segment(a.s, b), point_to_segment(a.t, b),
+		point_to_segment(b.s, a), point_to_segment(b.t, a)});
 }

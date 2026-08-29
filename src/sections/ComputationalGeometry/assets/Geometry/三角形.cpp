@@ -5,7 +5,8 @@ P circumcenter(cp a, cp b, cp c) { return C(a, b, c).c; }
 P orthocenter(cp a, cp b, cp c) {
 	return a + b + c - circumcenter(a, b, c) * 2; }
 P fermat_point(cp a, cp b, cp c) {
-	if (a == b) return a; if (b == c) return b;
+	if (a == b) return a;
+	if (b == c) return b;
 	if (c == a) return c;
 	LD ab = (a-b).len(), bc = (b-c).len(), ca = (c-a).len();
 	LD cosa = ((b-a)*(c-a)) / ab / ca;

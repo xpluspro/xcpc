@@ -1,28 +1,57 @@
-vector<p3> vec;
-Circle calc() {
- if(vec.empty()) { return Circle(p3(0, 0, 0), 0);
- }else if(1 == (int)vec.size()) {return Circle(vec[0], 0);
- }else if(2 == (int)vec.size()) {
-  return Circle(0.5 * (vec[0] + vec[1]), 0.5 * (vec[0] - vec[1]).len());
- }else if(3 == (int)vec.size()) {
-  double r = (vec[0] - vec[1]).len() * (vec[1] - vec[2]).len() * (vec[2] - vec[0]).len() / 2 / fabs(cross(vec[0] - vec[2], vec[1] - vec[2]).len());
-  Plane ppp1 = Plane(vec[1] - vec[0], 0.5 * (vec[1] + vec[0]));
-  return Circle(intersect(Plane(vec[1] - vec[0], 0.5 * (vec[1] + vec[0])), Plane(vec[2] - vec[1], 0.5 * (vec[2] + vec[1])), Plane(cross(vec[1] - vec[0], vec[2] - vec[0]), vec[0])), r);
- }else {
-  p3 o(intersect(Plane(vec[1] - vec[0], 0.5 * (vec[1] + vec[0])), Plane(vec[2] - vec[0], 0.5 * (vec[2] + vec[0])), Plane(vec[3] - vec[0], 0.5 * (vec[3] + vec[0]))));
-  return Circle(o, (o - vec[0]).len()); } }
-Circle miniBall(int n) {
- Circle res(calc());
- for(int i(0); i < n; i++) {
-  if(!in_circle(a[i], res)) { vec.push_back(a[i]);
-   res = miniBall(i); vec.pop_back();
-   if(i) { p3 tmp(a[i]);
-	memmove(a + 1, a, sizeof(p3) * i);
-	a[0] = tmp; } } }
- return res; }
-int main() {
- int n; scanf("%d", &n);
- for(int i(0); i < n; i++) a[i].scan();
- sort(a, a + n); n = unique(a, a + n) - a;
- vec.clear(); random_shuffle(a, a + n);
- printf("%.10f\n", miniBall(n).r); }
+struct Sphere {
+	p3 c; LD r;
+};
+bool in_sphere(p3 p,const Sphere &s) {return sgn((p-s.c).len()-s.r)<=0;}
+Sphere sphere(p3 a) {return {a,0};}
+Sphere sphere(p3 a,p3 b) {p3 c=(a+b)/2;return {c,(a-c).len()};}
+Sphere sphere3(p3 a,p3 b,p3 c) {
+	p3 u=b-a,v=c-a,n=cross(u,v);
+	if (!sgn(n.len2())) {
+		Sphere s=sphere(a,b);
+		array<pair<p3,p3>,2> candidate{{{a,c},{b,c}}};
+		for (auto [x,y]:candidate) {
+			Sphere t=sphere(x,y);
+			if (t.r>s.r) s=t;
+		}
+		return s;
+	}
+	p3 o=a+(cross(n,u)*v.len2()+cross(v,n)*u.len2())/(2*n.len2());
+	return {o,(a-o).len()};
+}
+Sphere sphere4(p3 a,p3 b,p3 c,p3 d) {
+	p3 u=b-a,v=c-a,w=d-a;
+	LD det=mix(u,v,w);
+	if (!sgn(det)) {
+		array<p3,4> q{a,b,c,d}; Sphere best{{},INF};
+		for (int i=0;i<4;++i) for (int j=i+1;j<4;++j) {
+			Sphere s=sphere(q[i],q[j]); bool ok=true;
+			for (p3 x:q) ok&=in_sphere(x,s);
+			if (ok&&s.r<best.r) best=s;
+		}
+		for (int i=0;i<4;++i) {
+			Sphere s=sphere3(q[(i+1)%4],q[(i+2)%4],q[(i+3)%4]); bool ok=true;
+			for (p3 x:q) ok&=in_sphere(x,s);
+			if (ok&&s.r<best.r) best=s;
+		}
+		return best;
+	}
+	p3 o=a+(cross(v,w)*(u.len2()/2)+cross(w,u)*(v.len2()/2)
+		+cross(u,v)*(w.len2()/2))/det;
+	return {o,(a-o).len()};
+}
+Sphere min_sphere(vector<p3> p) { // 随机增量，O(n) 期望
+	if (p.empty()) return {{},0};
+	shuffle(p.begin(),p.end(),rnd); Sphere ret=sphere(p[0]);
+	for (int i=1;i<(int)p.size();++i) if (!in_sphere(p[i],ret)) {
+		ret=sphere(p[i]);
+		for (int j=0;j<i;++j) if (!in_sphere(p[j],ret)) {
+			ret=sphere(p[i],p[j]);
+			for (int k=0;k<j;++k) if (!in_sphere(p[k],ret)) {
+				ret=sphere3(p[i],p[j],p[k]);
+				for (int l=0;l<k;++l) if (!in_sphere(p[l],ret))
+					ret=sphere4(p[i],p[j],p[k],p[l]);
+			}
+		}
+	}
+	return ret;
+}

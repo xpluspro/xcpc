@@ -15,7 +15,7 @@ struct P {
 	LD len2() const { return x * x + y * y; }
 	P unit() const { LD d = len(); return {x / d, y / d}; }
 
-	void read() { scanf("%Lf%Lf", &x, &y); }
+	void read() { if (scanf("%Lf%Lf", &x, &y) != 2) x = y = 0; }
 	void print() const { printf("(%.9Lf,%.9Lf)", x, y); }
 };
 

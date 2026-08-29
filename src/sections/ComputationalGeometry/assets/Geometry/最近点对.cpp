@@ -1,13 +1,34 @@
-LD solve(point p[], int l, int r) { // solve(p, 0, n)
-	if(l + 1 >= r) return INF;
-	int m = (l + r) / 2; LD mx = p[m].x;
-	LD ret = min(solve(p, l, m), solve(p, m, r));
- 	vector <point> v;
-	for(int i = l; i < r; i ++)
-		if(sqr(p[i].x - mx) < ret) v.push_back(p[i]);
-	sort(v.begin(), v.end(), by_y);
-	for(int i = 0; i < v.size(); i ++)
-		for(int j = i + 1; j < v.size(); j ++) {
-			if(sqr(v[i].y - v[j].y) > ret) break;
-			ret = min(ret, dis2(v[i], v[j])); }
-	return ret; } // 需先对p[]按x进行排序
+LD closest_pair(vp p) { // O(n log n)，返回欧氏距离
+	int n = (int)p.size();
+	if (n < 2) return INF;
+	sort(p.begin(), p.end());
+	vector<P> tmp(n);
+	function<LD(int, int)> solve = [&](int l, int r) -> LD {
+		if (r - l <= 3) {
+			LD ret = INF;
+			for (int i = l; i < r; ++i)
+				for (int j = i + 1; j < r; ++j)
+					ret = min(ret, (p[i] - p[j]).len2());
+			sort(p.begin() + l, p.begin() + r,
+				[](cp a, cp b) { return a.y == b.y ? a.x < b.x : a.y < b.y; });
+			return ret;
+		}
+		int m = (l + r) / 2;
+		LD mid_x = p[m].x;
+		LD ret = min(solve(l, m), solve(m, r));
+		merge(p.begin() + l, p.begin() + m, p.begin() + m, p.begin() + r,
+			tmp.begin(), [](cp a, cp b) {
+				return a.y == b.y ? a.x < b.x : a.y < b.y;
+			});
+		copy(tmp.begin(), tmp.begin() + r - l, p.begin() + l);
+		vector<P> strip;
+		for (int i = l; i < r; ++i) if ((p[i].x - mid_x) * (p[i].x - mid_x) < ret) {
+			for (int j = (int)strip.size() - 1; j >= 0
+				&& (p[i].y - strip[j].y) * (p[i].y - strip[j].y) < ret; --j)
+				ret = min(ret, (p[i] - strip[j]).len2());
+			strip.push_back(p[i]);
+		}
+		return ret;
+	};
+	return sqrtl(solve(0, n));
+}

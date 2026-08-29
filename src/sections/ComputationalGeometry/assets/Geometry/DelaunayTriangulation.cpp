@@ -9,18 +9,18 @@ const int N = 100000 + 5, MAX_TRIS = N * 6;
 bool in_circum(cp p1, cp p2, cp p3, cp p4) {
  LD u11 = p1.x-p4.x, u21 = p2.x-p4.x, u31 = p3.x-p4.x;
  LD u12 = p1.y-p4.y, u22 = p2.y-p4.y, u32 = p3.y-p4.y;
- LD u13 = sqr(p1.x)-sqr(p4.x) + sqr(p1.y) - sqr(p4.y);
- LD u23 = sqr(p2.x)-sqr(p4.x) + sqr(p2.y) - sqr(p4.y);
- LD u33 = sqr(p3.x)-sqr(p4.x) + sqr(p3.y) - sqr(p4.y);
- LD det = -u13*u22*u31 + u12*u23*u31 + u13*u21*u32 - u11*u23*u32 - u12*u21*u33 + u11*u22*u33;
- return det > eps; }
-LD dir(cp a, cp b, cp p) { return det(b-a,p-a);}
+ LD u13 = p1.len2()-p4.len2(), u23 = p2.len2()-p4.len2();
+ LD u33 = p3.len2()-p4.len2();
+ LD d = -u13*u22*u31 + u12*u23*u31 + u13*u21*u32
+	- u11*u23*u32 - u12*u21*u33 + u11*u22*u33;
+ return sgn(d) > 0; }
+LD dir(cp a, cp b, cp p) { return (b-a) ^ (p-a);}
 typedef int SideRef; struct Tri; typedef Tri* TriRef;
 struct Edge {
 	TriRef tri; SideRef side; Edge() : tri(0), side(0) {}
 	Edge(TriRef tri, SideRef side) : tri(tri), side(side) {} };
 struct Tri { // Triangle
-	point p[3];Edge edge[3];TriRef ch[3]; Tri(){}
+	P p[3];Edge edge[3];TriRef ch[3]; Tri(){}
 	Tri(cp p0,cp p1,cp p2){
 		p[0] = p0; p[1] = p1; p[2] = p2;
 				ch[0] = ch[1] = ch[2] = 0; }
@@ -39,10 +39,15 @@ void set_edge(Edge a, Edge b) {
 class Triangulation {
 	public:
 		Triangulation() {
+			tot_tri = triange_pool;
 			const LD LOTS = 1e6; // NOTE: below base triangle
-			the_root = new(tot_tri++) Tri (point(-LOTS,-LOTS), point(+LOTS,-LOTS), point(0,+LOTS)); }
-		TriRef find(point p) const { return find(the_root,p); }
+			the_root = new(tot_tri++) Tri (P(-LOTS,-LOTS), P(+LOTS,-LOTS), P(0,+LOTS)); }
+		TriRef find(P p) const { return find(the_root,p); }
 		void add_point(cp p) { add_point(find(the_root,p),p); }
+		void build(vp p) {
+			shuffle(p.begin(), p.end(), rnd);
+			for (cp x : p) add_point(x);
+		}
 	private:
 		TriRef the_root;
 		static TriRef find(TriRef root,cp p){
@@ -78,12 +83,6 @@ class Triangulation {
 			trj->ch[0]=trk; trj->ch[1]=trl; trj->ch[2]=0;
 			flip(trk,1); flip(trk,2); flip(trl,1); flip(trl,2); }
 };
-int n; point ps[N];
-void build(){
-	tot_tri = triange_pool; cin >> n;
-	for(int i = 0; i < n; ++ i) scanf("%lf%lf",&ps[i].x,&ps[i].y);
-	random_shuffle(ps, ps + n); Triangulation tri;
-	for(int i = 0; i < n; ++ i) tri.add_point(ps[i]); }
 //The Euclidean minimum spanning tree of a set of points is a subset of the Delaunay triangulation of the same points.
 //Connecting the centers of the circumcircles produces the Voronoi diagram.
 //No point in P is inside the circumcircle of any triangle.
