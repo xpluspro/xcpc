@@ -24,7 +24,7 @@
 8. `ComputationalGeometry`：计算几何
 9. `GraphTheory`：图论
 10. `OfflineAlgorithms`：离线算法（如 CDQ、莫队）
-11. `RandomizationAndGameTheory`：随机化与博弈论
+11. `OtherTools`：其它工具
 
 工程根目录下的 `archive/` 是旧版未整理素材与历史模板的归档区，不参与
 `main.tex` 的编译。需要启用其中的内容时，应先把素材移入对应版块的

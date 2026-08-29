@@ -9,7 +9,7 @@
 \usepackage{listings, color, setspace, titlesec, fancyhdr, mdframed, multicol}
 \usepackage{ucharclasses}
 \usepackage{xunicode, xltxtra}
-\usepackage[inner=1.25cm, outer=0.8cm, top=1.7cm, bottom=0.0cm]{geometry}
+\usepackage[inner=1.25cm, outer=0.8cm, top=1.7cm, bottom=0.8cm]{geometry}
 \usepackage{pdfpages}
 \usepackage{tocloft}
 \usepackage{nameref}
@@ -36,8 +36,10 @@
 \XeTeXlinebreaklocale "zh"
 \XeTeXlinebreakskip = 0pt plus 1pt
 
-\setlength{\parindent}{0em}\setlength{\parskip}{1pt}
-\setlength\itemsep{1pt}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{2pt}
+\setlength\itemsep{2pt}
+\renewcommand{\arraystretch}{1.16}
 
 \makeatletter
 \renewcommand{\paragraph}{%
@@ -50,14 +52,14 @@
 
 %configure the top corners
 \pagestyle{fancy}
-\setlength{\headsep}{0.1cm}
+\setlength{\headsep}{0.25cm}
 
 \chead{键落星辰}
 \rhead{Page \thepage}
 \lhead{上海交通大学 Shanghai Jiao Tong University}
 
 %configure space between the two columns
-\setlength{\columnsep}{13pt}
+\setlength{\columnsep}{18pt}
 
 %configure minted to display codes
 %\definecolor{Gray}{rgb}{0.9,0.9,0.9}
@@ -70,14 +72,18 @@
 
 %configure section style
 \titleformat{\section}
-{\huge}			% The style of the section title
+{\Huge\bfseries}			% The style of the section title
 {\thesection.}				% a prefix
 {4pt}						% How much space exists between the prefix and the title
 {}					% How the section is represented
 % \titleformat{\section}{\huge}{}{0pt}{}
-\titlespacing{\section}{0pt}{0pt}{0pt}
-\titlespacing{\subsection}{0pt}{0pt}{0pt}
-\titlespacing{\subsubsection}{0pt}{0pt}{0pt}
+\titleformat{\subsection}
+  {\Large\bfseries}{\thesubsection}{0.55em}{}
+\titleformat{\subsubsection}
+  {\large\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{8pt}{5pt}
+\titlespacing*{\subsection}{0pt}{7pt}{3pt}
+\titlespacing*{\subsubsection}{0pt}{5pt}{2pt}
 
 %enable section to start new page automatically
 %\let\stdsection\section
@@ -91,7 +97,7 @@
 	mathescape,
 	linenos,
 	autogobble,
-	baselinestretch=0.8,
+	baselinestretch=0.9,
 	tabsize=3,
 	fontsize=\normalsize,
 	%bgcolor=Gray,
@@ -112,7 +118,7 @@
 	mathescape,
 	linenos,
 	autogobble,
-	baselinestretch=0.8,
+	baselinestretch=0.9,
 	tabsize=3,
 	fontsize=\small,
 	%bgcolor=Gray,
@@ -133,7 +139,7 @@
 	mathescape,
 	linenos,
 	autogobble,
-	baselinestretch=0.8,
+	baselinestretch=0.9,
 	tabsize=3,
 	fontsize=\small,
 	%bgcolor=Gray,
@@ -155,7 +161,7 @@
 	mathescape,
 	linenos,
 	autogobble,
-	baselinestretch=0.8,
+	baselinestretch=0.9,
 	tabsize=2,
 	fontsize=\normalsize,
 	%bgcolor=Gray,
@@ -174,7 +180,7 @@
 	mathescape,
 	linenos,
 	autogobble,
-	baselinestretch=0.8,
+	baselinestretch=0.9,
 	tabsize=2,
 	fontsize=\normalsize,
 	%bgcolor=Gray,
