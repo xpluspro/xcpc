@@ -171,7 +171,11 @@ def validate_cpp(base: str | None) -> None:
             subprocess.run([str(output)], cwd=ROOT, check=True)
 
         changed = changed_cpp(base)
-        standalone = {path for path in changed if re.search(r"\bmain\s*\(", path.read_text(encoding="utf-8-sig"))}
+        standalone = {
+            path
+            for path in changed - covered
+            if re.search(r"\bmain\s*\(", path.read_text(encoding="utf-8-sig"))
+        }
         for path in sorted(standalone):
             standard = cpp_requirement(path)
             output = Path(output_dir) / f"standalone-{len(covered)}"
