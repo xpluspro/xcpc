@@ -1,3 +1,6 @@
+from itertools import combinations, combinations_with_replacement, permutations, product
+
+
 def RandomAndList():
 	import random
 	random.normalvariate(0.5, 0.1)
@@ -7,7 +10,6 @@ def RandomAndList():
 	l.sort(key=lambda x:x ^ 1,reverse=True)
 	from functools import cmp_to_key
 	l.sort(key=cmp_to_key(lambda x, y:(y^1)-(x^1)))
-	from itertools import *
 	for i in product('ABCD', repeat=2):
 		pass # AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD
 	for i in permutations('ABCD', repeat=2):

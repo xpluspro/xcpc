@@ -25,12 +25,22 @@
 % \newfontfamily\substitutefont{SimSun}[Scale=0.8,BoldFont=SimHei]
 % \setTransitionsForChinese{\begingroup\substitutefont}{\endgroup}
 \usepackage{xeCJK}
-\setCJKmainfont{Source Han Serif SC}[Scale=0.8]
-\setCJKmonofont{SimHei}[Scale=0.8]
-\setCJKsansfont{KaiTi}[Scale=0.8]
+\IfFontExistsTF{Source Han Serif SC}
+  {\setCJKmainfont{Source Han Serif SC}[Scale=0.8]}
+  {\setCJKmainfont{FandolSong-Regular}[Scale=0.8]}
+\IfFontExistsTF{SimHei}
+  {\setCJKmonofont{SimHei}[Scale=0.8]}
+  {\setCJKmonofont{FandolHei-Regular}[Scale=0.8]}
+\IfFontExistsTF{KaiTi}
+  {\setCJKsansfont{KaiTi}[Scale=0.8]}
+  {\setCJKsansfont{FandolKai-Regular}[Scale=0.8]}
 
-\setmainfont{Linux Libertine O}[Scale=0.925]
-\setmonofont{Consolas}[Scale=0.775]
+\IfFontExistsTF{Linux Libertine O}
+  {\setmainfont{Linux Libertine O}[Scale=0.925]}
+  {\setmainfont{TeX Gyre Termes}[Scale=0.925]}
+\IfFontExistsTF{Consolas}
+  {\setmonofont{Consolas}[Scale=0.775]}
+  {\setmonofont{Latin Modern Mono}[Scale=0.775]}
 %\setsansfont{Gill Sans Medium}
 
 \XeTeXlinebreaklocale "zh"
