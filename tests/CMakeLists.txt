@@ -1,0 +1,118 @@
+cmake_minimum_required(VERSION 3.16)
+project(xcpc_tests LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
+option(XCPC_SANITIZE "ASan+UBSan on contract tests" OFF)
+option(XCPC_DEATH_TESTS "Build guard/death tests instead of contract tests" OFF)
+
+include(FetchContent)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.15.2.zip
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+FetchContent_MakeAvailable(googletest)
+include(GoogleTest)
+enable_testing()
+
+set(XCPC_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
+set(XCPC_SRC "${XCPC_ROOT}/src/sections")
+
+function(xcpc_setup target)
+  target_include_directories(${target} PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/prelude"
+    "${XCPC_ROOT}"
+    "${XCPC_SRC}")
+  target_compile_options(${target} PRIVATE
+    -Wall -Wextra
+    -Wno-unused-variable -Wno-unused-but-set-variable
+    -Wno-unused-parameter -Wno-sign-compare
+    -Wno-unknown-pragmas -Wno-misleading-indentation)
+  target_link_libraries(${target} PRIVATE GTest::gtest_main)
+  gtest_discover_tests(${target} DISCOVERY_TIMEOUT 30)
+endfunction()
+
+function(xcpc_contract name src)
+  if(XCPC_DEATH_TESTS)
+    return()
+  endif()
+  add_executable(${name} ${src})
+  xcpc_setup(${name})
+  if(XCPC_SANITIZE)
+    target_compile_options(${name} PRIVATE -O1 -g -fno-omit-frame-pointer
+      -fsanitize=address,undefined)
+    target_link_options(${name} PRIVATE -fsanitize=address,undefined)
+  endif()
+endfunction()
+
+function(xcpc_guard name src)
+  if(NOT XCPC_DEATH_TESTS)
+    return()
+  endif()
+  add_executable(${name} ${src})
+  xcpc_setup(${name})
+  target_compile_options(${name} PRIVATE -O0 -g -UNDEBUG)
+  target_compile_definitions(${name} PRIVATE XCPC_DEATH_TESTS=1)
+endfunction()
+
+xcpc_contract(xcpc_nt_exgcd          contract/number_theory/exgcd_crt_test.cpp)
+xcpc_contract(xcpc_nt_llfpm          contract/number_theory/llfpm_test.cpp)
+xcpc_contract(xcpc_nt_floor_sum      contract/number_theory/floor_sum_test.cpp)
+xcpc_contract(xcpc_nt_pell           contract/number_theory/pell_test.cpp)
+xcpc_contract(xcpc_nt_tonelli        contract/number_theory/tonelli_test.cpp)
+xcpc_contract(xcpc_nt_date           contract/number_theory/date_test.cpp)
+xcpc_contract(xcpc_nt_miller         contract/number_theory/miller_rho_test.cpp)
+xcpc_contract(xcpc_nt_lucas          contract/number_theory/exlucas_test.cpp)
+xcpc_contract(xcpc_nt_factmod        contract/number_theory/factmod_test.cpp)
+xcpc_contract(xcpc_poly_ntt          contract/polynomial/ntt_poly_test.cpp)
+xcpc_contract(xcpc_poly_fft          contract/polynomial/fft_test.cpp)
+xcpc_contract(xcpc_poly_fwt          contract/polynomial/fwt_test.cpp)
+xcpc_contract(xcpc_poly_linrec       contract/polynomial/linrec_test.cpp)
+xcpc_contract(xcpc_str_kmp           contract/string/kmp_test.cpp)
+xcpc_contract(xcpc_str_minrep        contract/string/minrep_test.cpp)
+xcpc_contract(xcpc_str_sa            contract/string/sa_test.cpp)
+xcpc_contract(xcpc_str_sam           contract/string/sam_test.cpp)
+xcpc_contract(xcpc_str_ac            contract/string/ac_test.cpp)
+xcpc_contract(xcpc_str_manacher      contract/string/manacher_test.cpp)
+xcpc_contract(xcpc_str_pam           contract/string/pam_test.cpp)
+xcpc_contract(xcpc_str_lyndon        contract/string/lyndon_test.cpp)
+xcpc_contract(xcpc_str_hash          contract/string/hash_test.cpp)
+xcpc_contract(xcpc_ds_fhq            contract/data_structures/fhq_test.cpp)
+xcpc_contract(xcpc_ds_bit            contract/data_structures/bit_test.cpp)
+xcpc_contract(xcpc_ds_segtree        contract/data_structures/segtree_test.cpp)
+xcpc_contract(xcpc_ds_hashmap        contract/data_structures/hashmap_test.cpp)
+xcpc_contract(xcpc_ds_radix          contract/data_structures/radix_test.cpp)
+xcpc_contract(xcpc_ds_lct            contract/data_structures/lct_test.cpp)
+xcpc_contract(xcpc_ds_leftist        contract/data_structures/leftist_test.cpp)
+xcpc_contract(xcpc_ds_lichao         contract/data_structures/lichao_test.cpp)
+xcpc_contract(xcpc_graph_matching    contract/graph/matching_test.cpp)
+xcpc_contract(xcpc_graph_flow        contract/graph/flow_test.cpp)
+xcpc_contract(xcpc_graph_scc         contract/graph/scc_test.cpp)
+xcpc_contract(xcpc_graph_euler       contract/graph/euler_test.cpp)
+xcpc_contract(xcpc_graph_blossom     contract/graph/blossom_test.cpp)
+xcpc_contract(xcpc_graph_clique      contract/graph/clique_test.cpp)
+xcpc_contract(xcpc_graph_twosat      contract/graph/twosat_test.cpp)
+xcpc_contract(xcpc_geo_hull          contract/geometry/hull_test.cpp)
+xcpc_contract(xcpc_geo_basic         contract/geometry/geo_basic_test.cpp)
+xcpc_contract(xcpc_geo_circle        contract/geometry/circle_test.cpp)
+xcpc_contract(xcpc_geo_hpi           contract/geometry/hpi_test.cpp)
+xcpc_contract(xcpc_geo_sphere        contract/geometry/sphere_test.cpp)
+xcpc_contract(xcpc_geo_misc          contract/geometry/geo_misc_test.cpp)
+xcpc_contract(xcpc_dp_subset         contract/dp_offline_linalg/subset_sum_test.cpp)
+xcpc_contract(xcpc_dp_knuth          contract/dp_offline_linalg/knuth_test.cpp)
+xcpc_contract(xcpc_linalg_simplex    contract/dp_offline_linalg/simplex_test.cpp)
+xcpc_contract(xcpc_linalg_gauss      contract/dp_offline_linalg/gauss_test.cpp)
+xcpc_contract(xcpc_tree_hash         contract/tree/treehash_test.cpp)
+xcpc_contract(xcpc_tree_virtual      contract/tree/virtual_tree_test.cpp)
+
+xcpc_guard(xcpc_guards_nt            guards/number_theory_guards.cpp)
+xcpc_guard(xcpc_guards_poly          guards/polynomial_guards.cpp)
+xcpc_guard(xcpc_guards_ds            guards/data_structure_guards.cpp)
+xcpc_guard(xcpc_guards_geo           guards/geometry_guards.cpp)
+xcpc_guard(xcpc_guards_graph         guards/graph_guards.cpp)
+xcpc_guard(xcpc_guards_dp            guards/dp_linalg_guards.cpp)
