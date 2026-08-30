@@ -130,7 +130,16 @@ def changed_cpp(base: str | None) -> set[Path]:
     if base is None:
         return {path.resolve() for path in SOURCE_ROOT.rglob("*.cpp")}
     result = subprocess.run(
-        ["git", "diff", "--name-only", "--diff-filter=ACMR", f"{base}...HEAD", "--", "src/sections"],
+        [
+            "git",
+            "diff",
+            "--name-only",
+            "--find-renames=100%",
+            "--diff-filter=ACM",
+            f"{base}...HEAD",
+            "--",
+            "src/sections",
+        ],
         cwd=ROOT,
         check=True,
         text=True,
