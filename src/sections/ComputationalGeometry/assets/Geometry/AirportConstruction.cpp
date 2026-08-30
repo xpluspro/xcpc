@@ -1,7 +1,7 @@
-struct PolygonChordSolver { // 简单多边形顶点间最长内含线段
+struct PolygonChordSolver { // 逆时针简单多边形顶点间最长内含线段
 	vp p;
 	int n;
-	PolygonChordSolver(vp p) : p(move(p)), n((int)this->p.size()) {}
+	PolygonChordSolver(vp points) : p(move(points)), n((int)p.size()) {}
 
 	bool segment_inside(cp u, cp v) const {
 		for (int i = 0; i < n; ++i) {

@@ -1,7 +1,7 @@
 struct L {
 	P s, t;
 
-	L(cp s = P(), cp t = P()) : s(s), t(t) {}
+	L(cp s_ = P(), cp t_ = P()) : s(s_), t(t_) {}
 	L(cl a) : s(a.s), t(a.t) {}
 	L &operator=(cl a) { s = a.s, t = a.t; return *this; }
 	void read() { s.read(), t.read(); }

@@ -26,10 +26,26 @@ const int MAXN = 200005;
 #include "../src/sections/ComputationalGeometry/assets/Geometry/三维几何.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/三维凸包.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/最小覆盖球.cpp"
+#include "../src/sections/ComputationalGeometry/assets/Geometry/经纬度求球面最短距离.cpp"
 
 bool close(LD a, LD b, LD e = 1e-8L) { return fabsl(a - b) <= e; }
 
 int main() {
+	LD test_lon=2.26032585233467458985488762746L;
+	LD test_lat=-1.14958554905499912108732263327L;
+	assert(close(sphereDis(test_lon,test_lat,test_lon,test_lat,1),0));
+	assert(P().unit() == P());
+	assert(cc_intersection_count(C(P(0,0),1), C(P(0,0),1)) == -1);
+	assert(cc_intersection_count(C(P(0,0),0), C(P(0,0),0)) == 1);
+	assert(cc_intersection(C(P(0,0),0), C(P(0,0),0)) == vp{P(0,0)});
+	assert(cc_intersection_count(C(P(0,0),1), C(P(0,0),2)) == 0);
+	assert(cc_intersection_count(C(P(0,0),1), C(P(2,0),1)) == 1);
+	assert(cc_intersection_count(C(P(0,0),2), C(P(2,0),2)) == 2);
+	bool empty_at_threw = false;
+	try { ConvexQuery().at(0); }
+	catch (const out_of_range &) { empty_at_threw = true; }
+	assert(empty_at_threw);
+
 	mt19937_64 gen(20260829);
 	uniform_int_distribution<int> coord(-20, 20), count(2, 30);
 	for (int tc = 0; tc < 500; ++tc) {
@@ -76,16 +92,28 @@ int main() {
 	vp rect{{0,0},{4,0},{4,2},{0,2}};
 	assert(close(convex_min_width(rect), 2));
 	assert(close(min_area_rectangle(rect).area, 8));
+	vp repeated_rect{{0,0},{0,0},{4,0},{4,2},{0,2},{0,0}};
+	assert(close(convex_min_width(repeated_rect), 2));
+	assert(close(min_area_rectangle(repeated_rect).area, 8));
 	assert(close(polygon_area(rect), 8));
 	assert(close(polygon_perimeter(rect), 12));
 	assert((polygon_centroid(rect) - P(2,1)).len() < 1e-9L);
+	assert((polygon_centroid(vp{{0,0},{2,0},{4,0}}) - P(2,0)).len() < 1e-9L);
+	assert(polygon_centroid(vp{}) == P());
 	assert(point_in_polygon({2,1}, rect) == 1);
 	assert(point_in_polygon({4,1}, rect) == 0);
 	assert(point_in_polygon({5,1}, rect) == -1);
 	assert(close(segment_to_segment({{0,0},{1,0}}, {{2,1},{2,-1}}), 1));
+	assert(close(angle(P(),P(1,0)),0));
+	assert(close(circle_edge_area2(P(),P(2,0),1),0));
+	assert(close(polygon_circle_intersection_area(
+		vp{{0,0},{2,0},{0,2}},C(P(),1)),pi/4));
+	assert(close(PolygonChordSolver(rect).solve(), sqrtl(20.0L)));
 	vp square_hpi = hpi({{{0,0},{1,0}},{{1,0},{1,1}},
 		{{1,1},{0,1}},{{0,1},{0,0}}});
 	assert(square_hpi.size() == 4 && close(polygon_area(square_hpi),1));
+	IL ix{1,0,0}, iy{0,1,0}, idiag{-1,-1,1};
+	assert(close(triangle_area(ix,iy,idiag),0.5L));
 	assert(cc_intersection(C(P(0,0),1),C(P(2,0),1)).size()==1);
 
 	vp concave{{0,0},{3,0},{3,3},{1,1},{0,3}};
@@ -117,6 +145,8 @@ int main() {
 	Sphere flat_sphere=min_sphere({{-1,-1,0},{1,-1,0},{1,1,0},{-1,1,0}});
 	assert(flat_sphere.c.len()<1e-9L&&close(flat_sphere.r,sqrtl(2.0L)));
 	ConvexHull3D hull3;
+	assert(!hull3.build({{0,0,0},{1,0,0},{1,1,0},{0,1,0}}));
+	assert(hull3.face.empty());
 	assert(hull3.build(cube));
 	assert(!hull3.face.empty());
 	for (auto f : hull3.face)
@@ -142,6 +172,27 @@ int main() {
 	circle_count=2;
 	circles[0]=C(P(),1),circles[1]=C(P(),1);
 	circle_union();
+	assert(close(coverage_area[1],0));
 	assert(close(coverage_area[2],pi));
+	circles[0]=C(P(),8),circles[1]=C(P(),5);
+	circle_union();
+	assert(close(coverage_area[1],39*pi));
+	assert(close(coverage_area[2],25*pi));
+	circles[0]=C(P(0,0),2),circles[1]=C(P(2,0),2);
+	circle_union();
+	LD overlap=cc_intersection_area(circles[0],circles[1]);
+	assert(close(coverage_area[1],8*pi-2*overlap));
+	assert(close(coverage_area[2],overlap));
+	uniform_int_distribution<int> radius(1,10);
+	for(int tc=0;tc<1000;++tc) {
+		circles[0]=C(P(coord(gen),coord(gen)),radius(gen));
+		circles[1]=C(P(coord(gen),coord(gen)),radius(gen));
+		circle_union();
+		LD both=cc_intersection_area(circles[0],circles[1]);
+		LD exactly_one=pi*circles[0].r*circles[0].r
+			+pi*circles[1].r*circles[1].r-2*both;
+		assert(close(coverage_area[1],exactly_one));
+		assert(close(coverage_area[2],both));
+	}
 	cerr << "computational geometry tests passed\n";
 }

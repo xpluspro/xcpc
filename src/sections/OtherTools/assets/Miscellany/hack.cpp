@@ -1,20 +1,23 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 //fast = O3 + ffast-math + fallow-store-data-races
 #pragma GCC optimize("Ofast")
 //下：加include后面|   位运算   |浮点|  SIMD   | 优化寄存器 |
 #pragma GCC target("abm,bmi,bmi2,fma,sse2,avx2,tune=native")
-const int SZ = 1 << 16; int getc() {
+const int SZ = 1 << 16; int FastGetChar() {
 	static char buf[SZ], *ptr = buf, *top = buf;
 	if (ptr == top) {
 		ptr = buf, top = buf + fread(buf, 1, SZ, stdin);
 		if (top == buf) return -1; }
 	return *ptr++; }
 int read() {
-	int x = 0, f = 1, ch = getc();
+	int x = 0, f = 1, ch = FastGetChar();
 	while (!isdigit(ch)) {
 		if (ch == '-') f = -1;
-		ch = getc();
+		ch = FastGetChar();
 	}
-	while (isdigit(ch)) x = x * 10 + ch - '0', ch = getc();
+	while (isdigit(ch)) x = x * 10 + ch - '0', ch = FastGetChar();
 	return x * f;
 }
 const int OSZ = 1 << 16;
@@ -41,10 +44,21 @@ void writeStr(const char *s, char end = '\n') {
 	while (*s) pc(*s++);
 	pc(end);
 }
-idx=b._Find_first();idx!=b.size();idx=b._Find_next(idx);
-struct HashFunc{size_t operator()(const KEY &key)const{}};
-__builtin_uaddll_overflow(a, b, &c) // binary big int
+template<class Bitset, class Func>
+void ForEachSetBit(const Bitset &b, Func func) {
+	for (size_t idx = b._Find_first(); idx != b.size(); idx = b._Find_next(idx))
+		func(idx);
+}
+template<class Key> struct HashFunc {
+	size_t operator()(const Key &key) const { return hash<Key>{}(key); }
+};
+bool AddOverflow(unsigned long long a, unsigned long long b,
+		unsigned long long &c) { // binary big int
+	return __builtin_uaddll_overflow(a, b, &c);
+}
 void GospersHack(int k, int n) {
 	for (int s = (1 << k) - 1, c, r; s < (1 << n);
 	c = s & -s, r = s + c, s = (((r ^ s) >> 2) / c) | r); }
-chrono::steady_clock::now().time_since_epoch().count();
+auto SteadyClockSeed() {
+	return chrono::steady_clock::now().time_since_epoch().count();
+}

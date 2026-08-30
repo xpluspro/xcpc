@@ -2,7 +2,7 @@ struct C {
 	P c;
 	LD r;
 
-	C(cp c = P(), LD r = 0) : c(c), r(r) {}
+	C(cp c_ = P(), LD r_ = 0) : c(c_), r(r_) {}
 	C(cc a) : c(a.c), r(a.r) {}
 	C &operator=(cc a) { c = a.c, r = a.r; return *this; }
 	C(cp a, cp b) : c((a + b) / 2), r((a - c).len()) {}
@@ -55,15 +55,29 @@ LD cc_intersection_area(cc a, cc b) {
 	return a.r * a.r * t1 + b.r * b.r * t2 - d * a.r * sinl(t1);
 }
 
-vp cc_intersection(cc a, cc b) {
+// 返回交点个数；-1 表示两圆重合，有无穷多个交点。
+int cc_intersection_count(cc a, cc b) {
 	LD d = (a.c - b.c).len();
-	if (a.c == b.c || sgn(d - a.r - b.r) > 0
-		|| sgn(d - fabsl(a.r - b.r)) < 0) return {};
+	if (a.c == b.c) {
+		if (sgn(a.r - b.r)) return 0;
+		return !sgn(a.r) ? 1 : -1;
+	}
+	if (sgn(d - a.r - b.r) > 0
+		|| sgn(d - fabsl(a.r - b.r)) < 0) return 0;
+	if (!sgn(d - a.r - b.r) || !sgn(d - fabsl(a.r - b.r))) return 1;
+	return 2;
+}
+
+vp cc_intersection(cc a, cc b) { // 仅返回有限交点；重合圆返回空集
+	int cnt = cc_intersection_count(a, b);
+	if (cnt <= 0) return {};
+	if (a.c == b.c) return {a.c}; // 重合的零半径圆
+	LD d = (a.c - b.c).len();
 	P v = (b.c - a.c).unit();
 	LD x = (a.r * a.r - b.r * b.r + d * d) / (2 * d);
 	LD h = sqrtl(max(0.0L, a.r * a.r - x * x));
 	P p = a.c + v * x;
-	if (!sgn(h)) return {p};
+	if (cnt == 1) return {p};
 	return {p + v.rot90() * h, p - v.rot90() * h};
 }
 

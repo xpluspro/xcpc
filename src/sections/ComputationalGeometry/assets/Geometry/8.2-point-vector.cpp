@@ -1,7 +1,7 @@
 struct P {
 	LD x, y;
 
-	P(LD x = 0, LD y = 0) : x(x), y(y) {}
+	P(LD x_ = 0, LD y_ = 0) : x(x_), y(y_) {}
 	P(cp a) : x(a.x), y(a.y) {}
 	P &operator=(cp a) { x = a.x, y = a.y; return *this; }
 
@@ -13,7 +13,10 @@ struct P {
 	P _rot90() const { return {y, -x}; }
 	LD len() const { return sqrtl(x * x + y * y); }
 	LD len2() const { return x * x + y * y; }
-	P unit() const { LD d = len(); return {x / d, y / d}; }
+	P unit() const { // 零向量的单位向量约定为零向量
+		LD d = len();
+		return sgn(d) ? P{x / d, y / d} : P{};
+	}
 
 	void read() { if (scanf("%Lf%Lf", &x, &y) != 2) x = y = 0; }
 	void print() const { printf("(%.9Lf,%.9Lf)", x, y); }

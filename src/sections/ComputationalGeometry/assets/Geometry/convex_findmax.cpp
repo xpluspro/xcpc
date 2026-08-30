@@ -1,9 +1,14 @@
 struct ConvexQuery { // a 为逆时针严格凸包
 	vp a;
 	int n;
-	ConvexQuery(vp a = {}) : a(move(a)), n((int)this->a.size()) {}
+	ConvexQuery(vp points = {}) : a(move(points)), n((int)a.size()) {}
 
-	P at(int i) const { i %= n; if (i < 0) i += n; return a[i]; }
+	P at(int i) const { // 空凸包没有合法下标
+		if (!n) throw out_of_range("ConvexQuery::at() called on an empty polygon");
+		i %= n;
+		if (i < 0) i += n;
+		return a[i];
+	}
 	bool inside(cp u) const { // 含边界
 		if (!n) return false;
 		if (n == 1) return u == a[0];
