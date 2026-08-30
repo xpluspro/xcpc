@@ -18,6 +18,7 @@ SOURCE_ROOT = ROOT / "src" / "sections"
 CPP_MARKER = re.compile(r"//\s*@requires:\s*c\+\+(17|20|23)\s*$")
 PY_MARKER = re.compile(r"#\s*@requires:\s*python(3\.(?:10|11|12|13|14))\s*$")
 LOCAL_INCLUDE = re.compile(r'^\s*#\s*include\s*"([^"]+)"')
+SYSTEM_OR_QUOTED_INCLUDE = re.compile(r'^\s*#\s*include\s*[<"]')
 
 
 def first_line(path: Path) -> str:
@@ -70,6 +71,23 @@ def validate_python(target: str) -> None:
     print(f"Python {target}: validated {len(selected)} file(s)")
 
 
+def resolve_quoted_include(from_path: Path, inc: str) -> Path | None:
+    """Resolve a quoted include against the including file, repo root, and tests/."""
+    candidates = [
+        (from_path.parent / inc).resolve(),
+        (ROOT / inc).resolve(),
+        (ROOT / "tests" / inc).resolve(),
+    ]
+    seen: set[Path] = set()
+    for candidate in candidates:
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        if candidate.is_file() and candidate.suffix in {".cpp", ".cc", ".cxx", ".h", ".hpp"}:
+            return candidate
+    return None
+
+
 def included_sources(unit: Path) -> set[Path]:
     found: set[Path] = set()
 
@@ -78,23 +96,61 @@ def included_sources(unit: Path) -> set[Path]:
         if path in found:
             return
         found.add(path)
-        for line in path.read_text(encoding="utf-8-sig").splitlines():
+        try:
+            lines = path.read_text(encoding="utf-8-sig").splitlines()
+        except OSError:
+            return
+        for line in lines:
             match = LOCAL_INCLUDE.match(line)
             if not match:
                 continue
-            included = (path.parent / match.group(1)).resolve()
-            if included.is_file() and included.suffix in {".cpp", ".cc", ".cxx", ".h", ".hpp"}:
+            included = resolve_quoted_include(path, match.group(1))
+            if included is not None:
                 visit(included)
 
     visit(unit)
     return found
 
 
+def coverage_units() -> list[Path]:
+    """tools/test_*.cpp plus the GoogleTest tree under tests/."""
+    units = sorted((ROOT / "tools").glob("test_*.cpp"))
+    tests = ROOT / "tests"
+    if tests.is_dir():
+        units.extend(sorted(tests.rglob("*.cpp")))
+        units.extend(sorted(tests.rglob("*.hpp")))
+        units.extend(sorted(tests.rglob("*.h")))
+    return units
+
+
+def is_complete_translation_unit(path: Path) -> bool:
+    """True if the file is a self-contained program, not a handbook fragment.
+
+    Many printed snippets ship a demo `main()` that assumes a contest template
+    (`bits/stdc++.h`, `using LD`, ...). Those are not standalone TUs; they must
+    be pulled in through tools/test_*.cpp or tests/.
+    """
+    text = path.read_text(encoding="utf-8-sig")
+    if not re.search(r"\bmain\s*\(", text):
+        return False
+    return any(SYSTEM_OR_QUOTED_INCLUDE.match(line) for line in text.splitlines())
+
+
 def changed_cpp(base: str | None) -> set[Path]:
     if not base or set(base) == {"0"}:
         return set()
     result = subprocess.run(
-        ["git", "diff", "--name-only", "--diff-filter=ACMR", f"{base}...HEAD", "--", "src/sections"],
+        [
+            "git",
+            "-c",
+            "core.quotepath=false",
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMR",
+            f"{base}...HEAD",
+            "--",
+            "src/sections",
+        ],
         cwd=ROOT,
         check=True,
         text=True,
@@ -134,8 +190,11 @@ def validate_cpp(base: str | None) -> None:
             subprocess.run(command, cwd=ROOT, check=True)
             subprocess.run([str(output)], cwd=ROOT, check=True)
 
+        for unit in coverage_units():
+            covered.update(included_sources(unit))
+
         changed = changed_cpp(base)
-        standalone = {path for path in changed if re.search(r"\bmain\s*\(", path.read_text(encoding="utf-8-sig"))}
+        standalone = {path for path in changed if is_complete_translation_unit(path)}
         for path in sorted(standalone):
             standard = cpp_requirement(path)
             output = Path(output_dir) / f"standalone-{len(covered)}"
@@ -159,7 +218,9 @@ def validate_cpp(base: str | None) -> None:
     uncovered = sorted(changed - covered)
     if uncovered:
         names = "\n".join(f"  - {path.relative_to(ROOT)}" for path in uncovered)
-        raise RuntimeError("以下新增/修改的 C++ 文件未纳入 tools/test_*.cpp：\n" + names)
+        raise RuntimeError(
+            "以下新增/修改的 C++ 文件未纳入 tools/test_*.cpp 或 tests/：\n" + names
+        )
     print(f"C++: validated {len(units)} test unit(s); covered {len(covered)} source file(s)")
 
 

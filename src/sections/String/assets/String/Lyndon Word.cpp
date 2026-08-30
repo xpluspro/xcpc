@@ -4,11 +4,11 @@
 //后缀排序后，排名的所有前缀最小值构成了 Ly 分解的左端点。
 void mnsuf(char *s, int *mn, int n){ // 每个前缀的最小后缀
 	//1 - base ，求 Lyndon 分解去掉 mn 即可
-	for(int i = 1; i <= n;)
+	for(int i = 1; i <= n;) {
 		int j = i + 1, k = i; mn[i] = i;
 		for(; j <= n && s[k] <= s[j]; j++){
 			if(s[k] < s[j]) k = mn[j] = i;
-				else mn[j] = mn[k] + j - k, k++;
+				else mn[j] = mn[k] + j - k, k++; }
 		for(; i <= k; i += j - k) {} } } //lyn+=s[i..i+k-j-1]
 void mxsuf(char *s, int *mx, int n){ // 每个前缀的最大后缀
 	fill(mx + 1, mx + n + 1, 0); // 1 - base
