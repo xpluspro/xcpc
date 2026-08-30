@@ -6,4 +6,4 @@ for (int len = 2; len <= n; ++len) {
 			if (f[l][r] > f[l][k] + f[k + 1][r] + w(l, r)) {
 				f[l][r] = f[l][k] + f[k + 1][r] + w(l, r);
 				m[l][r] = k;
-	} } }
+	} } } }

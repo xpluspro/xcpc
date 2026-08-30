@@ -2,6 +2,8 @@ vector<int> omega[25]; // 单位根
 // n 是 DFT 的最大长度，例如如果最多有两个长为 m 的多项式相乘，
 // 或者求逆的长度为 m，那么 n 需要 >= 2m
 void ntt_init(int n) { // n = 2^k
+	assert(n >= 1 && (n & (n - 1)) == 0);
+	if (n >= 2) assert((p - 1) % n == 0);
 	for (int k = 2, d = 0; k <= n; k *= 2, d++) {
 		omega[d].resize(k + 1);
 		int wn = qpow(3, (p - 1) / k), tmp = 1;
@@ -11,7 +13,9 @@ void ntt_init(int n) { // n = 2^k
 // 否则把 d == 16 改成 d % 8 == 0 之类，多取几次模
 void ntt(int *c, int n, int tp) {
 	static ULL a[N];
-	for (int i = 0; i < n; i++) a[i] = c[i];
+	for (int i = 0; i < n; i++) {
+		assert(c[i] >= 0 && c[i] < p);
+		a[i] = c[i]; }
 	for (int i = 1, j = 0; i < n - 1; i++) {
 		int k = n; do j ^= (k >>= 1); while (j < k);
 		if (i < j) swap(a[i], a[j]); }
