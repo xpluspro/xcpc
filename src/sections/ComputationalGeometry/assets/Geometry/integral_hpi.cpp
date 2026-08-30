@@ -33,7 +33,7 @@ P reflect(cp x, cil l) { return x - static_cast<const P &>(l) * (2 * l(x) / l.le
 bool il_perpendicular(cil a, cil b) { return !sgn(a * b); }
 LD triangle_area(cil a, cil b, cil c) {
 	LD d = det3(a, b, c);
-	return d * d / ((a ^ b) * (b ^ c) * (c ^ a));
+	return d * d / (2 * (a ^ b) * (b ^ c) * (c ^ a));
 }
 
 vector<IL> cut_integral_hpi(const vector<IL> &o, IL l) {

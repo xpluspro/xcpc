@@ -100,9 +100,12 @@ int main() {
 	assert(point_in_polygon({4,1}, rect) == 0);
 	assert(point_in_polygon({5,1}, rect) == -1);
 	assert(close(segment_to_segment({{0,0},{1,0}}, {{2,1},{2,-1}}), 1));
+	assert(close(PolygonChordSolver(rect).solve(), sqrtl(20.0L)));
 	vp square_hpi = hpi({{{0,0},{1,0}},{{1,0},{1,1}},
 		{{1,1},{0,1}},{{0,1},{0,0}}});
 	assert(square_hpi.size() == 4 && close(polygon_area(square_hpi),1));
+	IL ix{1,0,0}, iy{0,1,0}, idiag{-1,-1,1};
+	assert(close(triangle_area(ix,iy,idiag),0.5L));
 	assert(cc_intersection(C(P(0,0),1),C(P(2,0),1)).size()==1);
 
 	vp concave{{0,0},{3,0},{3,3},{1,1},{0,3}};
@@ -161,6 +164,27 @@ int main() {
 	circle_count=2;
 	circles[0]=C(P(),1),circles[1]=C(P(),1);
 	circle_union();
+	assert(close(coverage_area[1],0));
 	assert(close(coverage_area[2],pi));
+	circles[0]=C(P(),8),circles[1]=C(P(),5);
+	circle_union();
+	assert(close(coverage_area[1],39*pi));
+	assert(close(coverage_area[2],25*pi));
+	circles[0]=C(P(0,0),2),circles[1]=C(P(2,0),2);
+	circle_union();
+	LD overlap=cc_intersection_area(circles[0],circles[1]);
+	assert(close(coverage_area[1],8*pi-2*overlap));
+	assert(close(coverage_area[2],overlap));
+	uniform_int_distribution<int> radius(1,10);
+	for(int tc=0;tc<1000;++tc) {
+		circles[0]=C(P(coord(gen),coord(gen)),radius(gen));
+		circles[1]=C(P(coord(gen),coord(gen)),radius(gen));
+		circle_union();
+		LD both=cc_intersection_area(circles[0],circles[1]);
+		LD exactly_one=pi*circles[0].r*circles[0].r
+			+pi*circles[1].r*circles[1].r-2*both;
+		assert(close(coverage_area[1],exactly_one));
+		assert(close(coverage_area[2],both));
+	}
 	cerr << "computational geometry tests passed\n";
 }

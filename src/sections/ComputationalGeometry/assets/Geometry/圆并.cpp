@@ -29,16 +29,20 @@ void add_interval(LD l, LD r, vector<Event> &e, int &base) {
 
 void circle_union() {
 	fill(coverage_area, coverage_area + circle_count + 2, 0);
+	vector<LD> delta(circle_count + 2);
 	for (int i = 0; i < circle_count; ++i) {
 		bool duplicate = false;
 		for (int j = 0; j < i; ++j)
 			if (same_circle(circles[i], circles[j])) duplicate = true;
 		if (duplicate) continue;
 
-		int cnt = 1;
+		int multiplicity = 0;
+		for (int j = 0; j < circle_count; ++j)
+			multiplicity += same_circle(circles[i], circles[j]);
+		int cnt = multiplicity;
 		vector<Event> e;
 		for (int j = 0; j < circle_count; ++j) if (i != j) {
-			if (same_circle(circles[i], circles[j])) { ++cnt; continue; }
+			if (same_circle(circles[i], circles[j])) continue;
 			if (contains(circles[j], circles[i])) { ++cnt; continue; }
 			if (contains(circles[i], circles[j])) continue;
 			LD d = (circles[j].c - circles[i].c).len();
@@ -58,8 +62,14 @@ void circle_union() {
 			LD l = e[j].ang, r = e[j + 1].ang, d = r - l;
 			P p = circles[i].c + P(cosl(l), sinl(l)) * circles[i].r;
 			P q = circles[i].c + P(cosl(r), sinl(r)) * circles[i].r;
-			coverage_area[cnt] += (p ^ q) / 2
+			LD area = (p ^ q) / 2
 				+ circles[i].r * circles[i].r * (d - sinl(d)) / 2;
+			delta[cnt - multiplicity + 1] += area;
+			delta[cnt + 1] -= area;
 		}
 	}
+	for (int k = 1; k <= circle_count; ++k)
+		coverage_area[k] = coverage_area[k - 1] + delta[k];
+	for (int k = 1; k < circle_count; ++k)
+		coverage_area[k] -= coverage_area[k + 1];
 }

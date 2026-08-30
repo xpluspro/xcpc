@@ -1,4 +1,4 @@
-struct PolygonChordSolver { // 简单多边形顶点间最长内含线段
+struct PolygonChordSolver { // 逆时针简单多边形顶点间最长内含线段
 	vp p;
 	int n;
 	PolygonChordSolver(vp p) : p(move(p)), n((int)this->p.size()) {}
