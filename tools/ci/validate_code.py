@@ -90,9 +90,45 @@ def included_sources(unit: Path) -> set[Path]:
     return found
 
 
+def git_output(*args: str) -> str | None:
+    result = subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip()
+
+
+def diff_base(base: str | None) -> str | None:
+    if base and set(base) != {"0"}:
+        exists = git_output("cat-file", "-e", f"{base}^{{commit}}") is not None
+        if exists and git_output("merge-base", "HEAD", base):
+            return base
+
+    parent = git_output("rev-parse", "--verify", "HEAD^")
+    fallback = git_output("merge-base", "HEAD", parent) if parent else None
+    if fallback:
+        print(
+            f"warning: base SHA {base or '<empty>'} is unavailable; using merge-base {fallback}",
+            file=sys.stderr,
+        )
+        return fallback
+
+    print(
+        f"warning: base SHA {base or '<empty>'} is unavailable; validating all C++ files",
+        file=sys.stderr,
+    )
+    return None
+
+
 def changed_cpp(base: str | None) -> set[Path]:
-    if not base or set(base) == {"0"}:
-        return set()
+    base = diff_base(base)
+    if base is None:
+        return {path.resolve() for path in SOURCE_ROOT.rglob("*.cpp")}
     result = subprocess.run(
         ["git", "diff", "--name-only", "--diff-filter=ACMR", f"{base}...HEAD", "--", "src/sections"],
         cwd=ROOT,
