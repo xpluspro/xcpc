@@ -1,7 +1,8 @@
-\begin{table}[H]
+\begingroup
 	\centering
 	\small
-	\renewcommand\arraystretch{1.25}
+	\renewcommand\arraystretch{1.05}
+	\resizebox{\columnwidth}{!}{%
 	\begin{tabular}{|r|r|r|r|r|r|}
 		\hline
 		\rowcolor{black!10} $n$ & $\log_{10} n$ & $n!$ & $C(n,n/2)$ & $\mathrm{LCM}(1\dots n)$ & $P_n$\\
@@ -38,7 +39,9 @@
 		\hline
 		$P_n$ & 37338$_{40}$ & 204226$_{50}$ & 966467$_{60}$ & 190569292$_{100}$ & 1e{9}$_{114}$\\
 		\hline
-	\end{tabular}
+	\end{tabular}}
+	\medskip
+	\resizebox{\columnwidth}{!}{%
 		\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
 			\hline
 			\rowcolor{black!10} $n \leq$ & 10 &  100 & 1e3 & 1e4 & 1e5 & 1e6 \\
@@ -71,7 +74,7 @@
 			\hline
 			$\pi(n)$ & \multicolumn{6}{c|}{Prime number theorem: $\pi(x) \sim x / \log (x)$} \\
 			\hline
-			\end{tabular}
+			\end{tabular}}
 \begin{comment}
 		\begin{tabular}{|r|r|r|r|}
 			\hline
@@ -117,4 +120,5 @@
 			\hline
 		\end{tabular}
 \end{comment}
-	\end{table}
+\par
+\endgroup

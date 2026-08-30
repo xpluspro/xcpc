@@ -1,0 +1,76 @@
+% !TEX root = ../../main.tex
+\subsubsection{入场检查}
+\begin{itemize}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 检查身份证件：护照、学生证、胸牌及现场所需通行证。
+  \item 检查手机、智能手表、金属物品（钥匙）等是否按规定存放。
+  \item 完整测试键盘、鼠标、显示器和座椅；如果有问题，立即联系工作人员。
+\end{itemize}
+
+\subsubsection{环境与 OJ 检查}
+\begin{itemize}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 测试所有可能的提交方式，找到题面与排行榜入口。
+  \item 测试 \texttt{-fsanitize=address,undefined} 与 \texttt{-D\_GLIBCXX\_DEBUG}。
+  \item 测试 \texttt{/usr/bin/time -v ./a.out} 能否显示内存占用。
+  \item 测试编译器版本以及 \texttt{bits/stdc++.h}、\texttt{pb\_ds}、\texttt{\_\_int128}、\texttt{\_\_float128} 和 \texttt{long double}。
+  \item 检查 pragma target 是否 CE、代码长度限制，以及 NO-OUTPUT、OLE、MLE 的行为。
+  \item 检查提交频率限制与队列规则，并测试 \texttt{clock()}、\texttt{make} 和本地/提交性能。
+\end{itemize}
+
+\begin{minted}{C++}
+#include <ext/rope>
+using namespace __gnu_cxx;
+rope<int> R; R.insert(y, x); R[x]; R.erase(x, 1);
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+tree<int, null_type, less<int>, rb_tree_tag,
+tree_order_statistics_node_update> s;
+s.insert(1); s.find_by_order(0); s.order_of_key(5);
+\end{minted}
+
+\begin{minted}{C++}
+const int N = 1 << 20;
+for (int T = 4; T; T--) {
+    int a[N], b[N], c[N];
+    for (int i = 0; i < N; i++) a[i] = i, b[i] = N - i;
+    ntt_init(N); ntt(a, N, 1); ntt(b, N, 1);
+    for (int i = 0; i < N; i++) c[i] = a[i] * b[i];
+    ntt(c, N, -1); assert(c[0] == 0xad223d); }
+// 机房: 190ms (1s T = 21); QOJ: 340+-40ms (1s T = 11.9)
+// CF: 1050+-100ms (1s T = 3.9)
+\end{minted}
+
+\begin{minted}{python3}
+import sys
+sys.set_int_max_str_digits(0) # >= Python 3.11
+for _ in range(3):
+    assert str(3 ** 100000 * 10 ** 100000)[:9] == "133497141"
+# 机房 Pypy: 130ms (1s T = 39); QOJ: 201ms (1s T = 16)
+# CF Python3: 1100ms (1s T = 2.9); Pypy3: 310ms (1s T = 12)
+\end{minted}
+
+\subsubsection{提交前检查}
+\begin{enumerate}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 保存、编译、通过样例，并测试 $n=0/1$。
+  \item 检查数组大小、时间与空间限制、实数输入、模数和整数类型。
+  \item 检查 \texttt{init} 调用以及清空范围是 $(0,1,n)$、$m$ 还是 $n+1$。
+  \item 检查答案正模、输出格式、多组输入是否完整读入。
+  \item 检查流同步设置；不要在关闭同步后混用 C 与 C++ 输入输出。
+  \item 加上需要用于验证假设的 \texttt{assert}，确认优化和指令集配置。
+\end{enumerate}
+
+\subsubsection{提交后检查}
+\begin{enumerate}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 变量复用后是否忘记改回；多组输入的数组是否在正确范围和时机清空。
+  \item 整数溢出、INF/-1 大小、浮点数 \texttt{eps}、零、\texttt{nan}/\texttt{inf}。
+  \item 模板参数类型是否正确，例如 \texttt{pair<long long, int>} 被错误地从 \texttt{pair<int, int>} 构造。
+  \item 离散化与二分的边界、\texttt{lower\_bound}/\texttt{upper\_bound} 的加减一，以及 \texttt{begin()}/\texttt{end()}。
+  \item 自定义排序方向和严格弱序；构造非对称、非回文的反例。
+  \item 复制代码后是否改全；shadow 变量；分类讨论、嵌套 \texttt{if} 和 \texttt{break} 位置。
+  \item 图的边编号、单双向边和反向边权；几何的共线、重点、除零和旋转方向。
+  \item 浮点数 \texttt{eps} 的量纲；二分、三分的迭代次数。
+\end{enumerate}
