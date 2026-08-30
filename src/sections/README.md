@@ -14,17 +14,18 @@
 
 目录与版块一一对应：
 
-1. `DynamicProgramming`：动态规划
-2. `String`：字符串
-3. `NumberTheory`：数论（不含博弈论）
-4. `Polynomial`：多项式与生成函数
-5. `LinearAlgebra`：线性代数
-6. `DataStructures`：数据结构
-7. `Tree`：树上问题
-8. `ComputationalGeometry`：计算几何
-9. `GraphTheory`：图论
-10. `OfflineAlgorithms`：离线算法（如 CDQ、莫队）
-11. `RandomizationAndGameTheory`：随机化与博弈论
+1. `OtherTools`：其它工具
+2. `DynamicProgramming`：动态规划
+3. `String`：字符串
+4. `NumberTheory`：数论（不含博弈论）
+5. `Polynomial`：多项式与生成函数
+6. `LinearAlgebra`：线性代数
+7. `DataStructures`：数据结构
+8. `Tree`：树上问题
+9. `ComputationalGeometry`：计算几何
+10. `GraphTheory`：图论
+11. `OfflineAlgorithms`：离线算法（如 CDQ、莫队）
+12. `ContestGuidance`：统一置于文档末尾的比赛注意事项
 
 工程根目录下的 `archive/` 是旧版未整理素材与历史模板的归档区，不参与
 `main.tex` 的编译。需要启用其中的内容时，应先把素材移入对应版块的
