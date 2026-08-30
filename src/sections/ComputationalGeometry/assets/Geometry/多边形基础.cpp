@@ -29,8 +29,19 @@ LD polygon_perimeter(cvp p) {
 	return ret;
 }
 
-P polygon_centroid(cvp p) { // 非退化简单多边形
+P polygon_centroid(cvp p) { // 退化时返回边界按长度加权的质心
 	LD area2 = polygon_signed_area2(p);
+	if (!sgn(area2)) {
+		P ret;
+		LD perimeter = 0;
+		for (int i = 0, n = (int)p.size(); i < n; ++i) {
+			LD length = (p[i] - p[(i + 1) % n]).len();
+			ret = ret + (p[i] + p[(i + 1) % n]) * length;
+			perimeter += length;
+		}
+		if (sgn(perimeter)) return ret / (2 * perimeter);
+		return p.empty() ? P{} : p[0];
+	}
 	P ret;
 	for (int i = 0, n = (int)p.size(); i < n; ++i) {
 		LD cross = p[i] ^ p[(i + 1) % n];

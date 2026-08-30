@@ -1,4 +1,6 @@
-struct ConvexHull3D { // 随机增量，输入需不存在重复点
+// 随机增量；输入需不存在重复点且仿射维数为 3。
+// 点数不足、共线或全部共面时 build 返回 false，face 为空。
+struct ConvexHull3D {
 	using Face = array<int,3>;
 	vector<p3> p;
 	vector<Face> face;

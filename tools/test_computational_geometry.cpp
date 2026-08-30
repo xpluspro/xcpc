@@ -30,6 +30,18 @@ const int MAXN = 200005;
 bool close(LD a, LD b, LD e = 1e-8L) { return fabsl(a - b) <= e; }
 
 int main() {
+	assert(P().unit() == P());
+	assert(cc_intersection_count(C(P(0,0),1), C(P(0,0),1)) == -1);
+	assert(cc_intersection_count(C(P(0,0),0), C(P(0,0),0)) == 1);
+	assert(cc_intersection(C(P(0,0),0), C(P(0,0),0)) == vp{P(0,0)});
+	assert(cc_intersection_count(C(P(0,0),1), C(P(0,0),2)) == 0);
+	assert(cc_intersection_count(C(P(0,0),1), C(P(2,0),1)) == 1);
+	assert(cc_intersection_count(C(P(0,0),2), C(P(2,0),2)) == 2);
+	bool empty_at_threw = false;
+	try { ConvexQuery().at(0); }
+	catch (const out_of_range &) { empty_at_threw = true; }
+	assert(empty_at_threw);
+
 	mt19937_64 gen(20260829);
 	uniform_int_distribution<int> coord(-20, 20), count(2, 30);
 	for (int tc = 0; tc < 500; ++tc) {
@@ -76,9 +88,14 @@ int main() {
 	vp rect{{0,0},{4,0},{4,2},{0,2}};
 	assert(close(convex_min_width(rect), 2));
 	assert(close(min_area_rectangle(rect).area, 8));
+	vp repeated_rect{{0,0},{0,0},{4,0},{4,2},{0,2},{0,0}};
+	assert(close(convex_min_width(repeated_rect), 2));
+	assert(close(min_area_rectangle(repeated_rect).area, 8));
 	assert(close(polygon_area(rect), 8));
 	assert(close(polygon_perimeter(rect), 12));
 	assert((polygon_centroid(rect) - P(2,1)).len() < 1e-9L);
+	assert((polygon_centroid(vp{{0,0},{2,0},{4,0}}) - P(2,0)).len() < 1e-9L);
+	assert(polygon_centroid(vp{}) == P());
 	assert(point_in_polygon({2,1}, rect) == 1);
 	assert(point_in_polygon({4,1}, rect) == 0);
 	assert(point_in_polygon({5,1}, rect) == -1);
@@ -117,6 +134,8 @@ int main() {
 	Sphere flat_sphere=min_sphere({{-1,-1,0},{1,-1,0},{1,1,0},{-1,1,0}});
 	assert(flat_sphere.c.len()<1e-9L&&close(flat_sphere.r,sqrtl(2.0L)));
 	ConvexHull3D hull3;
+	assert(!hull3.build({{0,0,0},{1,0,0},{1,1,0},{0,1,0}}));
+	assert(hull3.face.empty());
 	assert(hull3.build(cube));
 	assert(!hull3.face.empty());
 	for (auto f : hull3.face)

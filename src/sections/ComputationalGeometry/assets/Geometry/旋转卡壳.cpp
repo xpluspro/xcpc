@@ -13,7 +13,15 @@ LD convex_diameter(cvp p) { // p 为逆时针凸包，无重复末点
 	return sqrtl(ans2);
 }
 
-LD convex_min_width(cvp p) { // p 为逆时针凸包
+vp remove_repeated_convex_vertices(cvp p) {
+	vp q;
+	for (cp x : p) if (q.empty() || x != q.back()) q.push_back(x);
+	if (q.size() > 1 && q.front() == q.back()) q.pop_back();
+	return q;
+}
+
+LD convex_min_width(cvp input) { // input 为逆时针凸包，允许相邻重复点
+	vp p = remove_repeated_convex_vertices(input);
 	int n = (int)p.size();
 	if (n < 3) return 0;
 	LD ans = INF;
@@ -33,7 +41,8 @@ struct MinRectangle {
 	array<P, 4> p{};
 };
 
-MinRectangle min_area_rectangle(cvp p) { // p 为逆时针凸包
+MinRectangle min_area_rectangle(cvp input) { // input 为逆时针凸包，允许相邻重复点
+	vp p = remove_repeated_convex_vertices(input);
 	int n = (int)p.size();
 	if (!n) return {};
 	if (n == 1) return {0, {p[0], p[0], p[0], p[0]}};
