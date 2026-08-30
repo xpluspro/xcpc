@@ -20,6 +20,7 @@ const int MAXN = 200005;
 #include "../src/sections/ComputationalGeometry/assets/Geometry/DelaunayTriangulation.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/最近点对.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/三角形.cpp"
+#include "../src/sections/ComputationalGeometry/assets/Geometry/圆上整点.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/圆并.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/多边形和圆的交.cpp"
 #include "../src/sections/ComputationalGeometry/assets/yzh/circle_inversion.cpp"
@@ -122,6 +123,31 @@ int main() {
 	assert(close(triangle_area(ix,iy,idiag),0.5L));
 	assert(cc_intersection(C(P(0,0),1),C(P(2,0),1)).size()==1);
 
+	vp minkowski_a = convex_hull({{-1,1},{0,0},{1,2}});
+	vp minkowski_b = convex_hull({{-1,2},{0,0},{2,1}});
+	vp minkowski = minkowski_sum(minkowski_a, minkowski_b);
+	LD minkowski_max_x = -INF;
+	for (cp p : minkowski) minkowski_max_x = max(minkowski_max_x, p.x);
+	assert(close(minkowski_max_x, 3));
+
+	for (LL r = 1; r <= 100; ++r) {
+		vector<LL> actual = solve(r), expected;
+		sort(actual.begin(), actual.end());
+		actual.erase(unique(actual.begin(), actual.end()), actual.end());
+		for (LL y = 0; y <= r; ++y) {
+			LL x2 = r*r-y*y, x = llround(sqrtl(x2));
+			if (x*x == x2) expected.push_back(y);
+		}
+		assert(actual == expected);
+	}
+
+	hull dynamic_hull;
+	dynamic_hull.insert({0,0});
+	dynamic_hull.insert({0,-1});
+	assert((dynamic_hull.a == set<P>{{0,0}}));
+	dynamic_hull.insert({0,2});
+	assert((dynamic_hull.a == set<P>{{0,2}}));
+
 	vp concave{{0,0},{3,0},{3,3},{1,1},{0,3}};
 	auto tri = ear_clipping(concave);
 	assert(tri.size() == concave.size() - 2);
@@ -159,7 +185,8 @@ int main() {
 		for (int i = 0; i < (int)hull3.p.size(); ++i)
 			assert(sgn(hull3.volume(f,i)) <= 0);
 	Triangulation delaunay;
-	vp delaunay_points{{0,0},{3,0},{0,2},{2,3},{1,1}};
+	vp delaunay_points{{10000000,10000000},{10000003,10000000},
+		{10000000,10000002},{10000002,10000003},{10000001,10000001}};
 	delaunay.build(delaunay_points);
 	for (Tri *t=triange_pool;t<tot_tri;++t) if (!t->has_ch()) {
 		bool original=true;
