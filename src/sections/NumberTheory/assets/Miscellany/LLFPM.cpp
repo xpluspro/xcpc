@@ -1,8 +1,9 @@
 LL modmul(LL a, LL b, LL M) { // skip2004, M < 63bit
-	LL ret = (LL)((__int128)a * b % M);
+	LL ret = a * b - M * LL(1.L * a / M * b + 0.5);
 	return ret < 0 ? ret + M : ret; }
 ULL modmul(ULL a, ULL b, LL M) { // orz@CF, M in 63 bit
-	LL ret = (LL)((__int128)a * b % M);
+	ULL c = (long double)a * b / M;
+	LL ret = LL(a * b - c * M) % LL(M); // must be signed
 	return ret < 0 ? ret + M : ret; }
 // use int128 instead if M > 63 bit
 struct DIV { 

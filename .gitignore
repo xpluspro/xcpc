@@ -13,7 +13,3 @@ src/*.toc
 src/*.out
 __pycache__/
 *.py[cod]
-
-build/
-cmake-build-*/
-.cache/

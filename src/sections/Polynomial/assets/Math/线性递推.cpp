@@ -11,8 +11,6 @@ poly add(poly &a, poly &b) {
 	for (int i = 0; i <= n; ++i) {
 		for (int j = 0; j <= n; ++j) {
 			(res[i+j]+=(LL)a[i] * b[j] % MOD) %= MOD;
-		}
-	}
 	for (int i = 2 * n; i > n; --i) {
 		for (int j = 0; j < n; ++j) {
 			(res[i-1-j]+=(LL)res[i]*trans[j]%MOD) %=MOD;}

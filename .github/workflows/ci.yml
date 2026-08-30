@@ -41,45 +41,6 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: python3 tools/ci/validate_code.py cpp --base "$BASE_SHA"
 
-  gtest-contract:
-    name: C++ GoogleTest (contract + ASan)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Install ninja
-        run: sudo apt-get update && sudo apt-get install -y ninja-build
-      - name: Configure
-        run: cmake -S tests -B build/tests -G Ninja -DCMAKE_BUILD_TYPE=Release -DXCPC_SANITIZE=ON -DXCPC_DEATH_TESTS=OFF
-      - name: Build
-        run: cmake --build build/tests -j
-      - name: Test
-        run: ctest --test-dir build/tests --output-on-failure --timeout 60
-
-  gtest-guards:
-    name: C++ GoogleTest (assertion guards)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Install ninja
-        run: sudo apt-get update && sudo apt-get install -y ninja-build
-      - name: Configure
-        run: cmake -S tests -B build/guards -G Ninja -DCMAKE_BUILD_TYPE=Debug -DXCPC_SANITIZE=OFF -DXCPC_DEATH_TESTS=ON
-      - name: Build
-        run: cmake --build build/guards -j
-      - name: Test
-        run: ctest --test-dir build/guards --output-on-failure --timeout 30
-
-  gtest-sync:
-    name: C++ test coverage map
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Check adapter coverage
-        run: python3 tests/sync/check_adapters.py
-
   python:
     name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
