@@ -7,20 +7,19 @@
 #include <cmath>
 #include <cstdio>
 #include <ctime>
+#include <math.h>
 #include <random>
 #include <vector>
 
+// Handbook snippets call acosl/cosl/fabsl/sinl/sqrtl unqualified. Those C
+// long-double names live in the global namespace (via <math.h> / <cmath>);
+// libstdc++ does not put them in std, so `using std::acosl` fails on Ubuntu.
 using std::abs;
-using std::acosl;
 using std::clamp;
-using std::cosl;
-using std::fabsl;
 using std::max;
 using std::min;
 using std::mt19937;
-using std::sinl;
 using std::sort;
-using std::sqrtl;
 using std::unique;
 using std::vector;
 
