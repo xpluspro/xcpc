@@ -1,5 +1,4 @@
 int SubsetSum(vector <int> &a, int t) {
-  if (a.empty() || t < 0) return 0;
   int B = *max_element(a.begin(), a.end());
   int n = (int) a.size(), s = 0, i = 0;
   while (i < n && s + a[i] <= t) s += a[i ++];
@@ -14,5 +13,4 @@ int SubsetSum(vector <int> &a, int t) {
 	for (int d = 2 * B; d > B; --d)
 	  for (int j = pre[d - B]; j < f[d]; j++)
 		f[d - a[j]] = max(f[d - a[j]], j); }
-  for (i = 0; i <= B; i++) if (f[B - i] >= 0) return t - i;
-  return 0;}
+  for (i = 0; i <= B; i++) if (f[B - i] >= 0) return t - i;}
