@@ -26,10 +26,14 @@ const int MAXN = 200005;
 #include "../src/sections/ComputationalGeometry/assets/Geometry/三维几何.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/三维凸包.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/最小覆盖球.cpp"
+#include "../src/sections/ComputationalGeometry/assets/Geometry/经纬度求球面最短距离.cpp"
 
 bool close(LD a, LD b, LD e = 1e-8L) { return fabsl(a - b) <= e; }
 
 int main() {
+	LD test_lon=2.26032585233467458985488762746L;
+	LD test_lat=-1.14958554905499912108732263327L;
+	assert(close(sphereDis(test_lon,test_lat,test_lon,test_lat,1),0));
 	assert(P().unit() == P());
 	assert(cc_intersection_count(C(P(0,0),1), C(P(0,0),1)) == -1);
 	assert(cc_intersection_count(C(P(0,0),0), C(P(0,0),0)) == 1);
