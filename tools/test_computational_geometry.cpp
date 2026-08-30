@@ -100,6 +100,10 @@ int main() {
 	assert(point_in_polygon({4,1}, rect) == 0);
 	assert(point_in_polygon({5,1}, rect) == -1);
 	assert(close(segment_to_segment({{0,0},{1,0}}, {{2,1},{2,-1}}), 1));
+	assert(close(angle(P(),P(1,0)),0));
+	assert(close(circle_edge_area2(P(),P(2,0),1),0));
+	assert(close(polygon_circle_intersection_area(
+		vp{{0,0},{2,0},{0,2}},C(P(),1)),pi/4));
 	assert(close(PolygonChordSolver(rect).solve(), sqrtl(20.0L)));
 	vp square_hpi = hpi({{{0,0},{1,0}},{{1,0},{1,1}},
 		{{1,1},{0,1}},{{0,1},{0,0}}});

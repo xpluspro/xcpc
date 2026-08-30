@@ -1,6 +1,7 @@
 LD angle (cp u, cp v) {
-	return 2 * asinl(clamp((u.unit() - v.unit()).len() / 2, 0.0L, 1.0L)); }
+	return atan2l(fabsl(u ^ v), u * v); }
 LD circle_edge_area2(cp s, cp t, LD r) { // 2 * area
+	if (!sgn(s ^ t)) return 0;
 	LD theta = angle(s, t);
 	LD d = point_to_segment({0, 0}, {s, t});
 	if (sgn(d - r) >= 0) return theta * r * r;
