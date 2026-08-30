@@ -103,6 +103,12 @@ int main() {
 	assert(point_in_polygon({2,1}, rect) == 1);
 	assert(point_in_polygon({4,1}, rect) == 0);
 	assert(point_in_polygon({5,1}, rect) == -1);
+	auto [lower_chain, upper_chain] = ConvexQuery(rect).monotone_chains();
+	assert((lower_chain == vp{{0,0},{4,0},{4,2}}));
+	assert((upper_chain == vp{{4,2},{0,2},{0,0}}));
+	vp rotated_rect{{4,2},{0,2},{0,0},{4,0}};
+	auto [rotated_lower, rotated_upper] = ConvexQuery(rotated_rect).monotone_chains();
+	assert(rotated_lower == lower_chain && rotated_upper == upper_chain);
 	assert(close(segment_to_segment({{0,0},{1,0}}, {{2,1},{2,-1}}), 1));
 	assert(close(angle(P(),P(1,0)),0));
 	assert(close(circle_edge_area2(P(),P(2,0),1),0));

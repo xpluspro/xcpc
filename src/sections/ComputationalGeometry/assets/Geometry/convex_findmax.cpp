@@ -9,6 +9,24 @@ struct ConvexQuery { // a 为逆时针严格凸包
 		if (i < 0) i += n;
 		return a[i];
 	}
+	pair<vp, vp> monotone_chains() const { // 返回从最左点到最右点的下链、上链
+		if (!n) return {};
+		int left = 0, right = 0;
+		for (int i = 1; i < n; ++i) {
+			if (a[i] < a[left]) left = i;
+			if (a[right] < a[i]) right = i;
+		}
+		vp lower{a[left]}, upper{a[right]};
+		for (int i = left; i != right; ) {
+			i = (i + 1) % n;
+			lower.push_back(a[i]);
+		}
+		for (int i = right; i != left; ) {
+			i = (i + 1) % n;
+			upper.push_back(a[i]);
+		}
+		return {lower, upper};
+	}
 	bool inside(cp u) const { // 含边界
 		if (!n) return false;
 		if (n == 1) return u == a[0];
