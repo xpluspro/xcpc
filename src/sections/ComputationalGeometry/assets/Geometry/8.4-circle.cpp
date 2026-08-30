@@ -2,7 +2,7 @@ struct C {
 	P c;
 	LD r;
 
-	C(cp c = P(), LD r = 0) : c(c), r(r) {}
+	C(cp c_ = P(), LD r_ = 0) : c(c_), r(r_) {}
 	C(cc a) : c(a.c), r(a.r) {}
 	C &operator=(cc a) { c = a.c, r = a.r; return *this; }
 	C(cp a, cp b) : c((a + b) / 2), r((a - c).len()) {}

@@ -18,7 +18,7 @@ LD dir(cp a, cp b, cp p) { return (b-a) ^ (p-a);}
 typedef int SideRef; struct Tri; typedef Tri* TriRef;
 struct Edge {
 	TriRef tri; SideRef side; Edge() : tri(0), side(0) {}
-	Edge(TriRef tri, SideRef side) : tri(tri), side(side) {} };
+	Edge(TriRef tri_, SideRef side_) : tri(tri_), side(side_) {} };
 struct Tri { // Triangle
 	P p[3];Edge edge[3];TriRef ch[3]; Tri(){}
 	Tri(cp p0,cp p1,cp p2){
@@ -69,16 +69,17 @@ class Triangulation {
 			set_edge(Edge(tca,2),root->edge[1]);
 			root->ch[0]=tab;root->ch[1]=tbc;root->ch[2]=tca;
 			flip(tab,2); flip(tbc,2); flip(tca,2); }
-		void flip(TriRef tri, SideRef pi) {
-			TriRef trj = tri->edge[pi].tri; int pj = tri->edge[pi].side;
+		void flip(TriRef tri, SideRef side_index) {
+			TriRef trj = tri->edge[side_index].tri;
+			int pj = tri->edge[side_index].side;
 			if(!trj || !in_circum(tri->p[0],tri->p[1],tri->p[2],trj->p[pj])) return;
-			TriRef trk = new(tot_tri++) Tri(tri->p[(pi+1)%3], trj->p[pj], tri->p[pi]);
-			TriRef trl = new(tot_tri++) Tri(trj->p[(pj+1)%3], tri->p[pi], trj->p[pj]);
+			TriRef trk = new(tot_tri++) Tri(tri->p[(side_index+1)%3], trj->p[pj], tri->p[side_index]);
+			TriRef trl = new(tot_tri++) Tri(trj->p[(pj+1)%3], tri->p[side_index], trj->p[pj]);
 			set_edge(Edge(trk,0), Edge(trl,0));
-			set_edge(Edge(trk,1), tri->edge[(pi+2)%3]);
+			set_edge(Edge(trk,1), tri->edge[(side_index+2)%3]);
 			set_edge(Edge(trk,2), trj->edge[(pj+1)%3]);
 			set_edge(Edge(trl,1), trj->edge[(pj+2)%3]);
-			set_edge(Edge(trl,2), tri->edge[(pi+1)%3]);
+			set_edge(Edge(trl,2), tri->edge[(side_index+1)%3]);
 			tri->ch[0]=trk; tri->ch[1]=trl; tri->ch[2]=0;
 			trj->ch[0]=trk; trj->ch[1]=trl; trj->ch[2]=0;
 			flip(trk,1); flip(trk,2); flip(trl,1); flip(trl,2); }

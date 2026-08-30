@@ -35,7 +35,7 @@ struct ConvexHull3D {
 					if (horizon.count(rev)) horizon.erase(rev); else horizon.insert(e);
 				}
 			} else keep.push_back(f);
-			for (auto [a,b]:horizon) keep.push_back({a,b,x});
+			for (auto [u,v]:horizon) keep.push_back({u,v,x});
 			face.swap(keep);
 		}
 		return true;

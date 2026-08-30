@@ -1,6 +1,6 @@
 struct p3 {
 	LD x, y, z;
-	p3(LD x = 0, LD y = 0, LD z = 0) : x(x), y(y), z(z) {}
+	p3(LD x_ = 0, LD y_ = 0, LD z_ = 0) : x(x_), y(y_), z(z_) {}
 	LD &operator[](int i) { return i == 0 ? x : (i == 1 ? y : z); }
 	LD operator[](int i) const { return i == 0 ? x : (i == 1 ? y : z); }
 	LD len2() const { return x*x + y*y + z*z; }
@@ -39,8 +39,8 @@ void rotation_matrix(p3 axis, LD angle) {
 struct l3 { p3 s, t; };
 struct plane {
 	p3 normal; LD offset; // dot(normal, x) = offset，normal 为单位向量
-	plane(p3 normal = {1,0,0}, p3 point = {})
-		: normal(normal.unit()), offset(dot(this->normal, point)) {}
+	plane(p3 normal_ = {1,0,0}, p3 point = {})
+		: normal(normal_.unit()), offset(dot(normal, point)) {}
 };
 p3 project_to_plane(p3 a, const plane &b) {
 	return a + b.normal * (b.offset - dot(a, b.normal));

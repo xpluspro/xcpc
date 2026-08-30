@@ -1,7 +1,7 @@
 struct P {
 	LD x, y;
 
-	P(LD x = 0, LD y = 0) : x(x), y(y) {}
+	P(LD x_ = 0, LD y_ = 0) : x(x_), y(y_) {}
 	P(cp a) : x(a.x), y(a.y) {}
 	P &operator=(cp a) { x = a.x, y = a.y; return *this; }
 
