@@ -1,6 +1,72 @@
 \section{比赛注意事项}
 
-\subsection{试机赛与纪律文件}
-\begin{spacing}{0.3}
-  \input{sections/ContestGuidance/assets/discipline.tex}
-\end{spacing}
+\subsection{做题指导}
+
+\subsubsection{上机前}
+\begin{enumerate}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 预估你需要多少机时，以及写出来以后预计要调试多久，并在纸上记下。
+  \item 先想好再上机，不要一边写一边想。
+  \item 如果有好写的题，务必先写好写的。
+  \item 把题目交给擅长的人来写，而不是交给空闲的人。
+\end{enumerate}
+
+\subsubsection{机上}
+\begin{enumerate}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 如果遇到了问题（做法假了、需要分讨等），先下机并通知队友。不要占着机时想。
+  \item 建议使用整块时间写题，尽量不要断断续续地写。
+\end{enumerate}
+
+\subsubsection{交题前}
+\begin{enumerate}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item \texttt{long long} 开了没有。
+  \item 数组开够没有。
+  \item 多测清了没有。
+  \item 边界数据（corner case）考虑了没有。
+  \item 调试输出删了没有。
+  \item 输出格式对吗：空格/回车、正斜杠/反斜杠。
+  \item 检查所有的 Warning。
+\end{enumerate}
+
+\subsubsection{如果代码挂了}
+按照优先级检查：
+\begin{enumerate}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 如果是线段树，认真检查每个函数里的 \texttt{pushdown} 和每个信息的 \texttt{pushup}。
+  \item 检查每一个 Warning。
+  \item 先打印关键中间量再下机。（打印还没有送来就分屏调。）
+  \item 看 \texttt{long long} 开了没有、数组开够没有、多测清了没有。
+  \item 检查 typo，看看是否打错了一些难排查的地方。
+  \item 检查输出格式：Yes/No/其他的大小写，输出回车还是空格，正斜杠还是反斜杠。
+  \item 看看题意错读了没有。
+  \item 检查你的代码逻辑，即代码实现是否与做法一致；同时让另一个人重新读题。
+  \item 怀疑做法假了时，拉一个人一起看代码。
+  \item 如果是几何题，调整 \texttt{eps} 并排查精度问题。
+\end{enumerate}
+
+\subsection{常见错误检查表}
+\begin{itemize}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 多测未清空，或者没有读完当前测试数据便提前返回。
+  \item 应该开 \texttt{long long} 的地方没有开。一般情况下建议直接 \texttt{\#define int long long}。
+  \item 注意变量名打错：例如 \texttt{u} 写成 \texttt{v}、\texttt{a} 写成 \texttt{t}。建议读代码时慢一些以发现此类错误。
+  \item 树剖、倍增 LCA 等代码中把 \texttt{while} 写成 \texttt{if}。
+  \item 无穷不够大或不够小；答案初始化为 0 后取最大值，但答案可能为负。
+  \item 对负数取模，导致输出的答案可能为负。
+  \item 少加括号：\texttt{!(s >> k) \& 1} 是错的，因为 \texttt{!} 的优先级更高。
+  \item 不要混用 C 与 C++ 的输入输出；关闭流同步后尤其要注意。
+  \item 不要使用 \texttt{-O0} 作为赛时优化选项。
+\end{itemize}
+
+\subsection{团队节奏}
+\begin{itemize}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 千万注意节奏，不要让任何一个人在一道题上卡得太久，必要时可以换题。
+  \item 如果你想要看题，请想好再上机；如果想分类讨论一类题目，更要想好再上机。
+  \item 后期可以讨论，没必要一个人挂题。
+\end{itemize}
+
+\subsection{试机与现场环境检查}
+\input{sections/ContestGuidance/assets/discipline.tex}
