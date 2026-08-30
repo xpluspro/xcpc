@@ -1,19 +1,21 @@
 LD angle (cp u, cp v) {
-	return 2 * asin(dis(u.unit(), v.unit()) / 2); }
-LD area(cp s, cp t, LD r) { // 2 * area
+	return atan2l(fabsl(u ^ v), u * v); }
+LD circle_edge_area2(cp s, cp t, LD r) { // 2 * area
+	if (!sgn(s ^ t)) return 0;
 	LD theta = angle(s, t);
-	LD dis = p2s ({0, 0}, {s, t});
-	if (sgn(dis - r) >= 0) return theta * r * r;
-	auto [u, v] = line_circle_inter({s, t}, {{0, 0}, r});
-	point lo = sgn(det(s, u)) >= 0 ? u : s;
-	point hi = sgn(det(v, t)) >= 0 ? v : t;
-	return det(lo, hi) + (theta - angle(lo, hi)) * r * r; }
-LD solve(vector<point> &p, cc c) {
+	LD d = point_to_segment({0, 0}, {s, t});
+	if (sgn(d - r) >= 0) return theta * r * r;
+	auto q = lc_intersection({s, t}, C({0, 0}, r));
+	if (q.size() < 2) return theta * r * r;
+	P lo = sgn(s ^ q[0]) >= 0 ? q[0] : s;
+	P hi = sgn(q[1] ^ t) >= 0 ? q[1] : t;
+	return (lo ^ hi) + (theta - angle(lo, hi)) * r * r; }
+LD polygon_circle_intersection_area(cvp p, cc c) {
 	LD ret = 0;
 	for (int i = 0; i < (int) p.size (); ++i) {
 		auto u = p[i] - c.c;
 		auto v = p[(i + 1) % p.size()] - c.c;
-		int s = sgn(det(u, v));
-		if	  (s > 0) ret += area (u, v, c.r);
-		else if (s < 0) ret -= area (v, u, c.r);
-	} return abs (ret) / 2; } //ret在p逆时针时为正
+		int s = sgn(u ^ v);
+		if	  (s > 0) ret += circle_edge_area2(u, v, c.r);
+		else if (s < 0) ret -= circle_edge_area2(v, u, c.r);
+	} return fabsl(ret) / 2; } // ret 在 p 逆时针时为正

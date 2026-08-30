@@ -1,40 +1,75 @@
-int C; circle c[MAXN]; LD area[MAXN];
-struct event { // 如果需要边界而非面积，那么仔细考虑事件顺序
- point p; LD ang; int delta;
- bool operator <(const event &a){return ang < a.ang;}};
-void addevent(cc a, cc b, vector<event> &e, int &cnt) {
- LD d2=dis2(a.c, b.c),dw=((a.r-b.r)*(a.r+b.r)/d2+1)/2,pw=
-sqrt(max(0.,-(d2-sqr(a.r-b.r)*(d2-sqr(a.r+b.r))/sqr(2*d2));
- point d = b.c - a.c, p = d.rot(PI / 2),
-  q0 = a.c + d * dw + p * pw,
-  q1 = a.c + d * dw - p * pw;
- LD ang0 = atan2((q0 - a.c).y, (q0 - a.c).x),
-	ang1 = atan2((q1 - a.c).y, (q1 - a.c).x);
- e.push_back({q1,ang1,1}); e.push_back({q0,ang0,-1});
- cnt += ang1 > ang0; }
-bool issame(cc a, cc b) {
- return sgn((a.c-b.c).dis()) == 0 && sgn(a.r-b.r) == 0; }
-bool overlap(cc a, cc b) { 
- return sgn(a.r - b.r -(a.c - b.c).dis()) >= 0; }
-bool intersect(cc a, cc b) { 
- return sgn((a.c - b.c).dis() - a.r - b.r) < 0; }
-void solve() {
- fill(area, area + C + 2, 0);
- for(int i = 0; i < C; ++i) { int cnt = 1;
-  vector<event> e;
-  for(int j=0; j<i; ++j) if(issame(c[i],c[j])) ++cnt;
-  for(int j = 0; j < C; ++j)
-   if(j != i && !issame(c[i], c[j]) && overlap(c[j], c[i])) ++cnt;
-  for(int j = 0; j < C; ++j)
-   if(j != i && !overlap(c[j], c[i]) && !overlap(c[i], c[j]) && intersect(c[i], c[j]))
-	addevent(c[i], c[j], e, cnt);
-  if(e.empty()) area[cnt] += PI * c[i].r * c[i].r;
-  else {
-   sort(e.begin(), e.end());
-   e.push_back(e.front());
-   for(int j = 0; j + 1 <(int)e.size(); ++j) {
-	cnt += e[j].delta;
-	area[cnt] += det(e[j].p,e[j + 1].p) / 2;
-	LD ang = e[j + 1].ang - e[j].ang;
-	if(ang < 0) ang += PI * 2;
-	area[cnt] += ang * c[i].r * c[i].r / 2 - sin(ang) * c[i].r * c[i].r / 2; } } } }
+int circle_count;
+C circles[MAXN];
+LD coverage_area[MAXN]; // coverage_area[k]：恰被 k 个圆覆盖的面积
+
+struct Event {
+	LD ang;
+	int delta;
+	bool operator<(const Event &o) const { return ang < o.ang; }
+};
+
+bool same_circle(cc a, cc b) {
+	return a.c == b.c && !sgn(a.r - b.r);
+}
+bool contains(cc a, cc b) { // 圆 a 包含圆 b
+	return sgn(a.r - b.r - (a.c - b.c).len()) >= 0;
+}
+
+void add_interval(LD l, LD r, vector<Event> &e, int &base) {
+	const LD tau = 2 * pi;
+	while (l < 0) l += tau, r += tau;
+	while (l >= tau) l -= tau, r -= tau;
+	if (r < tau) e.push_back({l, 1}), e.push_back({r, -1});
+	else {
+		++base;
+		e.push_back({r - tau, -1});
+		e.push_back({l, 1});
+	}
+}
+
+void circle_union() {
+	fill(coverage_area, coverage_area + circle_count + 2, 0);
+	vector<LD> delta(circle_count + 2);
+	for (int i = 0; i < circle_count; ++i) {
+		bool duplicate = false;
+		for (int j = 0; j < i; ++j)
+			if (same_circle(circles[i], circles[j])) duplicate = true;
+		if (duplicate) continue;
+
+		int multiplicity = 0;
+		for (int j = 0; j < circle_count; ++j)
+			multiplicity += same_circle(circles[i], circles[j]);
+		int cnt = multiplicity;
+		vector<Event> e;
+		for (int j = 0; j < circle_count; ++j) if (i != j) {
+			if (same_circle(circles[i], circles[j])) continue;
+			if (contains(circles[j], circles[i])) { ++cnt; continue; }
+			if (contains(circles[i], circles[j])) continue;
+			LD d = (circles[j].c - circles[i].c).len();
+			if (sgn(d - circles[i].r - circles[j].r) >= 0) continue;
+			LD a = atan2l(circles[j].c.y - circles[i].c.y,
+				circles[j].c.x - circles[i].c.x);
+			LD b = acosl(clamp((circles[i].r * circles[i].r + d * d
+				- circles[j].r * circles[j].r) / (2 * circles[i].r * d),
+				-1.0L, 1.0L));
+			add_interval(a - b, a + b, e, cnt);
+		}
+		e.push_back({0, 0});
+		e.push_back({2 * pi, 0});
+		sort(e.begin(), e.end());
+		for (int j = 0; j + 1 < (int)e.size(); ++j) {
+			cnt += e[j].delta;
+			LD l = e[j].ang, r = e[j + 1].ang, d = r - l;
+			P p = circles[i].c + P(cosl(l), sinl(l)) * circles[i].r;
+			P q = circles[i].c + P(cosl(r), sinl(r)) * circles[i].r;
+			LD area = (p ^ q) / 2
+				+ circles[i].r * circles[i].r * (d - sinl(d)) / 2;
+			delta[cnt - multiplicity + 1] += area;
+			delta[cnt + 1] -= area;
+		}
+	}
+	for (int k = 1; k <= circle_count; ++k)
+		coverage_area[k] = coverage_area[k - 1] + delta[k];
+	for (int k = 1; k < circle_count; ++k)
+		coverage_area[k] -= coverage_area[k + 1];
+}

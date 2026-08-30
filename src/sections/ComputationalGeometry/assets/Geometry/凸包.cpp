@@ -1,10 +1,8 @@
-#define cp const point &
-int turn (cp a, cp b, cp c) { return sgn(det(b-a, c-a)); }
-vector <point> convex_hull (vector <point> a) {
+vp convex_hull (vp a) {
 	sort (a.begin(), a.end()); // 小于号 (y, x) 字典序
 	a.erase(unique(a.begin(), a.end()), a.end());//必要时去重
 	int n = (int) a.size (), cnt = 0;
-	vector <point> ret;
+	vp ret;
 	for (int i = 0; i < n; ++i) {
 		while (cnt > 1
 		&& turn (ret[cnt - 2], ret[cnt - 1], a[i]) <= 0)
