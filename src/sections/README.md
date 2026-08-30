@@ -35,3 +35,23 @@
 ```bash
 latexmk -xelatex -shell-escape main.tex
 ```
+
+## CI 与语言版本
+
+- C++ 默认必须兼容 C++17，并在 `-Wall -Wextra -Wshadow -Werror` 下零告警；
+- Python 默认必须兼容 Python 3.10；
+- 使用更高标准时，必须把版本标记写在文件第一行：
+
+```cpp
+// @requires: c++20
+```
+
+```python
+# @requires: python3.11
+```
+
+CI 当前接受 C++17/C++20/C++23 和 Python 3.10--3.14。未标记文件一律按
+C++17 或 Python 3.10 验证。C++ 素材通常是不能单独编译的模板片段，因此新增或
+修改 `.cpp` 时，还必须把它纳入 `tools/test_*.cpp` 中的某个可编译测试单元；含
+`main` 的完整程序可以直接接受验证。`archive/` 与 `SCL_others/` 是历史/外部资料，
+不属于正式源码检查范围。

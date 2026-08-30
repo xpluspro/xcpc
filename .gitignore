@@ -11,3 +11,5 @@ src/*.toc
 *.un~
 *.cpp~
 src/*.out
+__pycache__/
+*.py[cod]

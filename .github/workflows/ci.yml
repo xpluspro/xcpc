@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  latex:
+    name: LaTeX
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Compile document
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: main.tex
+          working_directory: src
+          latexmk_use_xelatex: true
+          latexmk_shell_escape: true
+          extra_system_packages: py3-pygments
+      - name: Upload PDF
+        uses: actions/upload-artifact@v6
+        with:
+          name: xcpc-handbook
+          path: src/main.pdf
+
+  cpp:
+    name: C++ standards and warnings
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Compile and run C++ test units
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python3 tools/ci/validate_code.py cpp --base "$BASE_SHA"
+
+  python:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile Python sources
+        env:
+          PYTHONWARNINGS: error
+        run: python tools/ci/validate_code.py python --target "${{ matrix.python-version }}"
