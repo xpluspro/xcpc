@@ -111,6 +111,9 @@ int main() {
 	auto [rotated_lower, rotated_upper] = ConvexQuery(rotated_rect).monotone_chains();
 	assert(rotated_lower == lower_chain && rotated_upper == upper_chain);
 	assert(close(segment_to_segment({{0,0},{1,0}}, {{2,1},{2,-1}}), 1));
+	auto shifted = offset_lines({{0,0},{2,0}}, 3);
+	assert(shifted[0].s == P(0,3) && shifted[0].t == P(2,3));
+	assert(shifted[1].s == P(0,-3) && shifted[1].t == P(2,-3));
 	assert(close(angle(P(),P(1,0)),0));
 	assert(close(circle_edge_area2(P(),P(2,0),1),0));
 	assert(close(polygon_circle_intersection_area(
@@ -189,7 +192,7 @@ int main() {
 	Triangulation delaunay;
 	vp delaunay_points{{10000000,10000000},{10000003,10000000},
 		{10000000,10000002},{10000002,10000003},{10000001,10000001}};
-	delaunay.build(delaunay_points);
+	assert(delaunay.build(delaunay_points));
 	for (Tri *t=triange_pool;t<tot_tri;++t) if (!t->has_ch()) {
 		bool original=true;
 		for (P v:t->p) {

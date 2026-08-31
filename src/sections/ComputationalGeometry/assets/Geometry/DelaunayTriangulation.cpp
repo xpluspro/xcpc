@@ -46,13 +46,14 @@ class Triangulation {
 			add_point(root,p);
 			return true;
 		}
-		void build(vp p) {
+		bool build(vp p) {
 			LD bound = 1;
 			for (cp x : p)
 				bound = max({bound, fabsl(x.x), fabsl(x.y)});
 			init(4*bound+1);
 			shuffle(p.begin(), p.end(), rnd);
-			for (cp x : p) add_point(x);
+			for (cp x : p) if (!add_point(x)) return false;
+			return true;
 		}
 	private:
 		TriRef the_root;
