@@ -18,11 +18,13 @@ void prepare(int q) {
 	for (int i = 0; i < q; ++ i) { choo[i][0] = Val(1);
 		for (int j = 1; j <= i; ++ j)
 			choo[i][j]=choo[i-1][j-1]+choo[i-1][j]; } }
-pair<Val, LL> fact(LL n, LL p, LL q) { Val ans = 1;
+pair<Val, LL> fact(LL n, LL p, LL q) {
+	assert(1 <= q && q <= 70); prepare((int)q); Val ans = 1;
 	for (int r = 1; r < p; ++ r) {
 		poly x (q, Val(0)), res (q, Val(0));
 		res[0] = 1; LL _res = 0; x[0] = r; LL _x = 0;
-		if (q > 1) x[1] = p, _x = 1; LL m = (n - r + p) / p;
+		if (q > 1) x[1] = p, _x = 1;
+		LL m = (n - r + p) / p;
 		while (m) { if (m & 1) {
 				res=polymul(res,polyshift(x,_res)); _res+=_x; }
 			m >>= 1; x = polymul(x, polyshift(x, _x)); _x+=_x; }

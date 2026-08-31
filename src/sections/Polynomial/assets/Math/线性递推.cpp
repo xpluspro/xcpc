@@ -11,17 +11,19 @@ poly add(poly &a, poly &b) {
 	for (int i = 0; i <= n; ++i) {
 		for (int j = 0; j <= n; ++j) {
 			(res[i+j]+=(LL)a[i] * b[j] % MOD) %= MOD;
+		}
+	}
 	for (int i = 2 * n; i > n; --i) {
 		for (int j = 0; j < n; ++j) {
 			(res[i-1-j]+=(LL)res[i]*trans[j]%MOD) %=MOD;}
 		res[i] = 0; }
 	res.erase(res.begin() + n + 1, res.end());
 	return res; }
-LinearRec(poly &first, poly &trans): first(first), trans(trans) {
+LinearRec(poly &first_, poly &trans_): first(first_), trans(trans_) {
 	n = first.size(); poly a(n + 1, 0); a[1] = 1;
 	bin.push_back(a); for (int i = 1; i < LOG; ++i)
 		bin.push_back(add(bin[i - 1], bin[i - 1])); }
-int calc(int k) { poly a(n + 1, 0); a[0] = 1;
+int calc(long long k) { poly a(n + 1, 0); a[0] = 1;
 	for (int i = 0; i < LOG; ++i)
 		if (k >> i & 1) a = add(a, bin[i]);
 	int ret = 0; for (int i = 0; i < n; ++i)

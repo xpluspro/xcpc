@@ -20,6 +20,7 @@ const int MAXN = 200005;
 #include "../src/sections/ComputationalGeometry/assets/Geometry/DelaunayTriangulation.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/最近点对.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/三角形.cpp"
+#include "../src/sections/ComputationalGeometry/assets/Geometry/圆上整点.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/圆并.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/多边形和圆的交.cpp"
 #include "../src/sections/ComputationalGeometry/assets/yzh/circle_inversion.cpp"
@@ -103,7 +104,16 @@ int main() {
 	assert(point_in_polygon({2,1}, rect) == 1);
 	assert(point_in_polygon({4,1}, rect) == 0);
 	assert(point_in_polygon({5,1}, rect) == -1);
+	auto [lower_chain, upper_chain] = ConvexQuery(rect).monotone_chains();
+	assert((lower_chain == vp{{0,0},{4,0},{4,2}}));
+	assert((upper_chain == vp{{4,2},{0,2},{0,0}}));
+	vp rotated_rect{{4,2},{0,2},{0,0},{4,0}};
+	auto [rotated_lower, rotated_upper] = ConvexQuery(rotated_rect).monotone_chains();
+	assert(rotated_lower == lower_chain && rotated_upper == upper_chain);
 	assert(close(segment_to_segment({{0,0},{1,0}}, {{2,1},{2,-1}}), 1));
+	auto shifted = offset_lines({{0,0},{2,0}}, 3);
+	assert(shifted[0].s == P(0,3) && shifted[0].t == P(2,3));
+	assert(shifted[1].s == P(0,-3) && shifted[1].t == P(2,-3));
 	assert(close(angle(P(),P(1,0)),0));
 	assert(close(circle_edge_area2(P(),P(2,0),1),0));
 	assert(close(polygon_circle_intersection_area(
@@ -115,6 +125,33 @@ int main() {
 	IL ix{1,0,0}, iy{0,1,0}, idiag{-1,-1,1};
 	assert(close(triangle_area(ix,iy,idiag),0.5L));
 	assert(cc_intersection(C(P(0,0),1),C(P(2,0),1)).size()==1);
+
+	vp minkowski_a = convex_hull({{-1,1},{0,0},{1,2}});
+	vp minkowski_b = convex_hull({{-1,2},{0,0},{2,1}});
+	vp minkowski = minkowski_sum(minkowski_a, minkowski_b);
+	LD minkowski_max_x = -INF;
+	for (cp p : minkowski) minkowski_max_x = max(minkowski_max_x, p.x);
+	assert(close(minkowski_max_x, 3));
+
+	assert(solve(0) == vector<LL>{0});
+	for (LL r = 1; r <= 100; ++r) {
+		vector<LL> actual = solve(r), expected;
+		sort(actual.begin(), actual.end());
+		actual.erase(unique(actual.begin(), actual.end()), actual.end());
+		for (LL y = 0; y <= r; ++y) {
+			LL x2 = r*r-y*y, x = llround(sqrtl(x2));
+			if (x*x == x2) expected.push_back(y);
+		}
+		assert(actual == expected);
+		assert(actual.back() == r); // (0,r) 必须被枚举到
+	}
+
+	hull dynamic_hull;
+	dynamic_hull.insert({0,0});
+	dynamic_hull.insert({0,-1});
+	assert((dynamic_hull.a == set<P>{{0,0}}));
+	dynamic_hull.insert({0,2});
+	assert((dynamic_hull.a == set<P>{{0,2}}));
 
 	vp concave{{0,0},{3,0},{3,3},{1,1},{0,3}};
 	auto tri = ear_clipping(concave);
@@ -153,8 +190,9 @@ int main() {
 		for (int i = 0; i < (int)hull3.p.size(); ++i)
 			assert(sgn(hull3.volume(f,i)) <= 0);
 	Triangulation delaunay;
-	vp delaunay_points{{0,0},{3,0},{0,2},{2,3},{1,1}};
-	delaunay.build(delaunay_points);
+	vp delaunay_points{{10000000,10000000},{10000003,10000000},
+		{10000000,10000002},{10000002,10000003},{10000001,10000001}};
+	assert(delaunay.build(delaunay_points));
 	for (Tri *t=triange_pool;t<tot_tri;++t) if (!t->has_ch()) {
 		bool original=true;
 		for (P v:t->p) {
@@ -183,6 +221,13 @@ int main() {
 	LD overlap=cc_intersection_area(circles[0],circles[1]);
 	assert(close(coverage_area[1],8*pi-2*overlap));
 	assert(close(coverage_area[2],overlap));
+	// 大圆近外切：真实交叠远小于扇形、三角形，不能直接作大数相减。
+	LD huge_r = 1e18L, penetration = 128;
+	LD tiny_overlap = cc_intersection_area(
+		C(P(), huge_r), C(P(2 * huge_r - penetration, 0), huge_r));
+	LD tangent_asymptotic = 4.0L / 3 * sqrtl(huge_r)
+		* penetration * sqrtl(penetration);
+	assert(fabsl(tiny_overlap / tangent_asymptotic - 1) < 1e-12L);
 	uniform_int_distribution<int> radius(1,10);
 	for(int tc=0;tc<1000;++tc) {
 		circles[0]=C(P(coord(gen),coord(gen)),radius(gen));
