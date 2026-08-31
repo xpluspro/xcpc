@@ -24,7 +24,7 @@ vector<int> KM(int n, int m) {
 				else d[j] -= mn;
 			}
 		}
-		for (int vv; u; u = vv) vv = pre[u], p[u] = p[vv];
+		if (v) for (int vv; u; u = vv) vv = pre[u], p[u] = p[vv];
 	}
 	for (int j = 1; j <= m; ++j) if (p[j] && p[j] <= n) ans[p[j]] = j;
 	return ans; }

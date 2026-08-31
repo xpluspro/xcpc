@@ -18,7 +18,8 @@ pair<LL, LL> peLL(LL n) {
 		a[i + 1] = (g[i] + a[2]) / h[i];
 		p[i] = a[i] * p[i - 1] + p[i - 2];
 		q[i] = a[i] * q[i - 1] + q[i - 2];
-		if(p[i] * p[i] - (__int128)n * q[i] * q[i] == 1) {
-			if (p[i] > LLONG_MAX || q[i] > LLONG_MAX) return {0, 0};
-			return {(LL)p[i], (LL)q[i]}; }}
+		if (p[i] < 0 || q[i] < 0 || p[i] > LLONG_MAX || q[i] > LLONG_MAX) return {0, 0};
+		if(p[i] * p[i] - (__int128)n * q[i] * q[i] == 1)
+			return {(LL)p[i], (LL)q[i]};
+	}
 	return {0, 0}; }

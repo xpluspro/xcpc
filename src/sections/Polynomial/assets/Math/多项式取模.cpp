@@ -11,7 +11,7 @@ poly poly_auto_mul(poly a, poly b) { // 自动判断长度的乘法
 poly poly_div(const poly& a, const poly& b) {
 	poly bb = b; while (bb.size() > 1 && bb.back() == 0) bb.pop_back();
 	int n = (int)a.size(), m = (int)bb.size();
-	if (!m || bb.back() == 0) return {};
+	if (!m || bb.back() == 0) { assert(false); return {}; } // 零多项式
 	if (n < m) return {};
 	int ntt_n = 1; while (ntt_n < n - m + 1) ntt_n *= 2;
 	poly f(ntt_n), g(ntt_n);
@@ -24,9 +24,11 @@ poly poly_div(const poly& a, const poly& b) {
 	reverse(c.begin(), c.end()); return c; }
 // 多项式取模，a 和 b 长度可以任意，返回 (余数，商)
 pair<poly, poly> poly_mod(const poly& a, const poly& b) {
-	int n = (int)a.size(), m = (int)b.size();
+	poly bb = b; while (bb.size() > 1 && bb.back() == 0) bb.pop_back();
+	if (bb.empty() || bb.back() == 0) { assert(false); return {{}, {}}; } // 零多项式
+	int n = (int)a.size(), m = (int)bb.size();
 	if (n < m) { poly r = a; r.resize(max(0, m - 1)); return {r, {}}; }
-	auto d = poly_div(a, b); auto c = poly_auto_mul(b, d);
+	auto d = poly_div(a, bb); auto c = poly_auto_mul(bb, d);
 	poly r(m - 1);
 	for (int i = 0; i < m - 1; i++) {
 		int ci = i < (int)c.size() ? c[i] : 0;
