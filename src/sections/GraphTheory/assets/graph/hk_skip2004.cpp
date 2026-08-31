@@ -33,9 +33,8 @@ vector<pair<int,int>> min_edge_cover(int nl, int nr) { // |V|-matching
  for (int i = 1; i <= nl; i++) if (ml[i])
   es.push_back({i, ml[i]}), uL[i] = uR[ml[i]] = 1;
  for (int i = 1; i <= nl; i++) if (!uL[i])
-  for (int y : E[i]) { es.push_back({i, y}); break; }
+  for (int y : E[i]) { es.push_back({i, y}); uL[i] = uR[y] = 1; break; }
  for (int j = 1; j <= nr; j++) if (!uR[j])
-  for (int i = 1; i <= nl; i++) for (int y : E[i]) if (y == j)
-   { es.push_back({i, j}); goto nxtR; }
-  nxtR:;
+  for (int i = 1; i <= nl && !uR[j]; i++)
+   for (int y : E[i]) if (y == j) { es.push_back({i, j}); uR[j] = 1; break; }
  return es; }
