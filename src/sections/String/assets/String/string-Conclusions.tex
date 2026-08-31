@@ -36,7 +36,7 @@
 
 \subsubsection*{Run 的 $O(N)$ 求解}
 \noindent
-分别在标准字典序 ($\le$) 和反向字典序 ($\ge$) 下各跑一遍 Duval 算法, 提取切分点形成的相邻位置 $i, j$ ($p = j - i$):\\
+分别在标准字典序 ($\le$) 和反向字典序 ($\ge$) 下求每个位置 $i$ 开始的最长 Lyndon 前缀长度 $\text{Lyn}[i]$, 令 $j = i + \text{Lyn}[i]$ ($p = j - i$):\\
 利用 ExKMP / SA / Hash 求出 $L_1 = \text{LCS}(S[1..i-1], S[1..j-1])$, $L_2 = \text{LCP}(S[i..N], S[j..N])$. 若 $L_1 + L_2 \ge p$, 则构成了合法 Run $[i - L_1, j + L_2 - 1]$. 最终将所有 Runs 排序去重即可.
 
 \subsubsection*{子串最小后缀}
