@@ -159,7 +159,7 @@ $$\frac {L_n + F_n \sqrt 5} 2 = \left( \frac {1 + \sqrt 5} 2 \right) ^ n$$
 \[ c(x)=\frac{1-\sqrt{1-4x}}{2x}\]
 Usage: $n$对括号序列; $n$个点满二叉树; $n\times n$的方格左下到右上不过对角线方案数; 凸$n+2$边形三角形分割数; $n$个数的出栈方案数; $2n$个顶点连接, 线段两两不交的方案数.
 \paragraph*{类卡特兰数}
-从 $(1,1)$ 出发走到 $(n,m)$,只能向右或者向上走,不能越过 $y=x$ 这条线(即保证 $x\geq y$ ),合法方案数是 $\binom{n+m-2}{m-1}-\binom{n+m-2}{m-2}$ (例如 $(3,2)$ 时为 $3-1=2$).
+从 $(1,1)$ 出发走到 $(n,m)$,只能向右或者向上走,不能越过 $y=x$ 这条线(即保证 $x\geq y$ ). 当 $n\geq m$ 时,合法方案数是 $\binom{n+m-2}{m-1}-\binom{n+m-2}{m-2}$ (例如 $(3,2)$ 时为 $3-1=2$); 当 $n<m$ 时,合法方案数为 $0$.
 \subsubsection{Motzkin Numbers 1, 1, 2, 4, 9, 21, 51, 127, 323, 835\dots}
 圆上$n$点间画不相交弦的方案数. 选$n$个数$k_1,k_2,...,k_n\in\{-1,0,1\}$, 保证$\sum_i^ak_i(1\leq a\leq n)$非负且所有数总和为$0$的方案数. \[M_{n+1}=M_n+\sum_i^{n-1}M_iM_{n-1-i}=\frac{(2n+3)M_n+3nM_{n-1}}{n+3}\]
 \[M_n=\sum_{i=0}^{\lfloor \frac{n}{2}\rfloor}\binom{n}{2k} \mathrm{Catlan}(k)\]
