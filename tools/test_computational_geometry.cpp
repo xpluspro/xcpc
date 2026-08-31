@@ -130,6 +130,7 @@ int main() {
 	for (cp p : minkowski) minkowski_max_x = max(minkowski_max_x, p.x);
 	assert(close(minkowski_max_x, 3));
 
+	assert(solve(0) == vector<LL>{0});
 	for (LL r = 1; r <= 100; ++r) {
 		vector<LL> actual = solve(r), expected;
 		sort(actual.begin(), actual.end());
@@ -139,6 +140,7 @@ int main() {
 			if (x*x == x2) expected.push_back(y);
 		}
 		assert(actual == expected);
+		assert(actual.back() == r); // (0,r) 必须被枚举到
 	}
 
 	hull dynamic_hull;
@@ -216,6 +218,13 @@ int main() {
 	LD overlap=cc_intersection_area(circles[0],circles[1]);
 	assert(close(coverage_area[1],8*pi-2*overlap));
 	assert(close(coverage_area[2],overlap));
+	// 大圆近外切：真实交叠远小于扇形、三角形，不能直接作大数相减。
+	LD huge_r = 1e18L, penetration = 128;
+	LD tiny_overlap = cc_intersection_area(
+		C(P(), huge_r), C(P(2 * huge_r - penetration, 0), huge_r));
+	LD tangent_asymptotic = 4.0L / 3 * sqrtl(huge_r)
+		* penetration * sqrtl(penetration);
+	assert(fabsl(tiny_overlap / tangent_asymptotic - 1) < 1e-12L);
 	uniform_int_distribution<int> radius(1,10);
 	for(int tc=0;tc<1000;++tc) {
 		circles[0]=C(P(coord(gen),coord(gen)),radius(gen));
