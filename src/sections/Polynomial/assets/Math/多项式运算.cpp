@@ -15,7 +15,7 @@ poly poly_calc(const poly& u, const poly& v,
 	ntt(c, n, -1); return poly(c, c + n); }
 poly poly_mul(const poly& u, const poly& v) { // 乘法
 	return poly_calc(u, v, [](int a, int b)
-		{ return (LL)a * b % p; }); } // 返回长度是两倍
+		{ return (LL)a * b % p; }); } // 返回长度补齐到 2 的幂
 poly poly_inv(const poly& a) { // 求逆，返回长度不变
 	assert(!a.empty() && a[0] % p != 0);
 	int size = (int)a.size(), limit = 1; while (limit < size) limit *= 2;

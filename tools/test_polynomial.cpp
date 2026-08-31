@@ -80,6 +80,10 @@ int main() {
 	assert(identity[0] == 1); for (int i=1;i<5;++i) assert(identity[i] == 0);
 	auto exponential = poly_exp(poly{0,1,0,0,0});
 	assert((exponential == poly{1,1,(p+1)/2,166374059,291154603}));
+	poly square_input{1,2,1,0,0};
+	auto square_root = poly_sqrt(square_input);
+	auto square = poly_mul(square_root, square_root);
+	assert((vector<int>(square.begin(), square.begin()+5) == square_input));
 
 	linear_recurrence at0(poly{0,1,1},0), at1(poly{0,1,1},1);
 	assert(at0(vector<int>{0,1}) == 0);
@@ -87,10 +91,14 @@ int main() {
 
 	poly_eval evaluation(poly{1,2,3,4}, vector<int>{1,2});
 	assert((evaluation() == vector<int>{10,49}));
+	assert((evaluation() == vector<int>{10,49}));
 
 	const long long index = 1000000000000LL;
 	assert(linear_recurrance(index, poly{0,1,1}, poly{0,1}) == fib(index));
 	static_assert(std::is_same_v<decltype(&LinearRec::calc), int (LinearRec::*)(long long)>);
+	poly fib_first{1,1}, fib_transition{1,1};
+	LinearRec fib_recurrence(fib_first, fib_transition);
+	assert(fib_recurrence.calc(index) == fib(index));
 
 	using namespace kth_fwt;
 	n=3; omega[0]=1; omega[1]=power(13,(kth_fwt::MOD-1)/3); omega[2]=1LL*omega[1]*omega[1]%kth_fwt::MOD;
