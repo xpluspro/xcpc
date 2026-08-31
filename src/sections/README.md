@@ -17,7 +17,7 @@
 1. `OtherTools`：其它工具
 2. `DynamicProgramming`：动态规划
 3. `String`：字符串
-4. `NumberTheory`：数论（不含博弈论）
+4. `NumberTheory`：数论与博弈论
 5. `Polynomial`：多项式与生成函数
 6. `LinearAlgebra`：线性代数
 7. `DataStructures`：数据结构
