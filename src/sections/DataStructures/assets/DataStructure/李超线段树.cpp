@@ -1,30 +1,50 @@
-namespace Li{ // 默认取max 可持久化李超记得从x转移而非p
-	int tag[MAXN]; 
-	double k[MAXN], b[MAXN];
-	const double EPS = 1e-10;
-	double calc(int i, double x) {return x * k[i] + b[i];}
-	void update(int nl, int nr, int l, int r, int p, int x){
-		if(l == r) {if(!tag[p] || calc(tag[p], l) < calc(x, l)) tag[p] = x; return;}
-		int mid = (l+r)>>1;
-		if(nl <= l && r <= nr){
-			if(!tag[p]) {tag[p] = x; return;}
-			double l1 = calc(tag[p], l), l2 = calc(x, l), r1 = calc(tag[p], r), r2 = calc(x, r);
-			if(abs(l1 - l2) < EPS && abs(r1 - r2) < EPS) return;
-			if(l1 > l2 && r1 > r2) return;
-			if(l2 > l1 && r2 > r1) tag[p] = x;
-			if(calc(tag[p], mid) < calc(x, mid)) swap(x, tag[p]);
-			if(k[x] > k[tag[p]]) update(nl, nr, mid+1, r, rs, x);
-			if(k[x] < k[tag[p]]) update(nl, nr, l, mid, ls, x); 
-			return;
+// 李超线段树
+//对于插入 线段 的 局部 问题，我们先找到线段横坐标区间在李超树上的 拆分区间，再进行对于每个拆分区间的全局插入。时间复杂度线性对数平方，空间复杂度线性对数
+//李超树 不支持 删除直线。因此我们只能 离线线段树分治。时间复杂度 。空间复杂度线性对数，瓶颈在于对每个区间存储时间范围定位区间包含该区间的所有修改，而非李超树。
+//当横坐标过大时，离线离散化或在线动态开点。因为李超树本质仍是线段树，所以支持动态开点。时间复杂度同普通李超树。空间复杂度 线性
+//李超树支持可持久化。
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1e5 + 5, X = 39989, Y = 1e9;
+int n, cnt, mx[X << 2];
+double k[N], b[N];
+double get(int x, int id) {return k[id] * x + b[id];}
+int get(int a, int c, int x) {
+	double b = get(x, a), d = get(x, c);
+	return b == d ? min(a, c) : b > d ? a : c;
+}
+void modify(int l, int r, int x, int v) {
+	int m = l + r >> 1;
+	if(get(m, v) > get(m, mx[x])) swap(mx[x], v);
+	if(get(l, v) > get(l, mx[x])) modify(l, m, x << 1, v);
+	else if(get(r, v) > get(r, mx[x])) modify(m + 1, r, x << 1 | 1, v);
+}
+void modify(int l, int r, int ql, int qr, int x, int v) {
+	if(ql <= l && r <= qr) return modify(l, r, x, v);
+	int m = l + r >> 1;
+	if(ql <= m) modify(l, m, ql, qr, x << 1, v);
+	if(m < qr) modify(m + 1, r, ql, qr, x << 1 | 1, v);
+}
+int query(int l, int r, int x, int p) {
+	if(l == r) return mx[x];
+	int m = l + r >> 1;
+	if(p <= m) return get(query(l, m, x << 1, p), mx[x], p);
+	return get(query(m + 1, r, x << 1 | 1, p), mx[x], p);
+}
+int main() {
+	cin >> n;
+	for(int i = 1, las = 0; i <= n; i++) {
+		int op, c, d, e, f;
+		scanf("%d %d", &op, &c), c = (c + las - 1) % X + 1;
+		if(op == 0) printf("%d\n", las = query(1, X, 1, c));
+		else {
+			scanf("%d %d %d", &d, &e, &f), e = (e + las - 1) % X + 1;
+			d = (d + las - 1) % Y + 1, f = (f + las - 1) % Y + 1;
+			if(c > e) swap(c, e), swap(d, f);
+			if(c == e) b[++cnt] = max(d, f);
+			else k[++cnt] = (double)(f - d) / (e - c), b[cnt] = d - c * k[cnt];
+			modify(1, X, c, e, 1, cnt);
 		}
-		if(nl <= mid) update(nl, nr, l, mid, ls, x);
-		if(nr > mid) update(nl, nr, mid+1, r, rs, x);
 	}
-	double query(int pos, int l, int r, int p){
-		double cur = tag[p] ? calc(tag[p], pos) : -1e100;
-		if(l == r) return cur;
-		int mid = (l+r)>>1;
-		if(pos <= mid) return max(cur, query(pos, l, mid, ls));
-		else return max(cur, query(pos, mid+1, r, rs));
-	}
+	return 0;
 }
