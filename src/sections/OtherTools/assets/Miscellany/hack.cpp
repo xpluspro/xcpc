@@ -10,15 +10,18 @@ const int SZ = 1 << 16; int FastGetChar() {
 	if (ptr == top) {
 		ptr = buf, top = buf + fread(buf, 1, SZ, stdin);
 		if (top == buf) return -1; }
-	return *ptr++; }
-int read() {
-	int x = 0, f = 1, ch = FastGetChar();
-	while (!isdigit(ch)) {
+	return static_cast<unsigned char>(*ptr++); }
+bool readInt(long long &x) {
+	long long value = 0; int f = 1, ch = FastGetChar();
+	while (ch != -1 && !isdigit(static_cast<unsigned char>(ch))) {
 		if (ch == '-') f = -1;
 		ch = FastGetChar();
 	}
-	while (isdigit(ch)) x = x * 10 + ch - '0', ch = FastGetChar();
-	return x * f;
+	if (ch == -1) return false;
+	while (ch != -1 && isdigit(static_cast<unsigned char>(ch)))
+		value = value * 10 + ch - '0', ch = FastGetChar();
+	x = value * f;
+	return true;
 }
 const int OSZ = 1 << 16;
 char obuf[OSZ]; int opos = 0;
@@ -56,9 +59,17 @@ bool AddOverflow(unsigned long long a, unsigned long long b,
 		unsigned long long &c) { // binary big int
 	return __builtin_uaddll_overflow(a, b, &c);
 }
-void GospersHack(int k, int n) {
-	for (int s = (1 << k) - 1, c, r; s < (1 << n);
-	c = s & -s, r = s + c, s = (((r ^ s) >> 2) / c) | r); }
+template<class Func>
+void GospersHack(int k, int n, Func func) {
+	assert(0 <= k && k <= n && n < 63);
+	if (k == 0) { func(0ULL); return; }
+	const unsigned long long limit = 1ULL << n;
+	for (unsigned long long s = (1ULL << k) - 1; s < limit; ) {
+		func(s);
+		unsigned long long c = s & -s, r = s + c;
+		s = (((r ^ s) >> 2) / c) | r;
+	}
+}
 auto SteadyClockSeed() {
 	return chrono::steady_clock::now().time_since_epoch().count();
 }

@@ -50,7 +50,7 @@
 \begin{itemize}[leftmargin=5mm]
   \setlength{\itemsep}{0pt}
   \item 多测未清空，或者没有读完当前测试数据便提前返回。
-  \item 应该开 \texttt{long long} 的地方没有开。一般情况下建议直接 \texttt{\#define int long long}。
+  \item 对可能溢出的变量显式使用 \texttt{long long} 或 \texttt{int64\_t}；不要依赖全局 \texttt{\#define int long long}。
   \item 注意变量名打错：例如 \texttt{u} 写成 \texttt{v}、\texttt{a} 写成 \texttt{t}。建议读代码时慢一些以发现此类错误。
   \item 树剖、倍增 LCA 等代码中把 \texttt{while} 写成 \texttt{if}。
   \item 无穷不够大或不够小；答案初始化为 0 后取最大值，但答案可能为负。

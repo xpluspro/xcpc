@@ -14,6 +14,16 @@ int main() {
 	if (!AddOverflow(ULLONG_MAX, 1, result) || result != 0) return 1;
 	if (HashFunc<int>{}(42) != hash<int>{}(42)) return 1;
 	if (SteadyClockSeed() <= 0) return 1;
-	GospersHack(2, 5);
+	vector<unsigned long long> subsets;
+	GospersHack(2, 5, [&](unsigned long long subset) {
+		subsets.push_back(subset);
+	});
+	if (subsets != vector<unsigned long long>({
+			3, 5, 6, 9, 10, 12, 17, 18, 20, 24})) return 1;
+	subsets.clear();
+	GospersHack(0, 5, [&](unsigned long long subset) {
+		subsets.push_back(subset);
+	});
+	if (subsets != vector<unsigned long long>({0})) return 1;
 	return 0;
 }

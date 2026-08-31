@@ -9,7 +9,7 @@ def ItertoolsExamples():
 
 def RandomExamples():
 	from random import randint, choice, sample, shuffle
-	from random import choices, binomialvariate, normalvariate
+	from random import choices, normalvariate, random
 	N = 10
 	randint(1, N)                   # [1, N] 内的随机整数
 	choice([1, 2, 3, 5, 8])        # 随机选择一个元素
@@ -17,7 +17,7 @@ def RandomExamples():
 	a = list(range(N))
 	shuffle(a)                      # 原地打乱列表
 	l, r = sorted(choices(range(1, N + 1), k=2))
-	binomialvariate(N, 0.5)
+	sum(random() < 0.5 for _ in range(N))
 	normalvariate(0.0, 1.0)
 
 def ListOperations():
@@ -73,10 +73,12 @@ def MemoizedSearch():
 
 def FastIO():
 	import sys, atexit, io
-	_INPUT_LINES = sys.stdin.read().splitlines()
-	input = iter(_INPUT_LINES).__next__
+	input_lines = iter(sys.stdin.read().splitlines())
 	_OUTPUT_BUFFER = io.StringIO()
 	sys.stdout = _OUTPUT_BUFFER
 	@atexit.register
 	def write():
 		sys.__stdout__.write(_OUTPUT_BUFFER.getvalue())
+	return input_lines.__next__
+
+# input = FastIO()
