@@ -1,7 +1,9 @@
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 \setlength\tabcolsep{1pt}
 \renewcommand{\arraystretch}{1.6}
-\def \bangle{ \atopwithdelims \langle \rangle}
+\newcommand{\bangle}[2]{\genfrac{\langle}{\rangle}{0pt}{}{#1}{#2}}
+\newcommand{\stirlingone}[2]{\genfrac{\lbrack}{\rbrack}{0pt}{}{#1}{#2}}
+\newcommand{\stirlingtwo}[2]{\genfrac{\lbrace}{\rbrace}{0pt}{}{#1}{#2}}
 \providecommand{\myfloor}[1]{ \left\lfloor #1 \right\rfloor }
 \begin{footnotesize}
 
@@ -9,7 +11,10 @@
 \subsubsection{Mobius Inversion}
 	\[F(n)=\sum_{d|n}f(d)\Rightarrow f(n)=\sum_{d|n}\mu(d)F\left(\frac{n}{d}\right)\]
 	\[F(n)=\sum_{n|d}f(d)\Rightarrow f(n)=\sum_{n|d}\mu\left(\frac{d}{n}\right)F(d)\]
-	\[[x = 1] = \sum_{d|x}\mu(d),\ \ x = \sum_{d|x}\mu(d)\]
+		\[\begin{aligned}
+			\relax[x = 1] &= \sum_{d|x}\mu(d), & x &= \sum_{d|x}\varphi(d), \\
+			2 &= \varphi(1)+\varphi(2).
+		\end{aligned}\]
 \subsubsection{杜教筛}
 	\input{sections/NumberTheory/assets/Math/杜教筛.tex}
 \subsubsection{降幂公式}
@@ -50,7 +55,7 @@ $J_k(n)$ is the number of $k$-tuples of positive integers all less than or equal
 \sum_{\delta|n}\varphi(\delta)d\left(\frac{n}{\delta}\right) = \sigma(n),&\ \sum_{\delta|n}\left| \mu(\delta) \right| = 2^{\omega(n)} \\
 \sum_{\delta|n}2^{\omega(\delta)} = d(n^2),&\ \sum_{\delta|n}d(\delta^2) = d^2(n) \\
 \sum_{\delta|n}d\left(\frac{n}{\delta}\right)2^{\omega(\delta)} = d^2(n),&\ \sum_{\delta|n}\frac{\mu(\delta)}{\delta} = \frac{\varphi(n)}{n} \\
-\sum_{\delta|n}\frac{\mu(\delta)}{\varphi(\delta)} = d(n),&\ \sum_{\delta|n}\frac{\mu^2(\delta)}{\varphi(\delta)} = \frac{n}{\varphi(n)} \\
+\sum_{\delta|n}\frac{\mu(\delta)}{\varphi(\delta)} = \prod_{p|n}\frac{p-2}{p-1},&\ \sum_{\delta|n}\frac{\mu^2(\delta)}{\varphi(\delta)} = \frac{n}{\varphi(n)} \quad(n=3:\tfrac12,\tfrac32) \\
 \end{align*}
 \[ n|\varphi(a^n-1) \]
 \[ \sum_{\substack{1 \leq k \leq n \\ \gcd(k, n) = 1}}f(\gcd(k-1, n)) = \varphi(n)
@@ -80,6 +85,7 @@ $J_k(n)$ is the number of $k$-tuples of positive integers all less than or equal
 \subsubsection{Binomial Coefficients}
 \begin{multicols*}{2}
 \begin{scriptsize}
+{\setlength{\tabcolsep}{0.75pt}
 \begin{tabular}{|P{0.2cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|P{0.3cm}|}
 	\hline
 	C & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10\\
@@ -106,16 +112,16 @@ $J_k(n)$ is the number of $k$-tuples of positive integers all less than or equal
 	\hline
 	10 & \cellcolor{black!20}1 & \cellcolor{black!0}10 & \cellcolor{black!20}45 & \cellcolor{black!0}120 & \cellcolor{black!0}210 & \cellcolor{black!0}252 & \cellcolor{black!0}210 & \cellcolor{black!0}120 & \cellcolor{black!20}45 & \cellcolor{black!0}10 & \cellcolor{black!20}1\\
 	\hline
-\end{tabular}
+\end{tabular}}
 \end{scriptsize}
-\[ {n \choose k} \equiv [n\& k=k] \pmod 2 \]
-\[ \sum_{k=0}^n{k \choose m} = {n+1 \choose m+1} \]
-\[ \sqrt{1+z} = 1 + \sum_{k=1}^{\infty}\frac{(-1)^{k-1}}{k\times2^{2k-1}}{2k-2 \choose k-1}z^k \]
-\[ \sum_{k=0}^{r}{r-k \choose m}{s+k \choose n} = {r+s+1 \choose m+n+1} \]
-\[ C_{n, m} = {n+m \choose m} - {n+m \choose m-1}, n \geq m \]
+\[ \binom{n}{k} \equiv [n\& k=k] \pmod 2 \]
+\[ \sum_{k=0}^n\binom{k}{m} = \binom{n+1}{m+1} \]
+\[ \sqrt{1+z} = 1 + \sum_{k=1}^{\infty}\frac{(-1)^{k-1}}{k\times2^{2k-1}}\binom{2k-2}{k-1}z^k \]
+\[ \sum_{k=0}^{r}\binom{r-k}{m}\binom{s+k}{n} = \binom{r+s+1}{m+n+1} \]
+\[ C_{n, m} = \binom{n+m}{m} - \binom{n+m}{m-1}, n \geq m \]
 \end{multicols*}
-\[ {n \choose k} = (-1)^k{k-n-1 \choose k},\ \ \sum_{k \leq n}{r+k \choose k} = {r+n+1 \choose n} \]
-\[ {{n_1+\cdots+n_p}\choose m}=\sum_{k_1+\cdots+k_p=m}{n_1\choose k_1}\cdots{n_p\choose k_p}\]
+\[ \binom{n}{k} = (-1)^k\binom{k-n-1}{k},\ \ \sum_{k \leq n}\binom{r+k}{k} = \binom{r+n+1}{n} \]
+\[ \binom{n_1+\cdots+n_p}{m}=\sum_{k_1+\cdots+k_p=m}\binom{n_1}{k_1}\cdots\binom{n_p}{k_p}\]
 \subsubsection{Fibonacci Numbers, Lucas Numbers}
 \begin{multicols*}{2}
 \[ F(z) = \frac{z}{1-z-z^2} \]
@@ -123,7 +129,10 @@ $J_k(n)$ is the number of $k$-tuples of positive integers all less than or equal
 \[ \sum_{k=1}^nf_k = f_{n+2}-1,\ \ \sum_{k=1}^nf^2_k = f_nf_{n+1} \]
 \[ \sum_{k=0}^nf_kf_{n-k} = \frac{1}{5}(n-1)f_n+\frac{2}{5}nf_{n-1} \]
 \[ \frac{f_{2n}}{f_n} = f_{n-1} + f_{n+1}\]
-\[ f_1+2f_2+3f_3+\cdots+nf_n=nf_{n+2}-f_{n+3}+2\]
+\[\begin{gathered}
+	f_1+2f_2+3f_3+\cdots+nf_n \\
+	=nf_{n+2}-f_{n+3}+2
+\end{gathered}\]
 \[ \gcd(f_m,f_n)=f_{\gcd(m,n)}\]
 \[ f^2_n + (-1)^n = f_{n+1}f_{n-1} \]
 \[ f_{n+k} = f_nf_{k+1} + f_{n-1}f_k \]
@@ -159,7 +168,7 @@ $$\frac {L_n + F_n \sqrt 5} 2 = \left( \frac {1 + \sqrt 5} 2 \right) ^ n$$
 \[ c(x)=\frac{1-\sqrt{1-4x}}{2x}\]
 Usage: $n$对括号序列; $n$个点满二叉树; $n\times n$的方格左下到右上不过对角线方案数; 凸$n+2$边形三角形分割数; $n$个数的出栈方案数; $2n$个顶点连接, 线段两两不交的方案数.
 \paragraph*{类卡特兰数}
-从 $(1,1)$ 出发走到 $(n,m)$,只能向右或者向上走,不能越过 $y=x$ 这条线(即保证 $x\geq y$ ),合法方案数是 $C_{n+m-2}^{n} - C_{n+m-2}^{n-1}$.
+从 $(1,1)$ 出发走到 $(n,m)$,只能向右或者向上走,不能越过 $y=x$ 这条线(即保证 $x\geq y$ ). 当 $n\geq m$ 时,合法方案数是 $\binom{n+m-2}{m-1}-\binom{n+m-2}{m-2}$ (例如 $(3,2)$ 时为 $3-1=2$); 当 $n<m$ 时,合法方案数为 $0$.
 \subsubsection{Motzkin Numbers 1, 1, 2, 4, 9, 21, 51, 127, 323, 835\dots}
 圆上$n$点间画不相交弦的方案数. 选$n$个数$k_1,k_2,...,k_n\in\{-1,0,1\}$, 保证$\sum_i^ak_i(1\leq a\leq n)$非负且所有数总和为$0$的方案数. \[M_{n+1}=M_n+\sum_i^{n-1}M_iM_{n-1-i}=\frac{(2n+3)M_n+3nM_{n-1}}{n+3}\]
 \[M_n=\sum_{i=0}^{\lfloor \frac{n}{2}\rfloor}\binom{n}{2k} \mathrm{Catlan}(k)\]
@@ -169,15 +178,15 @@ Usage: $n$对括号序列; $n$个点满二叉树; $n\times n$的方格左下到�
 \[D_n=(n-1)(D_{n-1}+D_{n-2})\]
 \subsubsection{Bell Numbers 1, 1, 2, 5, 15, 52, 203, 877, 4140 \dots}
 $n$个元素集合划分的方案数.
-\[ B_n=\sum_{k=1}^{n}{n\brace k},\ \ B_{n+1} = \sum_{k=0}^n{n \choose k}B_k \]
+\[ B_n=\sum_{k=1}^{n}\stirlingtwo{n}{k},\ \ B_{n+1} = \sum_{k=0}^n\binom{n}{k}B_k \]
 \[ B_{p^m+n} \equiv mB_n+B_{n+1} \pmod{p} \]
 \[B(x)=\sum_{n=0}^{\infty}\frac{B_n}{n!}x^n=\mathrm{e}^{\mathrm{e}^x-1}\]
 \subsubsection{Stirling Numbers}
 \paragraph*{第一类} $n$个元素集合分作$k$个\textbf{非空轮换}方案数.
 \begin{multicols*}{2}
 $$\begin{aligned}
-{n+1 \brack k} =& n{n \brack k} + {n \brack k-1} \\
-s(n,k) &=(-1)^{n-k}{n \brack k}
+\stirlingone{n+1}{k} =& n\stirlingone{n}{k} + \stirlingone{n}{k-1} \\
+s(n,k) &=(-1)^{n-k}\stirlingone{n}{k}
 \end{aligned}$$
 \begin{tabular}{|P{0.39cm}|P{0.39cm}|P{0.45cm}|P{0.57cm}|P{0.57cm}|P{0.45cm}|P{0.39cm}|P{0.39cm}|}
 	\hline
@@ -202,24 +211,26 @@ s(n,k) &=(-1)^{n-k}{n \brack k}
 \end{tabular}
 
 $$\begin{aligned}
-	{n+1 \brack 2} &= n!H_n \text{ (see \ref{section:Harmonic})} \\
-	x^{\underline{n}} &= \sum_k{ {n \brack k}(-1)^{n-k}x^k } \\
-	x^{\overline{n}} &= \sum_k{ {n \brack k}x^k }
+	\stirlingone{n+1}{2} &= n!H_n \text{ (see \ref{section:Harmonic})} \\
+	x^{\underline{n}} &= \sum_k \stirlingone{n}{k}(-1)^{n-k}x^k \\
+	x^{\overline{n}} &= \sum_k \stirlingone{n}{k}x^k
 \end{aligned}$$
 
 For fixed $k$, EGF:
 
-$$\begin{aligned}
-	\sum_{n = 0} ^ \infty {n \brack k} \frac {x ^ n} {n!} &= \frac {x ^ k} {k!} \left( \frac {\ln (1 - x)} x \right) ^ k
-\end{aligned}$$
+\[\begin{aligned}
+	\sum_{n = 0} ^ \infty \stirlingone{n}{k} \frac {x ^ n} {n!}
+	&= \frac {x ^ k} {k!} \left( \frac {-\ln (1 - x)} x \right) ^ k \\
+	&\quad (k=1:\,-\ln(1-x))
+\end{aligned}\]
 \end{multicols*}
 
 \paragraph*{第二类} 把$n$个元素集合分作$k$个\textbf{非空子集}方案数.
 
 \begin{multicols*}{2}
 $$\begin{aligned}
-{n+1 \brace k} &= k{n \brace k} + {n \brace k-1} \\
-m!{n \brace m} &= \sum_k{m \choose k}k^n(-1)^{m-k}
+\stirlingtwo{n+1}{k} &= k\stirlingtwo{n}{k} + \stirlingtwo{n}{k-1} \\
+m!\stirlingtwo{n}{m} &= \sum_k\binom{m}{k}k^n(-1)^{m-k}
 \end{aligned}$$
 \begin{tabular}{|P{0.39cm}|P{0.39cm}|P{0.39cm}|P{0.39cm}|P{0.45cm}|P{0.45cm}|P{0.45cm}|P{0.39cm}|}
 	\hline
@@ -244,17 +255,18 @@ m!{n \brace m} &= \sum_k{m \choose k}k^n(-1)^{m-k}
 \end{tabular}
 \columnbreak
 $$\begin{aligned}
-	x^n &= \sum_k{ {n \brace k}x^{\underline{k}} } \\
-	&= \sum_k{ {n \brace k}(-1)^{n-k}x^{\overline{k}} } 
+	x^n &= \sum_k \stirlingtwo{n}{k}x^{\underline{k}} \\
+	&= \sum_k \stirlingtwo{n}{k}(-1)^{n-k}x^{\overline{k}}
 \end{aligned}$$
 For fixed $k$, EGF and OGF:
 $$\begin{aligned}
-\sum_{n = 0} ^ \infty {n \brace k} \frac {x ^ n} {n!} &= \frac {x ^ k} {k!} \left( \frac {e ^ x - 1} x \right) ^ k \\
-\sum_{n = 0} ^ \infty {n \brace k} x ^ n &= x ^ k \prod_{i = 1} ^ k (1 - i x) ^ {-1}
+\sum_{n = 0} ^ \infty \stirlingtwo{n}{k} \frac {x ^ n} {n!} &= \frac {x ^ k} {k!} \left( \frac {e ^ x - 1} x \right) ^ k \\
+\sum_{n = 0} ^ \infty \stirlingtwo{n}{k} x ^ n &= x ^ k \prod_{i = 1} ^ k (1 - i x) ^ {-1}
 \end{aligned}$$
 \end{multicols*}
 \subsubsection{Eulerian Numbers}
 \begin{multicols*}{2}
+	{\setlength{\tabcolsep}{0.75pt}
 	\begin{tabular}{|P{0.5cm}|P{0.3cm}|P{0.5cm}|P{0.57cm}|P{0.57cm}|P{0.57cm}|P{0.5cm}|P{0.3cm}|}
 		\hline
 		n\textbackslash k & 0 & 1 & 2 & 3 & 4 & 5 & 6\\
@@ -273,18 +285,18 @@ $$\begin{aligned}
 		\hline
 		7 & 1 & 120 & 1191 & 2416 & 1191 & 120 & 1\\
 		\hline
-	\end{tabular}
+	\end{tabular}}
 	\columnbreak
-		\[ {n \bangle k} = (k+1){n-1 \bangle k} + (n-k){n-1 \bangle k-1} \]
-		\[ x^n = \sum_k{ {n \bangle k}{x+k \choose n} } \]
-		\[ {n \bangle m} = \sum_{k=0}^m{n+1 \choose k}(m+1-k)^n(-1)^k \]
+		\[ \bangle{n}{k} = (k+1)\bangle{n-1}{k} + (n-k)\bangle{n-1}{k-1} \]
+		\[ x^n = \sum_k \bangle{n}{k}\binom{x+k}{n} \]
+		\[ \bangle{n}{m} = \sum_{k=0}^m\binom{n+1}{k}(m+1-k)^n(-1)^k \]
 \end{multicols*}
 \begin{multicols*}{2}
 \subsubsection{Harmonic Numbers, 1, 3/2, 11/6, 25/12, 137/60\dots}
 \label{section:Harmonic}
 \[ H_n = \sum_{k=1}^n \frac{1}{k}, \sum_{k=1}^nH_k = (n+1)H_n-n \]
 \[ \sum_{k=1}^nkH_k = \frac{n(n+1)}{2}H_n - \frac{n(n-1)}{4} \]
-\[ \sum_{k=1}^n{k \choose m}H_k = {n+1 \choose m+1}(H_{n+1} - \frac{1}{m+1}) \]
+\[ \sum_{k=1}^n\binom{k}{m}H_k = \binom{n+1}{m+1}(H_{n+1} - \frac{1}{m+1}) \]
 
 \subsubsection{卡迈克尔函数}
 卡迈克尔函数表示模$m$剩余系下最大的阶, 即 $\lambda(m)=\max_{a\bot m} \delta_m(a)$.
@@ -313,9 +325,9 @@ $ \Phi(x) = \prod_{n=1}^{\infty}(1-x^n) \\=\sum_{n=-\infty}^{\infty}{(-1)^kx^{k(
 
 $$\begin{aligned}B(x)=\sum_{i\ge 0}\frac{B_i x^i}{i!}=\frac x{e^x-1}\end{aligned}$$
 
-$$ \begin{aligned}B_n=[n=0]-\sum_{i=0}^{n-1}{n\choose i}\frac{B_i}{n-k+1}, \sum_{i=0}^n{n+1\choose i}B_i=0\end{aligned} $$
+$$ \begin{aligned}B_n=[n=0]-\sum_{i=0}^{n-1}\binom{n}{i}\frac{B_i}{n-k+1}, \sum_{i=0}^n\binom{n+1}{i}B_i=0\end{aligned} $$
 
-$$ \begin{aligned}S_n(m)=\sum_{i=0}^{m-1}i^n=\sum_{i=0}^n{n\choose i}B_{n-i}\frac{m^{i+1}}{i+1}\end{aligned} $$
+$$ \begin{aligned}S_n(m)=\sum_{i=0}^{m-1}i^n=\sum_{i=0}^n\binom{n}{i}B_{n-i}\frac{m^{i+1}}{i+1}\end{aligned} $$
 
 $ B_0 = 1,\; B_1 = -\frac 1 2,\; B_4 = -\frac 1 {30},\; B_6 = \frac 1 {42},\; B_8 = -\frac 1{30},\; \dots$.
 
