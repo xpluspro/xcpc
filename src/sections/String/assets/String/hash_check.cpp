@@ -1,3 +1,5 @@
+using u128 = __uint128_t;
+using i128 = __int128_t;
 static constexpr u128 inv = []() {
 	u128 ret = P;
 	for (int i = 0; i < 6; i++) ret *= 2 - ret * P;

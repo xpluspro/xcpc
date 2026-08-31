@@ -1,5 +1,6 @@
 // 之前 PAM 的板子中，通过设置位置 0 为哨兵节点，因此不需要限制范围
 // 本板子采用 while 循环中限制范围的做法来规避风险
+const int N = 200005;
 struct PAM_bidirectional {
     int ch[N][26], len[N], fail[N], tot = 1;
     int last_front = 1, last_back = 1;  // 维护前后端指针
