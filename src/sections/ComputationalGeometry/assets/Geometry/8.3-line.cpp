@@ -38,8 +38,9 @@ bool ray_intersection_judge(cl a, cl b) {
 		if (!point_on_line(b.s, a)) return false;
 		return point_on_ray(b.s, a) || point_on_ray(a.s, b);
 	}
-	P p = ll_intersection(a, b);
-	return point_on_ray(p, a) && point_on_ray(p, b);
+	P u = a.t - a.s, v = b.t - b.s, w = b.s - a.s;
+	int sd = sgn(u ^ v);
+	return sgn(w ^ v) * sd >= 0 && sgn(w ^ u) * sd >= 0;
 }
 LD point_to_line(cp a, cl b) {
 	if (b.s == b.t) return (a - b.s).len();

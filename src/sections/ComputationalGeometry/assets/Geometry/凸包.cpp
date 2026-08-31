@@ -1,5 +1,5 @@
 vp convex_hull (vp a) {
-	sort (a.begin(), a.end()); // 小于号 (y, x) 字典序
+	sort (a.begin(), a.end()); // 小于号 (x, y) 字典序
 	a.erase(unique(a.begin(), a.end()), a.end());//必要时去重
 	int n = (int) a.size (), cnt = 0;
 	vp ret;
@@ -14,4 +14,4 @@ vp convex_hull (vp a) {
 			--cnt, ret.pop_back (); // 保留凸包边界上的点：< 0
 		++cnt, ret.push_back (a[i]); }
 	if (n > 1) ret.pop_back (); // n <= 2 是凸包吗?
-	return ret; } // 小于号为 (y, x) 时边 [0, 2pi) 逆时针
+	return ret; } // 从最左、再最下的点开始，逆时针返回凸包
