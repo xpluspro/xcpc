@@ -15,7 +15,8 @@ Sphere sphere3(p3 a,p3 b,p3 c) {
 		}
 		return s;
 	}
-	p3 o=a+(cross(n,u)*v.len2()+cross(v,n)*u.len2())/(2*n.len2());
+	p3 o=a+(cross(n,u)*v.len2()+cross(v,n)*u.len2())
+		/(2*n.len2());
 	return {o,(a-o).len()};
 }
 Sphere sphere4(p3 a,p3 b,p3 c,p3 d) {
