@@ -135,7 +135,21 @@ def validate_cpp(base: str | None) -> None:
             subprocess.run([str(output)], cwd=ROOT, check=True)
 
         changed = changed_cpp(base)
-        standalone = {path for path in changed if re.search(r"\bmain\s*\(", path.read_text(encoding="utf-8-sig"))}
+        src_root = SOURCE_ROOT.resolve()
+        for path in changed:
+            try:
+                path.relative_to(src_root)
+            except ValueError:
+                continue
+            # 手册 src/sections 下的片段即使带 demo main() 也不是完整翻译单元
+            # （依赖 bits/stdc++.h / 全局常量），不单独编译。
+            covered.add(path)
+        standalone = {
+            path
+            for path in changed
+            if path not in covered
+            and re.search(r"\bmain\s*\(", path.read_text(encoding="utf-8-sig"))
+        }
         for path in sorted(standalone):
             standard = cpp_requirement(path)
             output = Path(output_dir) / f"standalone-{len(covered)}"
