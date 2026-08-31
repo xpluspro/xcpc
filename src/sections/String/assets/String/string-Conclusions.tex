@@ -1,61 +1,67 @@
 \subsubsection*{双回文串}
 \noindent
-如果 $s = x_1x_2 = y_1y_2 = z_1z_2, |x_1| < |y_1| < |z_1|$, $x_2, y_1, y_2, z_1$ 是回文串, 则 $x_1$ 和 $z_2$ 也是回文串.
+若字符串 $s$ 满足 $s = x_1 x_2 = y_1 y_2 = z_1 z_2$（长度满足 $|x_1| < |y_1| < |z_1|$），且 $x_2, y_1, y_2, z_1$ 均为回文串，则 $x_1$ 与 $z_2$ 也必然是回文串。
 
 \subsubsection*{Border 和周期}
 \noindent
-如果 $r$ 是 $S$ 的一个 border, 则 $|S|-r$ 是 $S$ 的一个周期.\\
-弱周期引理: 若 $p$ 和 $q$ 均为 $S$ 的周期且 $p+q \le |S|$, 则 $\gcd(p, q)$ 也是 $S$ 的周期.\\
-强周期引理: 若 $p$ 和 $q$ 均为 $S$ 的周期且 $p+q \le |S| + \gcd(p, q)$, 则 $\gcd(p, q)$ 也是 $S$ 的周期.
+若 $r$ 是 $S$ 的一个 Border，则 $|S| - r$ 必然是 $S$ 的一个周期。\\
+弱周期引理 (Weak Periodicity Lemma): 若 $p$ 和 $q$ 均为 $S$ 的周期，且满足 $p + q \le |S|$，则 $\gcd(p, q)$ 也是 $S$ 的周期。\\
+强周期引理 (Strong Periodicity Lemma): 若 $p$ 和 $q$ 均为 $S$ 的周期，且满足 $p + q \le |S| + \gcd(p, q)$，则 $\gcd(p, q)$ 也是 $S$ 的周期。
 
 \subsubsection*{字符串匹配与 Border}
 \noindent
-若字符串 $S, T$ 满足 $2|S| \ge |T|$, 则 $S$ 在 $T$ 中所有匹配位置成等差数列.\\
-若 $S$ 的匹配次数大于 2, 则等差数列的公差恰好等于 $S$ 的最小周期.
+当模式串与文本串满足 $2|S| \ge |T|$ 时，$S$ 在 $T$ 中的所有匹配位置构成一个等差数列。\\
+若 $S$ 在 $T$ 中的匹配次数大于 2，则该等差数列的公差恰好等于 $S$ 的最小周期。
 
 \subsubsection*{Border 的结构}
 \noindent
-字符串 $S$ 的所有不小于 $|S|/2$ 的 border 长度组成一个等差数列.\\
-字符串 $S$ 的所有 border 按长度排序后可分成 $O(\log{|S|})$ 段, 每段是一个等差数列.
+字符串 $S$ 所有长度不小于 $|S|/2$ 的 Border 构成一个单等差数列。\\
+字符串 $S$ 的所有 Border 按长度排序后，最多可以拆分为 $O(\log |S|)$ 段等差数列。
 
 \subsubsection*{回文串 Border 与 slink 优化}
 \noindent
-回文串长度为 $t$ 的后缀是一个回文后缀, 等价于 $t$ 是该串的 border. 因此回文后缀的长度也可以划分成 $O(\log{|S|})$ 段等差数列, 可用于 $O(N \log N)$ 回文划分 DP 优化.\\
-定义 $\text{diff}[u] = \text{len}[u] - \text{len}[\text{fail}[u]]$, $\text{slink}[u]$ 表示 $u$ 的 fail 链上第一个 diff 值与 $u$ 不同的祖先节点:
+回文串长度为 $t$ 的后缀是回文后缀，当且仅当 $t$ 是该回文串的 Border。因此，回文后缀的长度分布同样满足拆分为 $O(\log |S|)$ 段等差数列的性质，可利用此性质实现 $O(N \log N)$ 回文划分 DP 优化。\\
+具体地，引入以下两个辅助变量：\\
+$\text{diff}[u] = \text{len}[u] - \text{len}[\text{fail}[u]]$：表示节点 $u$ 与它最长真回文后缀的长度差。\\
+$\text{slink}[u]$ (Serial Link)：指向 $u$ 的 $\text{fail}$ 链上第一个 $\text{diff}$ 值与 $u$ 不同的祖先节点：
 \[
 \text{slink}[u] = \begin{cases} \text{slink}[\text{fail}[u]], & \text{if } \text{diff}[u] == \text{diff}[\text{fail}[u]] \\ \text{fail}[u], & \text{otherwise} \end{cases}
 \]
-同一条等差数列上的状态可以 $O(1)$ 继承.
+同一条等差数列上的状态可以 $O(1)$ 继承。
 
 \subsubsection*{Run 理论}
 \noindent
-三元组 $(l, r, p)$ 称为 $S$ 的一个 Run, 当且仅当 $S[l..r]$ 的最小周期为 $p$, 且满足:\\
-1. 周期重复: $r - l + 1 \ge 2p$.\\
-2. 极大性: 向左右均无法拓展 ($S[l-1] \neq S[l-1+p]$, $S[r+1] \neq S[r+1-p]$).\\
-长度为 $N$ 的字符串中, 不同的 Runs 数量 $< 1.83 N$, 所有 Runs 的周期之和 $< 3N$.
+三元组 $(l, r, p)$ 称为字符串 $S$ 的一个 Run，当且仅当子串 $S[l..r]$ 的最小周期为 $p$，且满足：\\
+1. 周期重复: $r - l + 1 \ge 2p$（至少重复 2 次）。\\
+2. 极大性: 无法向左拓展 ($S[l-1] \neq S[l-1+p]$) 且无法向右拓展 ($S[r+1] \neq S[r+1-p]$)。\\
+长度为 $N$ 的字符串中，不同的 Runs 数量 $< 1.83 N$，所有 Runs 的长度 / 周期之和 $< 3N$。
 
 \subsubsection*{Run 的 $O(N)$ 求解}
 \noindent
-分别在标准字典序 ($\le$) 和反向字典序 ($\ge$) 下各跑一遍 Duval 算法, 提取切分点形成的相邻位置 $i, j$ ($p = j - i$):\\
-利用 ExKMP / SA / Hash 求出 $L_1 = \text{LCS}(S[1..i-1], S[1..j-1])$, $L_2 = \text{LCP}(S[i..N], S[j..N])$. 若 $L_1 + L_2 \ge p$, 则构成了合法 Run $[i - L_1, j + L_2 - 1]$. 最终将所有 Runs 排序去重即可.
+针对每一个位置 $i \in [1, N]$，分别在正序 ($\le$) 和反序 ($\ge$) 字典序下求出以 $i$ 开头的最长 Lyndon 前缀长度 $\text{Lyn}[i]$。正反各产生 $N$ 个，共计 $2N$ 个候选周期 $p = \text{Lyn}[i]$，提取所有 $(i, i+p)$ 候选对。\\
+对于每一个切分点形成的相邻位置 $i$ 与 $j$ ($p = j - i$)：利用 ExKMP（或 SA / Hash + 二分）求出 $L_1 = \text{LCS}(S[1..i-1], S[1..j-1])$，$L_2 = \text{LCP}(S[i..N], S[j..N])$。若扩展总长 $L_1 + L_2 \ge p$，则构造出了一个合法 Run $[i - L_1, j + L_2 - 1]$，其周期为 $p$。最后将所有提取到的三元组 $(l, r, p)$ 放入 \texttt{vector} 中，通过 \texttt{sort} + \texttt{unique} 排序去重，即可得到全串所有的 Runs。
 
 \subsubsection*{子串最小后缀}
 \noindent
-设 $s[p..n]$ 是 $s[i..n]\ (l \le i \le r)$ 中字典序最小者, 则 $\text{minsuf}(l, r)$ 等于 $s[p..r]$ 的最短非空 border.\\
-倍增递推式: $\text{minsuf}(l, r) = \min\{ s[p..r], \text{minsuf}(r - 2^k + 1, r) \}\ (2^k < r - l + 1 \le 2^{k+1})$.
+设 $s[p..n]$ 是所有 $s[i..n]\ (l \le i \le r)$ 中字典序最小者，则 $\text{minsuf}(l, r)$ 等于 $s[p..r]$ 的最短非空 Border。\\
+满足倍增递推式: $\text{minsuf}(l, r) = \min\{ s[p..r], \text{minsuf}(r - 2^k + 1, r) \}\ (2^k < r - l + 1 \le 2^{k+1})$。
 
 \subsubsection*{子串最大后缀}
 \noindent
-从左往右扫, 用 set 维护字典序递减的单调队列, 并在对应时刻添加“小于事件”点以便后续修改队列; 区间查询直接在 set 里 lower\_bound.
+从左往右扫描字符串，使用 \texttt{std::set} 维护字典序递减的单调队列。每一次插入字符的时候，先弹出队尾一定小于其字典序的位置，然后在对应时刻插入“小于事件”点以供后续修改队列；可以使用查找 LCP 后一位字符相对大小的方法找到这个对应的事件。删除的时候重新获取前驱后继计算事件插入即可。区间查询时直接在 \texttt{set} 上运行 \texttt{lower\_bound}。
 
 \subsubsection*{LCP 性质与查询}
 \noindent
-若 $A \le B \le C$, 则 $\text{LCP}(A, C) = \min(\text{LCP}(A, B), \text{LCP}(B, C))$. 配合 ST 表和 height 数组可实现 $O(1)$ 区间 LCP 查询.
+对于任意三个字符串 $A, B, C$，若满足字典序关系 $A \le B \le C$，则必有：
+\[
+\text{LCP}(A, C) = \min\Big(\text{LCP}(A, B), \text{LCP}(B, C)\Big)
+\]
+因此，对于位置 $l$ 和 $r$ 的串的 LCP 查询，配合 ST 表和 height 数组可实现 $O(1)$ 查询。
 
 \subsubsection*{哈希与杂项}
 \noindent
-字符串 Hash 配合数据结构可动态维护可变字符串的 Hash.\\
-引入行进制 $B_1$ 与列进制 $B_2$ 可实现二维矩阵 Hash.
+字符串 Hash 配合数据结构可动态维护可变字符串的 Hash。\\
+引入行进制 $B_1$ 与列进制 $B_2$ 可实现二维矩阵 Hash。
 
 % \subsubsection*{ZJJ: SAM处理手法}
 % \noindent 1. 基本子串结构: CLB 搞的那玩意。\\	

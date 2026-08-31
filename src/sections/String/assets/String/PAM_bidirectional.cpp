@@ -7,7 +7,14 @@ struct PAM_bidirectional {
     int L = N, R = N - 1;               // 初始指针居中
 
     void init() {
-        fail[0] = 1; len[1] = -1; }
+        fail[0] = 1; len[1] = -1;
+        memset(ch, 0, sizeof ch);
+        memset(len, 0, sizeof len);
+        memset(fail, 0, sizeof fail);
+        tot = 1;
+        last_front = last_back = 1;
+        L = N; R = N - 1;
+        fail[0] = 1; len[1] = -1;}
 
     void push_back(char c) {
         s[++R] = c;
