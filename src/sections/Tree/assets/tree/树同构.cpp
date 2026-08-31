@@ -1,7 +1,7 @@
 // $O(1)$ 求逆 时间复杂度 $O(n)$ MOD 需要是质数
 #define fors(i) for (auto i : e[x]) if (i != p)
 int ra[N]; void prepare() {
-	for (int i = 0; i < N; ++ i) ra[i] = rand() % MOD;}
+	for (int i = 0; i < N; ++ i) ra[i] = rand() % (MOD - 1) + 1;}
 struct Sub {
 	vector<int> s; int d1, d2, H1, H2;
 	Sub() {d1 = d2 = 0; s.clear();}
@@ -10,9 +10,10 @@ struct Sub {
 	int hash() { H1 = H2 = 1; for (int i : s) {
 			H1 = (ll) H1 * (ra[d1]+i) % MOD;
 			H2 = (ll) H2 * (ra[d2]+i) % MOD; } return H1;}
+	int mul_inv(int d, int v) { int t = (ra[d] + v) % MOD; if (!t) t = 1; return reverse(t); }
 	pii del(int d, int v) { if (d==d1)
-		return {d2+1, (ll)H2*reverse(ra[d2]+v) % MOD};
-		return {d1+1, (ll)H1*reverse(ra[d1]+v) % MOD};}};
+		return {d2+1, (ll)H2*mul_inv(d2, v) % MOD};
+		return {d1+1, (ll)H1*mul_inv(d1, v) % MOD};}};
 pii U[N]; int A[N]; Sub tree[N]; //A[x]为以x为根的哈希值
 void dfsD(int x, int p) { tree[x] = Sub();
 	fors(i) { dfsD(i, x);

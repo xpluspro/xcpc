@@ -18,7 +18,8 @@ void prepare(int q) {
 	for (int i = 0; i < q; ++ i) { choo[i][0] = Val(1);
 		for (int j = 1; j <= i; ++ j)
 			choo[i][j]=choo[i-1][j-1]+choo[i-1][j]; } }
-pair<Val, LL> fact(LL n, LL p, LL q) { Val ans = 1;
+pair<Val, LL> fact(LL n, LL p, LL q) { prepare((int)q);
+	Val mod = 1; for (int i = 0; i < q; ++i) mod *= (Val)p; Val ans = 1;
 	for (int r = 1; r < p; ++ r) {
 		poly x (q, Val(0)), res (q, Val(0));
 		res[0] = 1; LL _res = 0; x[0] = r; LL _x = 0;
@@ -26,7 +27,7 @@ pair<Val, LL> fact(LL n, LL p, LL q) { Val ans = 1;
 		while (m) { if (m & 1) {
 				res=polymul(res,polyshift(x,_res)); _res+=_x; }
 			m >>= 1; x = polymul(x, polyshift(x, _x)); _x+=_x; }
-		ans = ans * res[0]; }
+		ans = (Val)((unsigned __int128)ans * res[0] % mod); }
 	LL cnt = n / p; if (n >= p) { auto tmp=fact(n / p, p, q);
-		ans = ans * tmp.first; cnt += tmp.second; }
+		ans = (Val)((unsigned __int128)ans * tmp.first % mod); cnt += tmp.second; }
 	return {ans, cnt}; }

@@ -22,7 +22,9 @@ struct P {
 	void print() const { printf("(%.9Lf,%.9Lf)", x, y); }
 };
 
-bool operator<(cp a, cp b) { return a.x == b.x ? a.y < b.y : a.x < b.x; }
+bool operator<(cp a, cp b) {
+	int sx = sgn(a.x - b.x); if (sx) return sx < 0;
+	return sgn(a.y - b.y) < 0; }
 bool operator>(cp a, cp b) { return b < a; }
 bool operator==(cp a, cp b) { return !sgn(a.x - b.x) && !sgn(a.y - b.y); }
 bool operator!=(cp a, cp b) { return !(a == b); }

@@ -5,7 +5,8 @@ int lca(int x, int y) {
 	for(++hscnt; x; y ? swap(x, y) : (void)0) {
 		x = find(x);
 		if(hs[x] == hscnt) return x;
-		hs[x] = hscnt, x = pre[mch[x]]; } }
+		hs[x] = hscnt, x = pre[mch[x]]; }
+	return 0; }
 void blossom(int x, int y, int rt) {
 	for(int z; find(x) != rt; y = z, x = pre[y]) {
 		pre[x] = y, z = mch[x];
