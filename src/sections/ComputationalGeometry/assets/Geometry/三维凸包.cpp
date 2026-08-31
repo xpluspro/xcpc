@@ -31,7 +31,8 @@ struct ConvexHull3D {
 			vector<Face> keep;
 			for (Face f:face) if (sgn(volume(f,x))>0) {
 				for (int k=0;k<3;++k) {
-					pair<int,int> e={f[k],f[(k+1)%3]},rev={e.second,e.first};
+					pair<int,int> e={f[k],f[(k+1)%3]};
+					pair<int,int> rev={e.second,e.first};
 					if (horizon.count(rev)) horizon.erase(rev); else horizon.insert(e);
 				}
 			} else keep.push_back(f);

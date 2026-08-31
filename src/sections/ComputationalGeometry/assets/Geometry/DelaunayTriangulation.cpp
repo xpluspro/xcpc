@@ -90,7 +90,9 @@ class Triangulation {
 		void flip(TriRef tri, SideRef side_index) {
 			TriRef trj = tri->edge[side_index].tri;
 			int pj = tri->edge[side_index].side;
-			if(!trj || !in_circum(tri->p[0],tri->p[1],tri->p[2],trj->p[pj])) return;
+			if(!trj) return;
+			if(!in_circum(tri->p[0],tri->p[1],
+				tri->p[2],trj->p[pj])) return;
 			TriRef trk = new(tot_tri++) Tri(tri->p[(side_index+1)%3], trj->p[pj], tri->p[side_index]);
 			TriRef trl = new(tot_tri++) Tri(trj->p[(pj+1)%3], tri->p[side_index], trj->p[pj]);
 			set_edge(Edge(trk,0), Edge(trl,0));
