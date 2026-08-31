@@ -31,7 +31,6 @@ P ll_intersection(cl a, cl b) { // 两直线需不平行
 	return (b.s * s2 - b.t * s1) / (s2 - s1);
 }
 bool point_on_ray(cp a, cl b) {
-	if (b.s == b.t) return a == b.s;
 	return point_on_line(a, b) && sgn((a - b.s) * (b.t - b.s)) >= 0;
 }
 bool ray_intersection_judge(cl a, cl b) {
@@ -50,6 +49,10 @@ P project_to_line(cp a, cl b) {
 	P d = b.t - b.s;
 	if (b.s == b.t) return b.s;
 	return b.s + d * ((a - b.s) * d / d.len2());
+}
+array<L, 2> offset_lines(cl l, LD d) { // 非退化直线向两侧平移距离 d
+	P v = (l.t - l.s).unit().rot90() * d;
+	return {L(l.s + v, l.t + v), L(l.s - v, l.t - v)};
 }
 LD point_to_segment(cp a, cl b) {
 	if (b.s == b.t) return (a - b.s).len();

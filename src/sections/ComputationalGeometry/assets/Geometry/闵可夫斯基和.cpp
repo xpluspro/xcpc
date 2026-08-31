@@ -1,12 +1,17 @@
 vp minkowski_sum(vp a, vp b) {
-// size > 0, rotate to min (y, x), 无重
-	auto yx = [](cp u, cp v) { return u.y != v.y ? u.y < v.y : u.x < v.x; };
-	if (!a.empty()) rotate(a.begin(), min_element(a.begin(), a.end(), yx), a.end());
-	if (!b.empty()) rotate(b.begin(), min_element(b.begin(), b.end(), yx), b.end());
+	// size > 0, counter-clockwise, no duplicate points
 	if (a.size() == 1 || b.size() == 1) { 
 		vp ret;
 		for (auto i : a) for (auto j : b) ret.push_back(i+j);
 		return ret; }
+	auto rotate_to_lowest = [](vp &p) {
+		auto it = min_element(p.begin(), p.end(), [](cp u, cp v) {
+			return u.y == v.y ? u.x < v.x : u.y < v.y;
+		});
+		rotate(p.begin(), it, p.end());
+	};
+	rotate_to_lowest(a);
+	rotate_to_lowest(b);
 	vp x, y;
 	for (size_t i = 0; i < a.size(); ++i)
 		x.push_back(a[(i + 1) % a.size()] - a[i]);

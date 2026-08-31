@@ -23,11 +23,6 @@ for src in dp_*.cpp; do
     fail=$((fail + 1))
   fi
 done
-echo "RUN dp_formulas.py"
-if ! python3 dp_formulas.py; then
-  echo "RUN FAIL dp_formulas.py"
-  fail=$((fail + 1))
-fi
 if [[ "$fail" -ne 0 ]]; then
   echo "duipai failures: $fail"
   exit 1

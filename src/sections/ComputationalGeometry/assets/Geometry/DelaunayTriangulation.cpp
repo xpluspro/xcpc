@@ -1,8 +1,8 @@
 /* Delaunay Triangulation 随机增量算法 :
 节点数至少为点数的 6 倍, 空间消耗较大注意计算内存使用
-建图的过程在 build 中, 注意初始化内存池和初始三角形 (LOTS)
+建图的过程在 build 中, 会根据输入范围初始化内存池和初始三角形
 Triangulation::find 返回包含某点的三角形
-Triangulation::add_point 将某点加入三角剖分
+Triangulation::add_point 将某点加入三角剖分，点在初始三角形外时返回 false
 某个 Tri 在三角剖分中当且仅当它的 has_ch 为 0
 如果要找到三角形 u 的邻域, 则枚举它的所有 u.edge[i].tri, 该条边的两个点为 u.p[(i+1)%3], u.p[(i+2)%3] */
 const int N = 100000 + 5, MAX_TRIS = N * 6;
@@ -38,26 +38,42 @@ void set_edge(Edge a, Edge b) {
 	if (b.tri) b.tri->edge[b.side] = a; }
 class Triangulation {
 	public:
-		Triangulation() {
-			tot_tri = triange_pool;
-			const LD LOTS = 1e6; // NOTE: below base triangle
-			the_root = new(tot_tri++) Tri (P(-LOTS,-LOTS), P(+LOTS,-LOTS), P(0,+LOTS)); }
+		explicit Triangulation(LD lots = 1e6L) { init(lots); }
 		TriRef find(P p) const { return find(the_root,p); }
-		void add_point(cp p) { add_point(find(the_root,p),p); }
-		void build(vp p) {
+		bool add_point(cp p) {
+			TriRef root = find(the_root,p);
+			if (!root) return false;
+			add_point(root,p);
+			return true;
+		}
+		bool build(vp p) {
+			LD bound = 1;
+			for (cp x : p)
+				bound = max({bound, fabsl(x.x), fabsl(x.y)});
+			init(4*bound+1);
 			shuffle(p.begin(), p.end(), rnd);
-			for (cp x : p) add_point(x);
+			for (cp x : p) if (!add_point(x)) return false;
+			return true;
 		}
 	private:
 		TriRef the_root;
+		void init(LD lots) {
+			tot_tri = triange_pool;
+			the_root = new(tot_tri++) Tri(
+				P(-lots,-lots), P(+lots,-lots), P(0,+lots));
+		}
 		static TriRef find(TriRef root,cp p){
 			for( ; ; ) {
-				if (!root->has_ch()) return root;
-				TriRef nxt = 0;
-				for (int i = 0; i < 3 && root->ch[i] ; ++i)
-					if (root->ch[i]->contains(p))
-						{ nxt = root->ch[i]; break; }
-				root = nxt ? nxt : root->ch[0]; } }
+				if (!root->has_ch()) return root->contains(p) ? root : nullptr;
+				TriRef next = nullptr;
+				for (int i = 0; i < 3 && root->ch[i]; ++i)
+					if (root->ch[i]->contains(p)) {
+						next = root->ch[i]; break;
+					}
+				if (!next) return nullptr;
+				root = next;
+			}
+		}
 		void add_point(TriRef root, cp p) {
 			TriRef tab,tbc,tca;
 			tab = new(tot_tri++) Tri(root->p[0], root->p[1], p);
