@@ -1,0 +1,71 @@
+\subsubsection*{双回文串}
+\noindent
+如果 $s = x_1x_2 = y_1y_2 = z_1z_2, |x_1| < |y_1| < |z_1|$, $x_2, y_1, y_2, z_1$ 是回文串, 则 $x_1$ 和 $z_2$ 也是回文串.
+
+\subsubsection*{Border 和周期}
+\noindent
+如果 $r$ 是 $S$ 的一个 border, 则 $|S|-r$ 是 $S$ 的一个周期.\\
+弱周期引理: 若 $p$ 和 $q$ 均为 $S$ 的周期且 $p+q \le |S|$, 则 $\gcd(p, q)$ 也是 $S$ 的周期.\\
+强周期引理: 若 $p$ 和 $q$ 均为 $S$ 的周期且 $p+q \le |S| + \gcd(p, q)$, 则 $\gcd(p, q)$ 也是 $S$ 的周期.
+
+\subsubsection*{字符串匹配与 Border}
+\noindent
+若字符串 $S, T$ 满足 $2|S| \ge |T|$, 则 $S$ 在 $T$ 中所有匹配位置成等差数列.\\
+若 $S$ 的匹配次数大于 2, 则等差数列的公差恰好等于 $S$ 的最小周期.
+
+\subsubsection*{Border 的结构}
+\noindent
+字符串 $S$ 的所有不小于 $|S|/2$ 的 border 长度组成一个等差数列.\\
+字符串 $S$ 的所有 border 按长度排序后可分成 $O(\log{|S|})$ 段, 每段是一个等差数列.
+
+\subsubsection*{回文串 Border 与 slink 优化}
+\noindent
+回文串长度为 $t$ 的后缀是一个回文后缀, 等价于 $t$ 是该串的 border. 因此回文后缀的长度也可以划分成 $O(\log{|S|})$ 段等差数列, 可用于 $O(N \log N)$ 回文划分 DP 优化.\\
+定义 $\text{diff}[u] = \text{len}[u] - \text{len}[\text{fail}[u]]$, $\text{slink}[u]$ 表示 $u$ 的 fail 链上第一个 diff 值与 $u$ 不同的祖先节点:
+\[
+\text{slink}[u] = \begin{cases} \text{slink}[\text{fail}[u]], & \text{if } \text{diff}[u] == \text{diff}[\text{fail}[u]] \\ \text{fail}[u], & \text{otherwise} \end{cases}
+\]
+同一条等差数列上的状态可以 $O(1)$ 继承.
+
+\subsubsection*{Run 理论}
+\noindent
+三元组 $(l, r, p)$ 称为 $S$ 的一个 Run, 当且仅当 $S[l..r]$ 的最小周期为 $p$, 且满足:\\
+1. 周期重复: $r - l + 1 \ge 2p$.\\
+2. 极大性: 向左右均无法拓展 ($S[l-1] \neq S[l-1+p]$, $S[r+1] \neq S[r+1-p]$).\\
+长度为 $N$ 的字符串中, 不同的 Runs 数量 $< 1.83 N$, 所有 Runs 的周期之和 $< 3N$.
+
+\subsubsection*{Run 的 $O(N)$ 求解}
+\noindent
+分别在标准字典序 ($\le$) 和反向字典序 ($\ge$) 下各跑一遍 Duval 算法, 提取切分点形成的相邻位置 $i, j$ ($p = j - i$):\\
+利用 ExKMP / SA / Hash 求出 $L_1 = \text{LCS}(S[1..i-1], S[1..j-1])$, $L_2 = \text{LCP}(S[i..N], S[j..N])$. 若 $L_1 + L_2 \ge p$, 则构成了合法 Run $[i - L_1, j + L_2 - 1]$. 最终将所有 Runs 排序去重即可.
+
+\subsubsection*{子串最小后缀}
+\noindent
+设 $s[p..n]$ 是 $s[i..n]\ (l \le i \le r)$ 中字典序最小者, 则 $\text{minsuf}(l, r)$ 等于 $s[p..r]$ 的最短非空 border.\\
+倍增递推式: $\text{minsuf}(l, r) = \min\{ s[p..r], \text{minsuf}(r - 2^k + 1, r) \}\ (2^k < r - l + 1 \le 2^{k+1})$.
+
+\subsubsection*{子串最大后缀}
+\noindent
+从左往右扫, 用 set 维护字典序递减的单调队列, 并在对应时刻添加“小于事件”点以便后续修改队列; 区间查询直接在 set 里 lower\_bound.
+
+\subsubsection*{LCP 性质与查询}
+\noindent
+若 $A \le B \le C$, 则 $\text{LCP}(A, C) = \min(\text{LCP}(A, B), \text{LCP}(B, C))$. 配合 ST 表和 height 数组可实现 $O(1)$ 区间 LCP 查询.
+
+\subsubsection*{哈希与杂项}
+\noindent
+字符串 Hash 配合数据结构可动态维护可变字符串的 Hash.\\
+引入行进制 $B_1$ 与列进制 $B_2$ 可实现二维矩阵 Hash.
+
+% \subsubsection*{ZJJ: SAM处理手法}
+% \noindent 1. 基本子串结构: CLB 搞的那玩意。\\	
+% \noindent 2. 正反串 SAM 的基本联系: 一个子串出现的位置将会在两个SAM中同时得到映照。\\	
+% \noindent 3. SAM 上转成数点问题。\\	
+% \noindent 4. 线段树合并维护 endpos 集合。\\	
+% \noindent 5. 树剖保证到根的链上只涉及 log 次修改和查询。(区间 border) \\	
+% \noindent 6. LCT 保证到根的链只修改均摊 log 个不同的颜色段。(区间本质不同子串数量)
+
+% \subsubsection*{ZJJ: 字符串常见错误}
+% \noindent 1. 字符串算法变式记得判匹配位置超出字符串的情况，例如多组数据下的双端插入回文串，后缀数组多组。
+% \noindent 2. 警惕 char 运算中 `a' 和 `\textvisiblespace{a}' 的区别。
+% \noindent 3. char kmp[]
