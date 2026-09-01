@@ -42,6 +42,16 @@ vp lc_intersection(cl l, cc c) { // 直线与圆交点
 	return {p - v, p + v};
 }
 
+LD circle_segment_factor(LD t) { // t-sin(t)cos(t)，小角时避免灾难性消减
+	if (fabsl(t) < 0.1L) {
+		LD t2 = t * t;
+		return t * t2 * (2.0L / 3 + t2 * (-2.0L / 15
+			+ t2 * (4.0L / 315 + t2 * (-2.0L / 2835
+			+ t2 * (4.0L / 155925 - t2 * (4.0L / 6081075))))));
+	}
+	return t - sinl(t) * cosl(t);
+}
+
 LD cc_intersection_area(cc a, cc b) {
 	LD d = (a.c - b.c).len();
 	if (sgn(d - a.r - b.r) >= 0) return 0;
@@ -49,10 +59,16 @@ LD cc_intersection_area(cc a, cc b) {
 		LD r = min(a.r, b.r);
 		return pi * r * r;
 	}
-	LD x = (d * d + a.r * a.r - b.r * b.r) / (2 * d);
-	LD t1 = acosl(clamp(x / a.r, -1.0L, 1.0L));
-	LD t2 = acosl(clamp((d - x) / b.r, -1.0L, 1.0L));
-	return a.r * a.r * t1 + b.r * b.r * t2 - d * a.r * sinl(t1);
+	// 用半角公式求两个弓形的半圆心角，所有根号内的因子在相交时均非负。
+	// 这样既不需要平方差，也不会用两个大扇形减去一个大三角形。
+	LD u = max(0.0L, a.r + b.r - d);
+	LD v = max(0.0L, d + b.r - a.r);
+	LD w = max(0.0L, d + a.r - b.r);
+	LD z = max(0.0L, d + a.r + b.r);
+	LD t1 = 2 * atan2l(sqrtl(u * v), sqrtl(z * w));
+	LD t2 = 2 * atan2l(sqrtl(u * w), sqrtl(z * v));
+	return a.r * a.r * circle_segment_factor(t1)
+		+ b.r * b.r * circle_segment_factor(t2);
 }
 
 // 返回交点个数；-1 表示两圆重合，有无穷多个交点。

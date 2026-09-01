@@ -10,6 +10,11 @@ template<class It> LD calc(It it) {
 	if (u != a.end() && v != a.end()) ret -= *u ^ *v;
 	return ret; }
 void insert (P p) {
+	auto same_x = a.lower_bound(P(p.x, numeric_limits<LD>::lowest()));
+	if (same_x != a.end() && same_x->x == p.x) {
+		if (same_x->y >= p.y) return;
+		erase(same_x);
+	}
 	if (!a.size()) { a.insert (p); return; }
 	auto it = a.lower_bound (p);
 	bool out;
