@@ -1,0 +1,38 @@
+\noindent
+用于求解有向无环图（DAG）上\textbf{点不相交路径组}的加权计数问题。将非相交路径组计数问题转化为求矩阵的行列式。
+
+\paragraph{1. 数学定义与前提}
+设 $G = (V, E)$ 为 DAG，边权为 $w(e)$。
+\begin{itemize}
+    \item \textbf{路径权值}：$w(P) = \prod_{e \in P} w(e)$。
+    \item \textbf{两点路径和}：$e(u, v) = \sum_{P: u \to v} w(P)$。
+    \item \textbf{路径组与不相交性}：给定起点集 $A = \{a_1, \dots, a_n\}$ 与终点集 $B = \{b_1, \dots, b_n\}$。若路径组 $\mathbf{P} = (P_1, \dots, P_n)$ 中 $P_i$ 从 $a_i$ 到 $b_{\sigma(i)}$（$\sigma \in S_n$）且任意两条路径无公共顶点，则称为点不相交路径组。
+\end{itemize}
+
+\paragraph{2. 定理内容与矩阵构造}
+构造 $n \times n$ 的路径权值矩阵 $M_{i, j} = e(a_i, b_j)$：
+\[
+M = \begin{pmatrix} 
+e(a_1, b_1) & e(a_1, b_2) & \dots & e(a_1, b_n) \\ 
+e(a_2, b_1) & e(a_2, b_2) & \dots & e(a_2, b_n) \\ 
+\vdots & \vdots & \ddots & \vdots \\ 
+e(a_n, b_1) & e(a_n, b_2) & \dots & e(a_n, b_n) 
+\end{pmatrix}
+\]
+\begin{itemize}
+    \item \textbf{一般形式}：行列式展开为所有点不相交路径组带置换符号的权值和：
+    \[
+    \det(M) = \sum_{\sigma \in S_n} \mathrm{sgn}(\sigma) \sum_{\mathbf{P}: A \to B_\sigma \text{不相交}} \prod_{i=1}^n w(P_i)
+    \]
+    \item \textbf{完全无错位特例（如平面网格图）}：若图拓扑保证只有当 $\sigma = \mathrm{id}$（即 $a_i \to b_i$ 对应连接）时才可能存在不相交路径，其余交叉置换项经符号改变对合全部抵消为 $0$，直接有：
+    \[
+    \det(M) = \sum_{\mathbf{P}: a_i \to b_i \text{不相交}} \prod_{i=1}^n w(P_i)
+    \]
+\end{itemize}
+
+\paragraph{3. 竞赛建模应用流程}
+\begin{enumerate}
+    \item \textbf{构建路径矩阵 $M$}：利用 DP 或组合数公式计算出任意起点 $a_i$ 到终点 $b_j$ 的路径数/权值和 $e(a_i, b_j)$。
+    \item \textbf{检验拓扑相交条件}：确认起点/终点排列是否满足“交叉匹配必相交”特性（即仅 $\sigma = \mathrm{id}$ 生效）。
+    \item \textbf{求解行列式}：在模 $P$ 意义下使用高斯消元在 $O(n^3)$ 复杂度内求得 $\det(M)$。
+\end{enumerate}
