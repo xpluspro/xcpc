@@ -1,0 +1,35 @@
+\noindent
+用于在 $O(N 2^N)$ 或 $O(N^2 2^N)$ 复杂度内高效求解位运算卷积（OR, AND, XOR）以及不重不漏的子集划分卷积[cite: 7]。
+
+\paragraph{1. 位运算卷积与蝶形矩阵}
+目标求解 $C[k] = \sum_{i \oplus j = k} A[i] \cdot B[j]$[cite: 7]。通过正变换将原数组转至频域点乘，再经逆变换还原[cite: 7]。
+\begin{itemize}
+    \item \textbf{OR 卷积 (FMT 莫比乌斯变换)}：$\hat{A}[S] = \sum_{T \subseteq S} A[T]$（即 SOS DP 子集和）[cite: 7]。
+    \[ 
+    \text{正变换: } \begin{pmatrix} \hat{F}_0 \\ \hat{F}_1 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 1 & 1 \end{pmatrix} \begin{pmatrix} F_0 \\ F_1 \end{pmatrix}, \quad 
+    \text{逆变换: } \begin{pmatrix} F_0 \\ F_1 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ -1 & 1 \end{pmatrix} \begin{pmatrix} \hat{F}_0 \\ \hat{F}_1 \end{pmatrix}
+    \]
+    \item \textbf{AND 卷积}：$\hat{A}[S] = \sum_{S \subseteq T} A[T]$（即 SOS DP 超集和）[cite: 7]。
+    \[ 
+    \text{正变换: } \begin{pmatrix} \hat{F}_0 \\ \hat{F}_1 \end{pmatrix} = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix} \begin{pmatrix} F_0 \\ F_1 \end{pmatrix}, \quad 
+    \text{逆变换: } \begin{pmatrix} F_0 \\ F_1 \end{pmatrix} = \begin{pmatrix} 1 & -1 \\ 0 & 1 \end{pmatrix} \begin{pmatrix} \hat{F}_0 \\ \hat{F}_1 \end{pmatrix}
+    \]
+    \item \textbf{XOR 卷积 (FWT 沃尔什变换)}：$\hat{A}[S] = \sum_{T} (-1)^{|S \cap T|} A[T]$[cite: 7]。
+    \[ 
+    \text{正变换: } \begin{pmatrix} \hat{F}_0 \\ \hat{F}_1 \end{pmatrix} = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} \begin{pmatrix} F_0 \\ F_1 \end{pmatrix}, \quad 
+    \text{逆变换: } \begin{pmatrix} F_0 \\ F_1 \end{pmatrix} = \frac{1}{2} \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} \begin{pmatrix} \hat{F}_0 \\ \hat{F}_1 \end{pmatrix}
+    \]
+\end{itemize}
+
+\paragraph{2. 子集卷积 (Subset Convolution)}
+求解无重叠的集合划分卷积：$C[S] = \sum_{T \cup U = S, T \cap U = \emptyset} A[T] B[U]$[cite: 7]。
+\begin{itemize}
+    \item \textbf{核心原理}：利用 $T \cap U = \emptyset \iff |T| + |U| = |T \cup U|$，引入 Popcount 维度扩展为二维数组 $a[i][S]$（仅当 $i = |S|$ 时保留 $A[S]$，其余为 0）[cite: 7]。
+    \item \textbf{计算流程}（时间 $O(N^2 2^N)$，空间 $O(N 2^N)$）[cite: 7]：
+    \begin{enumerate}
+        \item \textbf{分层}：根据 $\mathrm{popcount}(S)$ 初始化 $a[i][S], b[j][S]$[cite: 7]。
+        \item \textbf{正变换}：对每个分层 $i \in [0, N]$ 分别执行 FMT\_OR 正变换[cite: 7]。
+        \item \textbf{频域点值多项式乘法}：对每个状态 $S$，做低阶多项式卷积 $\hat{c}[k][S] = \sum_{i=0}^k \hat{a}[i][S] \cdot \hat{b}[k-i][S]$[cite: 7]。
+        \item \textbf{逆变换与提取}：对每层 $k \in [0, N]$ 执行 IFMT\_OR 逆变换，最终提取 $C[S] = c[\mathrm{popcount}(S)][S]$[cite: 7]。
+    \end{enumerate}
+\end{itemize}

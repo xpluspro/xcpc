@@ -14,4 +14,4 @@ src/*.toc
 src/*.out
 __pycache__/
 *.py[cod]
-*.pdf
+main.pdf

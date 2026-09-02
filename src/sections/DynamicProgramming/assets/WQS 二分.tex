@@ -1,0 +1,17 @@
+\noindent
+利用离散拉格朗日乘数法，将“恰好选择 $K$ 个元素/进行 $K$ 次操作”的硬性约束，转化为“选择附加权值（Penalty/Cost） $C$”的无约束极值问题。
+
+\paragraph{1. 适用前提与几何意义}
+设 $g(k)$ 为恰好选择 $k$ 个元素时的最优解：
+\begin{itemize}
+    \item \textbf{求最大值 $\max$}：$g(k)$ 须为上凸函数（差分递减）。
+    \item \textbf{求最小值 $\min$}：$g(k)$ 须为下凸函数（差分递增）。
+\end{itemize}
+几何上相当于画一条斜率为 $C$ 的直线切凸包，求最大/最小截距 $b = g(k) - C \cdot k$。通过二分斜率 $C$，精准定位切点在 $k = K$ 处时的斜率 $C^*$。
+
+\paragraph{2. 多点共线（三点共线）避坑原则}
+当凸包上存在连续多个点落在斜率为 $C^*$ 的同一条直线上时：
+\begin{enumerate}
+    \item \textbf{决策偏好一致性}：在 DP 或贪心存在等权转移时，统一强制选择最大（或最小）可能的选择数 $cnt$。
+    \item \textbf{截距不变性}：若优先选尽可能多的元素，二分结束时即使 $cnt > K$，只要 $cnt \ge K$ 成立，代入公式 $g(K) = \mathrm{val}_{\text{截距}} + C^* \cdot K$（求最小值增加权值时为 $\mathrm{val} - C^* \cdot K$）计算依然完全精确，因整段共线点截距完全相等。
+\end{enumerate}
