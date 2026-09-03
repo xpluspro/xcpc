@@ -1,5 +1,6 @@
 using u128 = __uint128_t;
 using i128 = __int128_t;
+const int P = 1e9 + 7; // any prime number
 static constexpr u128 inv = []() {
 	u128 ret = P;
 	for (int i = 0; i < 6; i++) ret *= 2 - ret * P;
