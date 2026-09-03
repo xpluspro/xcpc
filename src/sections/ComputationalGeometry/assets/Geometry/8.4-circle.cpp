@@ -98,7 +98,15 @@ vp cc_intersection(cc a, cc b) { // 仅返回有限交点；重合圆返回空�
 }
 
 vp tangent(cp a, cc b) { // 点到圆的切点
-	return cc_intersection(b, C(a, b.c));
+	P d = a - b.c;
+	LD d2 = d.len2(), r2 = b.r * b.r;
+	// 不用 sgn：固定绝对 eps 会把极靠近圆周的外点误判为圆上点。
+	if (d2 < r2) return {};
+	if (d2 == r2) return {a};
+	if (b.r == 0) return {b.c};
+	P p = b.c + d * (r2 / d2);
+	P v = d.rot90() * (b.r * sqrtl(d2 - r2) / d2);
+	return {p + v, p - v};
 }
 
 vector<L> tangent(cc a, cc b, int f) { // f=1 外公切线，f=-1 内公切线
