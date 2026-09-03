@@ -1,6 +1,6 @@
-const int N = 2005; int H[N][N], V[N][N]; char s[N], t[N];
-int main() { gets(s + 1); gets(t + 1);
-	int n = (int) strlen(s + 1), m = (int) strlen(t + 1);
+const int N = 2005; int H[N][N], V[N][N]; string s, t;
+int main() { cin >> s >> t;
+	int n = (int) (s.size() + 1), m = (int) (t.size() + 1); s = " " + s; t = " " + t;
 	for (int i = 1; i <= m; ++ i) H[0][i] = i;
 	for (int i = 1; i <= n; ++ i) {
 		for (int j = 1; j <= m; ++ j) {

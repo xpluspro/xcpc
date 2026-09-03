@@ -1,0 +1,224 @@
+后续章节整理了常见的 DP 模型与套路。
+
+\subsection{基础与背包 DP 模型}
+
+\subsubsection{0-1 背包、完全背包、多重背包}
+\begin{itemize}
+    \item \textbf{二进制拆分优化}：$O(VN \log K)$。
+    \item \textbf{单调队列/滑动窗口优化}：$O(VN)$，最外层枚举物品，次外层枚举余数，内层维护单调队列。
+    \item \textbf{体积与价值互换}：适用于体积巨大、价值较小时。
+\end{itemize}
+
+\subsubsection{背包变体与衍生}
+\begin{itemize}
+    \item \textbf{二维/多维费用背包}：纯粹多轮循环。
+    \item \textbf{分组背包与有依赖的背包（树形背包）}：外层从小到大枚举，组内决策互斥，采用严格上下界循环保证 $O(N^2)$ 复杂度。
+    \item \textbf{超大容量背包}：折半搜索（Meet-in-the-middle）、贪心 + 小范围 DP。
+    \item \textbf{期望/概率背包}。
+    \item \textbf{背包方案数计数、字典序最小/最大方案还原}：倒着 DP，正着还原方案。
+    \item \textbf{状态转移存在拓扑环时的背包}：结合 Dijkstra 算法，将 DP 状态设置成图上的点。
+\end{itemize}
+
+
+\subsection{线性、区间与网格 DP}
+
+\subsubsection{经典线性模型}
+\begin{itemize}
+    \item \textbf{LIS（最长上升子序列）}：$O(N^2)$ 与 $O(N \log N)$ 树状数组/二分维护。
+    \item \textbf{LCS（最长公共子序列）}：元素互异时转化为 LIS 优化（$O(N \log N)$），令 $b[i] := \mathrm{pos}[i]$。
+    \item \textbf{LCIS（最长公共上升子序列）}：$O(N^2)$。
+    \item \textbf{子段和系列}：最大子段和、环形最大子段和、限制长度的最大子段和、$m$ 个不重叠子段和的最大值。
+\end{itemize}
+
+\subsubsection{区间 DP}
+\begin{itemize}
+    \item \textbf{标准型}：石子合并、环形区间 DP，先枚举长度，再枚举左端点。
+    \item \textbf{结合括号匹配/树形映射的区间 DP}：注意去重，强制左端点为原子项。
+    \item \textbf{包含两侧边界信息的状态}：如两端取数博弈，需保证状态定义清晰。
+\end{itemize}
+
+\subsubsection{网格图 DP}
+\begin{itemize}
+    \item \textbf{棋盘路径计数与障碍回避}：组合数容斥，复杂度 $O(K^2)$。
+    \item \textbf{多条不相交路径}：结合双人同行 DP，开辟多个维度。
+    \item \textbf{LGV 定理}：结合单调性，先用 DP 求出所有起点到终点的自由路径数目构建行列式，再利用高斯消元求解。
+\end{itemize}
+
+
+\subsection{树形与图论 DP}
+
+\subsubsection{树形 DP 基础模型}
+\begin{itemize}
+    \item \textbf{经典集合问题}：树上最大独立集、最小点覆盖、最小支配集。
+    \item \textbf{树的直径}：两次 DFS 仅适用于非负边权；存在负边权时需用 DP，设 $dp[u]$ 表示 $u$ 子树内最深路径，合并时更新答案。
+    \item \textbf{树的重心}。
+    \item \textbf{树上背包}：泛化物品合并，严格 $O(N^2)$ 上下界优化。
+\end{itemize}
+
+\subsubsection{树形 DP 高级扩展}
+\begin{itemize}
+    \item \textbf{换根 DP（二次扫描与换根法 / Rerooting DP）}：维护最大/次大值及前后缀子树合并。
+    \item \textbf{长链剖分优化树形 DP}：优化与深度相关的转移，将复杂度降至 $O(N)$。
+    \item \textbf{树上连通块 DP}：合并子节点 $v$ 时按“选/不选 $v$”应用乘法/加法原理转移。
+    \item \textbf{树上路径 DP}：在 LCA 处合并状态。
+\end{itemize}
+
+\subsubsection{图结构 DP}
+\begin{itemize}
+    \item \textbf{DAG（有向无环图）}：拓扑序 DP、最长路/最短路计数。
+    \item \textbf{基环树 DP}：找环 $\to$ 断边 $\to$ 两次 DP 分类讨论环上转移。
+    \item \textbf{仙人掌 DP}：圆方树建图 + 圆方树上 DP / Tarjan 过程中 DFS。
+\end{itemize}
+
+
+\subsection{状压与连通性 DP}
+
+\subsubsection{位运算与集合状压 DP}
+\begin{itemize}
+    \item \textbf{经典问题}：旅行商问题（TSP）、匹配问题、哈密顿回路。
+    \item \textbf{子集枚举 DP}：$\sum_{i=0}^N \binom{N}{i} 2^i = O(3^N)$。
+    \item \textbf{SOS DP（Sum Over Subsets / 高维前缀和）}：$O(N 2^N)$，外层枚举维度，内层枚举 $\mathrm{mask}$。
+    \item \textbf{FWT / FMT 与状压 DP 结合}：子集卷积（Subset Convolution），用于解决包含 $\subseteq$ 约束的转移。
+\end{itemize}
+
+\subsubsection{轮廓线与连通性 DP}
+\begin{itemize}
+    \item \textbf{逐格转移/轮廓线 DP}。
+    \item \textbf{插头 DP（Plug DP）}：基于最小表示法或括号序列表示法（回路问题、路径覆盖、连通块计数）。
+\end{itemize}
+
+
+\subsection{字符串与自动机 DP}
+
+\subsubsection{自动机上 DP}
+\begin{itemize}
+    \item \textbf{AC 自动机 + DP}：禁忌串避开、文本匹配方案数、期望步数。
+    \item \textbf{SAM（后缀自动机）+ DP}：不同子串计数、字典序第 $k$ 大子串、多个字符串的 LCS。
+    \item \textbf{PAM（回文自动机）+ DP}：回文划分、回文子串计数。
+    \item \textbf{Min-Palindrome Partition}：结合 PAM 的阶梯表优化至 $O(N \log N)$。
+\end{itemize}
+
+\subsubsection{状态机 DP}
+\begin{itemize}
+    \item \textbf{匹配状态机 DP}：KMP 匹配状态机 DP、正则表达式 DFA/NFA 状态匹配 DP（构建 DFA 并在其上转移）。
+\end{itemize}
+
+
+\subsection{数位与博弈 DP}
+
+\subsubsection{数位 DP}
+\begin{itemize}
+    \item \textbf{记忆化搜索标准框架}：\texttt{dfs(pos, limit, lead, state)}，仅当 \texttt{!limit \&\& !lead} 时才写入记忆化数组。
+    \item \textbf{常见约束类型}：数位和、特定数字出现次数、整除性质（模数约束）、不含特定子串（结合 AC 自动机/KMP）。
+    \item \textbf{进制扩展}：任意进制下的数位 DP。
+\end{itemize}
+
+\subsubsection{博弈 DP}
+\begin{itemize}
+    \item \textbf{公平组合游戏}：SG 值 DP 计算。\textbf{SG 定理}：复杂游戏的 SG 值等于各子游戏 SG 值的异或和。
+    \item \textbf{MiniMax 极大极小搜索与博弈树 DP}：Alpha-Beta 剪枝优化。$\alpha$ 为 Max 玩家保证能得到的最低下界，$\beta$ 为 Min 玩家允许对方得到的最高上界。当 $\alpha \ge \beta$ 时截断该子树。
+\end{itemize}
+
+
+\subsection{概率与期望 DP}
+
+\subsubsection{标准概率/期望模型}
+\begin{itemize}
+    \item \textbf{顺推概率 DP}：初始状态确定，求到达各状态的概率。
+    \item \textbf{逆推期望 DP}：终点状态确定，求到达终点的期望步数或收益。
+\end{itemize}
+
+\subsubsection{带环转移与图上期望}
+\begin{itemize}
+    \item \textbf{高斯消元解有环图上的期望 DP}：$O(N^3)$ 复杂度，列出期望方程组消元。
+    \item \textbf{树上带后向边的期望 DP}：利用树的结构实现 $O(N)$ 消元。
+    \item \textbf{马尔可夫链}：转移矩阵 + 矩阵快速幂。
+    \item \textbf{树上状态线性化}：假设对于任意节点 $u$，其状态 $dp[u]$ 可表示为关于父节点 $dp[\mathrm{fa}[u]]$ 的一次线性函数：
+    \[ dp[u] = K_u \cdot dp[\mathrm{fa}[u]] + B_u \]
+    先自底向上计算出 $K_u, B_u$，再利用根节点没有父节点的性质，自顶向下依次求出各节点的 DP 值。
+\end{itemize}
+
+
+\subsection{数据结构优化 DP}
+
+\subsubsection{单调性优化}
+\begin{itemize}
+    \item \textbf{单调栈优化}：维护具备单调性的候选转移点（如最大矩形面积、柱状图问题）。
+    \item \textbf{单调队列优化}：处理带滑动窗口最值的转移，形如 $dp_i = \max_{j=i-k}^{i-1} (dp_j + w_j)$。
+\end{itemize}
+
+\subsubsection{线段树 / 树状数组优化}
+\begin{itemize}
+    \item \textbf{区间最值/求和维护}：$dp_i = \max_{j \in [L_i, R_i]} \{dp_j\} + w_i$。
+    \item \textbf{扫描线 + 线段树}：维护动态 DP 值。
+\end{itemize}
+
+\subsubsection{进阶数据结构结合}
+\begin{itemize}
+    \item \textbf{线段树合并优化树形 DP}：自底向上合并状态（如树上值域线段树合并）。
+    \item \textbf{CDQ 分治优化 DP}：解决带有偏序关系的 DP 转移（如三维偏序 LIS：$i < j, A_i < A_j, B_i < B_j$），需严格遵守时间序并在操作后复原。
+    \item \textbf{可持久化数据结构}：维护 DP 的历史版本。
+\end{itemize}
+
+
+\subsection{数学与决策单调性优化 DP}
+
+\subsubsection{代数与递推优化}
+\begin{itemize}
+    \item \textbf{矩阵快速幂优化 DP}：适用于线性递推关系、固定步数的图上路径计数。
+    \item \textbf{BM 算法（Berlekamp-Massey）+ 线性递推}：自动求递推式并用特征多项式在 $O(K^2 \log N)$ 内求解。
+    \item \textbf{广义矩阵乘法}：$(\min, +)$ 或 $(\max, +)$ 矩阵乘法。
+\end{itemize}
+
+\subsubsection{斜率优化（凸包优化 / Convex Hull Trick）}
+\begin{itemize}
+    \item 转移方程形如：$dp_i = \min_j \{dp_j + y_j - k_i \cdot x_j\}$。
+    \item \textbf{单调队列维护凸包}：$x, k$ 均单调，复杂度 $O(N)$。
+    \item \textbf{二分 + 单调栈}：$x$ 单调、$k$ 不单调，复杂度 $O(N \log N)$。
+    \item \textbf{李超线段树 / 平衡树维护凸包}：$x, k$ 均不单调，复杂度 $O(N \log N)$。
+\end{itemize}
+
+\subsubsection{决策单调性优化（四边形不等式）}
+\begin{itemize}
+    \item \textbf{$1\mathrm{D}/1\mathrm{D}$ 决策单调性}：
+    转移方程形如 $dp_i = \min_{0 \le j < i} \{ dp_j + w(j, i) \}$。
+    \begin{enumerate}
+        \item \textbf{分治优化}：适用于第 $i$ 层 DP 值仅依赖第 $i-1$ 层（决策点推导可离线/不互相阻塞），复杂度 $O(N \log N)$ 或 $O(K N \log N)$。递归函数 \texttt{solve(l, r, L, R)} 计算中点 $mid$ 的最优决策点 $opt_{mid}$，再分治递归左右区间 \texttt{solve(l, mid-1, L, opt\_mid)} 与 \texttt{solve(mid+1, r, opt\_mid, R)}。
+        \item \textbf{二分栈 / 二分队列}：适用于在线 $1\mathrm{D}/1\mathrm{D}$ DP（$dp_i$ 的计算依赖同一层已算出的 $dp_j$），复杂度 $O(N \log N)$。使用单调队列维护三元组 \texttt{(j, l, r)}，通过二分查找判定决策点 $i$ 胜过旧决策点的临界点。
+    \end{enumerate}
+
+    \item \textbf{$2\mathrm{D}/1\mathrm{D}$ 四边形不等式}：
+    转移方程形如 $dp_{l, r} = \min_{l \le k < r} \{ dp_{l, k} + dp_{k+1, r} \} + w(l, r)$。
+    若代价函数 $w(l, r)$ 满足四边形不等式（$w(a, d) + w(b, c) \ge w(a, c) + w(b, d)$）与区间单调性（$w(b, c) \le w(a, d)$），则最优决策点满足：
+    \[ opt_{l, r-1} \le opt_{l, r} \le opt_{l+1, r} \]
+    可将区间 DP 复杂度由 $O(N^3)$ 降至 $O(N^2)$。
+\end{itemize}
+
+\subsubsection{凸性与几何优化}
+\begin{itemize}
+    \item \textbf{Wqs 二分 / 带权二分 / 凸包二分（Alien's Trick）}：解决恰好选择 $K$ 个元素/段数的带约束 DP 优化。
+    \item \textbf{Slope Trick（坡度技巧）}：维护凸/凹 DP 函数的折点（通常用可并堆/优先队列维护导数变化点）。
+    \item \textbf{闵可夫斯基和（Minkowski Sum）}：优化凸包合并与凸函数 DP 加法。
+\end{itemize}
+
+\subsubsection{分治与 FFT 优化}
+\begin{itemize}
+    \item \textbf{分治 FFT / NTT}：解决半在线卷积转移方程 $dp_i = \sum_{j=1}^{i} dp_{i-j} \times f_j$，复杂度 $O(N \log^2 N)$。
+    \item \textbf{分治逻辑}：\texttt{solve(L, R)} 取 $mid$，先递归计算左半部分，再将左半部分与转移系数进行多项式卷积贡献至右半部分，最后递归计算右半部分。
+\end{itemize}
+
+
+\subsection{高级融合模型与动态 DP}
+
+\subsubsection{动态 DP (Dynamic DP / DDP)}
+\begin{itemize}
+    \item \textbf{树链剖分 + 线段树维护 $(\min, +)$ 广义矩阵}：支持带点权/边权修改的树上 DP（如带修树上最大独立集）。通过重链剖分将 DP 方程改写为广义矩阵乘积形式。
+    \item \textbf{全局平衡二叉树（GBBT）优化 DDP}：将树上修改与查询复杂度优化至严格 $O(\log N)$。
+\end{itemize}
+
+\subsubsection{DP 拟阵与结合理论}
+\begin{itemize}
+    \item \textbf{杨表（Young Tableau）与 Hook 公式}：结合最长上升子序列（LIS）及其扩展。
+    \item \textbf{网络流与 DP 对偶转换}：如将 DP 状态转移网格转换为图论中的最小割 / 最大流问题。
+    \item \textbf{符号化方法（Symbolic Method）与生成函数}：结合组合结构构造进行组合计数 DP。
+\end{itemize}

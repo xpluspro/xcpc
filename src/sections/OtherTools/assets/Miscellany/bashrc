@@ -1,2 +1,2 @@
-export CXXFLAGS='-g -Wall -Wextra -Wconversion -Wshadow -std=gnu++20 -fsanitize=undefined'
+export CXXFLAGS='-g -Wall -Wextra -Wconversion -Wshadow -std=gnu++20 -D_GLIBCXX_ASSERTIONS -fsanitize=address,undefined -fno-omit-frame-pointer'
 ulimit -s 1048576

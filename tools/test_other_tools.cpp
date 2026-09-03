@@ -4,6 +4,23 @@ using namespace std;
 #include "../src/sections/OtherTools/assets/Miscellany/hack.cpp"
 
 int main() {
+	FILE *savedStdin = stdin;
+	FILE *input = tmpfile();
+	if (input == nullptr) return 1;
+	fputs("0 -1 9223372036854775807 -9223372036854775808 9223372036854775808 7", input);
+	rewind(input);
+	stdin = input;
+	long long value = 0;
+	if (!readInt(value) || value != 0) return 1;
+	if (!readInt(value) || value != -1) return 1;
+	if (!readInt(value) || value != LLONG_MAX) return 1;
+	if (!readInt(value) || value != LLONG_MIN) return 1;
+	if (readInt(value)) return 1;
+	if (!readInt(value) || value != 7) return 1;
+	if (readInt(value)) return 1;
+	stdin = savedStdin;
+	fclose(input);
+
 	bitset<8> bits("10100100");
 	vector<size_t> positions;
 	ForEachSetBit(bits, [&](size_t index) { positions.push_back(index); });

@@ -1,0 +1,22 @@
+\noindent
+用于解决小规模网格图（通常较短维度 $M \le 12$）上的回路覆盖、简单路径与连通块划分问题。
+
+\paragraph{1. 复杂度与状态表示}
+\begin{itemize}
+    \item \textbf{复杂度}：时间 $O(N \cdot M \cdot S)$，空间 $O(S)$（使用双哈希表滚动更新）。其中 $S$ 为轮廓线上有效状态数。回路覆盖问题采用括号序列法，$S \approx C_{M+1} = \frac{1}{M+2}\binom{2M+2}{M+1}$（卡特兰数，如 $M=10 \implies S \approx 16796$）；一般连通性采用最小表示法，$S \approx B_{M+1}$（贝尔数）。
+    \item \textbf{括号序列法}：轮廓线上包含 $M+1$ 个接口，每个接口用 2 bit（四进制）存储状态：\texttt{0} 代表无插头，\texttt{1} 代表左括号 \texttt{(}（路径左端点），\texttt{2} 代表右括号 \texttt{)}（路径右端点）。
+\end{itemize}
+
+\paragraph{2. 转移逻辑分类讨论（针对左插头 $p_l$ 与上插头 $p_u$）}
+\begin{itemize}
+    \item $p_l = 0, p_u = 0$：可跳过（若允许为空格）或新建拐角（输出右插头 1，下插头 2）。
+    \item $p_l, p_u$ 恰有一个为 $0$：延伸路径（向右输出 $p_l+p_u$，或向下输出 $p_l+p_u$）。
+    \item $p_l > 0, p_u > 0$（合并两条路径）：
+    \begin{itemize}
+        \item \textbf{1 + 1}：抵消两插头，并沿轮廓线向右找到 $p_u$ 对应的 \texttt{)} 修改为 \texttt{(}。
+        \item \textbf{2 + 2}：抵消两插头，并沿轮廓线向左找到 $p_l$ 对应的 \texttt{(} 修改为 \texttt{)}。
+        \item \textbf{2 + 1}：直接抵消两插头。
+        \item \textbf{1 + 2}：回路闭合，仅在最后一个有效格 \texttt{(end\_x, end\_y)} 处合法。
+    \end{itemize}
+    \item \textbf{换行处理}：每行处理完时最右侧右插头必须为 0，轮廓线整体左移 2 bit (\texttt{st << 2})，最低位补 0 作为下一行最左侧的左插头。
+\end{itemize}

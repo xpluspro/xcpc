@@ -12,15 +12,26 @@ const int SZ = 1 << 16; int FastGetChar() {
 		if (top == buf) return -1; }
 	return static_cast<unsigned char>(*ptr++); }
 bool readInt(long long &x) {
-	long long value = 0; int f = 1, ch = FastGetChar();
-	while (ch != -1 && !isdigit(static_cast<unsigned char>(ch))) {
-		if (ch == '-') f = -1;
+	unsigned long long value = 0;
+	int ch = FastGetChar();
+	while (ch != -1 && ch != '-' && !isdigit(static_cast<unsigned char>(ch)))
+		ch = FastGetChar();
+	if (ch == -1) return false;
+	bool negative = ch == '-';
+	if (negative) ch = FastGetChar();
+	if (ch == -1 || !isdigit(static_cast<unsigned char>(ch))) return false;
+	const unsigned long long negativeLimit = 1ULL << 63;
+	const unsigned long long limit = negative ? negativeLimit : LLONG_MAX;
+	bool overflow = false;
+	while (ch != -1 && isdigit(static_cast<unsigned char>(ch))) {
+		unsigned digit = static_cast<unsigned>(ch - '0');
+		if (value > (limit - digit) / 10) overflow = true;
+		else if (!overflow) value = value * 10 + digit;
 		ch = FastGetChar();
 	}
-	if (ch == -1) return false;
-	while (ch != -1 && isdigit(static_cast<unsigned char>(ch)))
-		value = value * 10 + ch - '0', ch = FastGetChar();
-	x = value * f;
+	if (overflow) return false;
+	if (negative && value == negativeLimit) x = LLONG_MIN;
+	else x = negative ? -static_cast<long long>(value) : static_cast<long long>(value);
 	return true;
 }
 const int OSZ = 1 << 16;

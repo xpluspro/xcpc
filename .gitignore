@@ -1,5 +1,6 @@
 .vscode
 src/_minted-main
+src/_minted
 src/*.aux
 src/*.synctex.gz
 src/*.log
@@ -13,3 +14,4 @@ src/*.toc
 src/*.out
 __pycache__/
 *.py[cod]
+main.pdf
