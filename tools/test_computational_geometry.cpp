@@ -40,8 +40,27 @@ int main() {
 	assert(cc_intersection_count(C(P(0,0),0), C(P(0,0),0)) == 1);
 	assert(cc_intersection(C(P(0,0),0), C(P(0,0),0)) == vp{P(0,0)});
 	assert(cc_intersection_count(C(P(0,0),1), C(P(0,0),2)) == 0);
+	assert(cc_intersection_count(C(P(0,0),1), C(P(3,0),1)) == 0);
+	assert(cc_intersection_count(C(P(0,0),3), C(P(1,0),1)) == 0);
+	assert(cc_intersection_count(C(P(0,0),3), C(P(2,0),1)) == 1);
 	assert(cc_intersection_count(C(P(0,0),1), C(P(2,0),1)) == 1);
 	assert(cc_intersection_count(C(P(0,0),2), C(P(2,0),2)) == 2);
+	assert((incenter(P(0,0), P(6,0), P(0,8)) - P(2,2)).len() < 1e-12L);
+	assert(tangent(P(0,0), C(P(),1)).empty());
+	assert(tangent(P(1,0), C(P(),1)) == vp{P(1,0)});
+	LD test_radius = 1e3L;
+	P just_outside(test_radius + 5e-13L, 0);
+	assert(just_outside.x > test_radius);
+	assert(tangent(just_outside, C(P(), test_radius)).size() == 2);
+	LD large_radius = 1e9L;
+	P near_outside(large_radius + 5e-10L, 0);
+	assert(near_outside.x > large_radius);
+	vp near_tangents = tangent(near_outside, C(P(), large_radius));
+	assert(near_tangents.size() == 2);
+	for (cp p : near_tangents) {
+		assert(fabsl(p.len2() - large_radius * large_radius) < 0.2L);
+		assert(fabsl((near_outside - p) * p) < 0.1L);
+	}
 	bool empty_at_threw = false;
 	try { ConvexQuery().at(0); }
 	catch (const out_of_range &) { empty_at_threw = true; }
