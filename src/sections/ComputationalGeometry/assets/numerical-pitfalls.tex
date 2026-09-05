@@ -1,0 +1,16 @@
+\begin{itemize}[leftmargin=5mm]
+  \setlength{\itemsep}{0pt}
+  \item 大量读入浮点数时，即使关闭同步流，\texttt{cin} 仍可能很慢。优先使用
+    \texttt{scanf}；若题面数据实际均为整数，则先按整数读入，再转换为
+    \texttt{long double} 参与计算。
+  \item \texttt{eps} 并非越小越好。输入浮点数本身的精度可能有限；若
+    \texttt{eps} 小于输入误差的量级，比较标准会与有效输入精度不匹配，反而导致错误。
+  \item 看到 \texttt{acos} 的参数接近 $1$、大数减大数，或
+    \texttt{x - sin(x)}、\texttt{x - cos(x)} 这类小量相减时，立即警觉消去误差与数值稳定性。
+  \item 处理方向夹角时，可先按极角排序，再检查环上相邻极角之差（包括首尾跨
+    $2\pi$ 的一对）。若差值为 $d$，取 $\min(d, 2\pi-d)$；等价地，$d>\pi$
+    时改取 $2\pi-d$。
+  \item 只要数据与运算可以保持整数形式，就优先使用 \texttt{long long}，不要过早转为浮点数。
+  \item 若答案必为整数且可能超过 $10^{19}$，使用 \texttt{\_\_int128} 计算并输出，
+    不要使用 \texttt{long double} 代替整数类型；浮点数无法保证大整数运算的精确性。
+\end{itemize}
