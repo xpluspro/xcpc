@@ -26,3 +26,12 @@ void ntt(int *c, int n, int tp) {
 	if (tp>0) {for (int i = 0; i < n; i++) c[i] = a[i] % p;}
 	else { int inv = qpow(n, p - 2);
 		for (int i = 0; i < n; i++) c[i] = a[i] * inv % p;}}
+
+// usage: 模 p 卷积（a、b 的系数按低次到高次存放）
+// int need = a.size() + b.size() - 1, n = 1;
+// while (n < need) n <<= 1;
+// a.resize(n); b.resize(n); ntt_init(n);
+// ntt(a.data(), n, 1); ntt(b.data(), n, 1);
+// for (int i = 0; i < n; i++) a[i] = (LL)a[i] * b[i] % p;
+// ntt(a.data(), n, -1);
+// a.resize(need); // a 即卷积结果
