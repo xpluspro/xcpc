@@ -1,4 +1,15 @@
 using poly = vector<int>;
+// poly: 系数低次 -> 高次；{1,2,3} = 1 + 2x + 3x^2
+// poly_mul(a,b)       : a*b，结果长度补到 2 的幂
+// poly_inv(a)         : 1/a mod x^n；n=a.size()，a[0]!=0
+// poly_sqrt(a)        : sqrt(a) mod x^n；要求 a[0]==1
+// poly_derivative(a)  : a'；返回长度仍为 a.size()
+// poly_integrate(a)   : 积分 mod x^n；常数项为 0
+// poly_ln(a)          : ln(a) mod x^n；要求 a[0]==1
+// poly_exp(a)         : exp(a) mod x^n；要求 a[0]==0
+// poly_div(a,b)       : 商；要求 b 的最高次项非 0
+// poly_mod(a,b)       : {余数, 商}
+// poly_eval(f,x)()    : f 在 x 中各点的值
 poly poly_calc(const poly& u, const poly& v,
 	function<int(int, int)> op) { // 返回长度补齐到 2 的幂
 	if (u.empty() || v.empty()) return {};
@@ -43,7 +54,7 @@ poly poly_integrate(const poly& a) { poly c(a.size());
 	for (int i = 1; i < (int)a.size(); i++) // 不定积分
 		c[i] = (LL)a[i - 1] * inv[i] % p;
 	return c; }
-poly poly_ln(const poly& a) { // ln,常数项非0,返回长度不变
+poly poly_ln(const poly& a) { // ln，常数项必须是 1，返回长度不变
 	auto c = poly_mul(poly_derivative(a), poly_inv(a));
 	c.resize(a.size()); return poly_integrate(c); }
 // exp，常数项必须是 0，返回长度不变
