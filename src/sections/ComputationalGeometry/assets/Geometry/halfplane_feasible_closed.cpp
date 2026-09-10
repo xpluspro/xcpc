@@ -1,52 +1,66 @@
-// n * p >= b；按题目原始表示构造：系数用 HP({a,b},c)，两点用 HP(L)。
-// 已知系数不要先造浮点端点再转回来，以免主动丢失平行关系。
+// n*p >= c；闭约束，Range 可限制横轴开闭范围。
 struct HP {
-  P n; LD b;
-  HP(P normal = {}, LD bound = 0) : n(normal), b(bound) {
-    LD d = hypotl(n.x, n.y);
-    if (d) n = n / d, b /= d;
-  }
-  HP(cl l) : HP((l.t - l.s).rot90(), (l.t - l.s).rot90() * l.s) {} // 左侧合法
+  P n; LD c;
+  HP(P v={},LD b=0):n(v),c(b){}
+  HP(cl l):HP((l.t-l.s).rot90(),(l.t-l.s).rot90()*l.s){}
 };
-
-bool hp_bad(const HP& h, cp p) {
-  LD x = h.n.x * p.x, y = h.n.y * p.y;
-  LD e = 16 * numeric_limits<LD>::epsilon()
-      * (1 + fabsl(x) + fabsl(y) + fabsl(h.b));
-  return h.b - (x + y) > e;
-}
-
-// 闭半平面交是否非空：支持无界、线段、单点及空约束。
-// 随机增量，期望 O(n)，最坏 O(n^2)，空间 O(n)。
-// 仅补偿浮点舍入，非精确判定；输入及中间运算须有限（区间端点除外）。
-// 若需距离容差，调用前对非零法向量的 HP 手动 b -= tolerance。
-bool hp_feasible(vector<HP> a) {
-  shuffle(a.begin(), a.end(), rnd);
-  const LD inf = numeric_limits<LD>::infinity();
-  P p{};
-  for (int i = 0; i < (int)a.size(); ++i) {
-    if (!a[i].n.len2()) {
-      if (a[i].b > 0) return false;
-      continue;
-    }
-    if (!hp_bad(a[i], p)) continue;
-    P o = a[i].n * a[i].b, v = a[i].n.rot90();
-    LD l = -inf, r = inf;
-    for (int j = 0; j < i; ++j) {
-      LD k = a[j].n * v, c = a[j].b - a[j].n * o;
-      // 不用固定角度 eps 判平行：小夹角可能在远处有解。
-      if (k > 0) l = max(l, c / k);
-      else if (k < 0) r = min(r, c / k);
-      else if (hp_bad(a[j], o)) return false;
-    }
-    if (l > r) {
-      if (!isfinite(l) || !isfinite(r)) return false;
-      LD e = 64 * numeric_limits<LD>::epsilon()
-          * max({1.0L, fabsl(l), fabsl(r)});
-      if (l - r > e) return false;
-      l = r = l / 2 + r / 2;
-    }
-    p = o + v * clamp(0.0L, l, r);
+const LD HINF=numeric_limits<LD>::infinity();
+struct Range { LD l=-HINF,r=HINF; bool lo=0,ro=0; };
+Range x_lt(LD x){return {-HINF,x,0,1};}
+Range x_gt(LD x){return {x,HINF,1,0};}
+bool hp_feasible(const vector<HP>& h,Range R={}) {
+  struct F { LD k,b,l; }; vector<F> A,B;
+  for(auto [n,c]:h) {
+    LD a=n.x,b=n.y;
+    if(b) (b>0?A:B).push_back({-a/fabsl(b),c/fabsl(b),0});
+    else if(a>0) { if(c/a>R.l) R.l=c/a,R.lo=0; }
+    else if(a<0) { if(c/a<R.r) R.r=c/a,R.ro=0; }
+    else if(c>0) return 0;
   }
-  return true;
+  if(R.l>R.r || (R.l==R.r&&(R.lo||R.ro))
+      || R.l==HINF || R.r==-HINF) return 0;
+  if(A.empty()||B.empty()) return 1;
+  auto hull=[](vector<F> a) {
+    sort(a.begin(),a.end(),[](F x,F y) {
+      return x.k!=y.k ? x.k<y.k : x.b>y.b;
+    });
+    vector<F> q;
+    for(F f:a) {
+      if(!q.empty()&&f.k==q.back().k) continue;
+      LD x=-HINF;
+      while(!q.empty()) {
+        x=(q.back().b-f.b)/(f.k-q.back().k);
+        if(x>q.back().l) break;
+        q.pop_back();
+      }
+      f.l=q.empty()?-HINF:x; q.push_back(f);
+    }
+    return q;
+  };
+  A=hull(move(A)); B=hull(move(B));
+  auto good=[](F a,F b,LD x,bool open) {
+    LD v=fmal(a.k,x,a.b)+fmal(b.k,x,b.b);
+    LD e=32*numeric_limits<LD>::epsilon()*
+        (fabsl(a.k*x)+fabsl(a.b)
+        +fabsl(b.k*x)+fabsl(b.b));
+    return open?v<0:v<=e;
+  };
+  for(size_t i=0,j=0;i<A.size()&&j<B.size();) {
+    LD ni=i+1<A.size()?A[i+1].l:HINF;
+    LD nj=j+1<B.size()?B[j+1].l:HINF;
+    LD l=max({R.l,A[i].l,B[j].l}), r=min({R.r,ni,nj});
+    LD m=A[i].k+B[j].k;
+    bool lo=l==R.l&&R.lo, ro=r==R.r&&R.ro;
+    if(l<r||(l==r&&!lo&&!ro)) {
+      // 恒定段在内部取到最小值，用 x=0 避免代入无穷。
+      if(m==0 ? good(A[i],B[j],0,0) : m>0 ?
+          (l==-HINF||good(A[i],B[j],l,lo)) :
+          (r== HINF||good(A[i],B[j],r,ro))) return 1;
+    }
+    LD x=min(ni,nj);
+    if(x>=R.r) break;
+    if(ni==x) ++i;
+    if(nj==x) ++j;
+  }
+  return 0;
 }

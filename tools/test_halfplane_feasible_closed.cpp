@@ -38,11 +38,42 @@ bool exact_feasible(const vector<L>& lines) {
 // 仅供旧线数据测试使用；正式 API 只有 vector<HP>。
 bool check_lines(const vector<L>& lines, LD tolerance = 0) {
   vector<HP> h(lines.begin(), lines.end());
-  for (auto& row : h) if (row.n.len2()) row.b -= tolerance;
+  for (auto& row : h) if (row.n.len2()) row.c -= tolerance * hypotl(row.n.x, row.n.y);
   return hp_feasible(h);
 }
 
 int main() {
+  const LD infinity = HINF;
+  assert(hp_feasible({}, {0,0}));
+  assert(!hp_feasible({}, {0,0,true,false}));
+  assert(!hp_feasible({}, {0,0,false,true}));
+  assert(!hp_feasible({}, {1,0}));
+  assert(!hp_feasible({}, {infinity,infinity}));
+  assert(!hp_feasible({}, {-infinity,-infinity}));
+  assert(hp_feasible({{{1,0},1}}, {0,1,true,false}));
+  assert(!hp_feasible({{{1,0},1}}, {0,1,false,true}));
+  assert(hp_feasible({{{-1,0},-1}}, {1,2,false,true}));
+  assert(!hp_feasible({{{-1,0},-1}}, {1,2,true,false}));
+  vector<HP> decreasing{{{0,1},0},{{1,-1},0}}; // F(x)=-x
+  assert(!hp_feasible(decreasing,x_lt(0)));
+  assert(hp_feasible(decreasing,{-infinity,0}));
+  vector<HP> increasing{{{0,1},0},{{-1,-1},0}};
+  assert(!hp_feasible(increasing,x_gt(0)));
+  assert(hp_feasible(increasing,{0,infinity}));
+  vector<HP> flat{{{0,1},0},{{0,-1},0}};
+  assert(hp_feasible(flat,{-1,0,true,true}));
+  vector<HP> tiny{{{0,1},0},{{1,-1},-1e-30L}};
+  assert(hp_feasible(tiny,x_lt(0)));
+  tiny.back().c=1e-30L;
+  assert(!hp_feasible(tiny,x_lt(0)));
+  // 严格可行区间 (-delta,0)，不能用 v < -e 将其吞掉。
+  LD delta=ldexpl(1.0L,-60);
+  assert(hp_feasible({{{0,1},1},{{1,-1},-1-delta}},x_lt(0)));
+  assert(!hp_feasible({{{0,1},1},{{1,-1},-1}},x_lt(0)));
+  vector<HP> cusp{{{1,1},0},{{-1,1},0},{{0,-1},0}};
+  assert(!hp_feasible(cusp,x_lt(0)));
+  assert(!hp_feasible(cusp,x_gt(0)));
+  assert(hp_feasible(cusp,{-1,1,true,true}));
   rnd.seed(20260910);
   // 用户回归：2 1 19 / 10 7 7，含非负 A、B，解退化到线段。
   vector<L> regression = {{{0,1},{0,0}}, {{0,0},{1,0}}};
@@ -50,8 +81,8 @@ int main() {
     regression.push_back(L({0,c/x},{1,c/x-x}));
     regression.push_back(L({1,d/x-x},{0,d/x}));
   }
-  for (int seed = 0; seed < 10000; ++seed) {
-    rnd.seed(seed);
+  for (int seed = 0; seed < 30; ++seed) {
+    shuffle(regression.begin(), regression.end(), rnd);
     assert(check_lines(regression));
   }
   vector<HP> rows = {
@@ -65,9 +96,9 @@ int main() {
   impossible.push_back({{0,1},0.61L});
   auto scaled_impossible = impossible;
   for (auto& row : scaled_impossible) {
-    row = HP(row.n * 1e20L, row.b * 1e20L);
+    row = HP(row.n * 1e20L, row.c * 1e20L);
   }
-  // 从原始系数分别缩放后再构造，覆盖单位化及非轴对齐单点。
+  // 从原始系数分别缩放后再构造，覆盖系数缩放及非轴对齐单点。
   for (LD scale : {1e-20L, 1.0L, 1e20L}) {
     vector<HP> scaled_point = {
       {{3*scale,4*scale},5*scale}, {{-3,-4},-5},
@@ -75,19 +106,30 @@ int main() {
     }; // 唯一解 (0.6, 0.8)
     auto scaled_empty = scaled_point;
     scaled_empty.push_back({{1,0},0.61L});
-    for (int seed = 0; seed < 1000; ++seed) {
-      rnd.seed(seed);
+    for (int seed = 0; seed < 30; ++seed) {
+      shuffle(scaled_point.begin(), scaled_point.end(), rnd);
       assert(hp_feasible(scaled_point));
       assert(!hp_feasible(scaled_empty));
     }
   }
-  for (int seed = 0; seed < 10000; ++seed) {
-    rnd.seed(seed);
+  for (int seed = 0; seed < 30; ++seed) {
+    shuffle(rows.begin(), rows.end(), rnd);
     assert(hp_feasible(rows));
     assert(hp_feasible(point));
     assert(!hp_feasible(impossible));
     assert(!hp_feasible(scaled_impossible));
   }
+  // 原点附近的真实间隙，不允许被固定绝对 EPS 吞掉。
+  assert(!hp_feasible({{{1,0},1e-25L},{{-1,0},0}}));
+  assert(!hp_feasible({{{0,1},1e-25L},{{0,-1},0}}));
+  // 只有远处才有可行点，且不用人为大框。
+  assert(hp_feasible({{{1e-30L,0},1},{{0,1},0}}));
+  assert(hp_feasible({{{0,1},1},{{1e-30L,-1},0}}));
+  // 固定 x，恰好落在两包络折点；以及唯一可行位置在区间右端点。
+  assert(hp_feasible({{{1,0},0},{{-1,0},0},
+    {{-1,1},0},{{1,1},0},{{0,-1},0}}));
+  assert(hp_feasible({{{0,1},1},{{1,-1},0},{{-1,0},-1}}));
+  assert(!hp_feasible({{{0,1},1},{{1,-1},0},{{-1,0},0}}));
   assert(hp_feasible({}));
   assert(hp_feasible({{{0,0},0},{{0,0},-1}}));
   assert(!hp_feasible({{{0,0},1}}));
@@ -131,6 +173,47 @@ int main() {
   vector<L> larger_gap = {{{0,0},{1,0}},{{1,-4*eps},{0,-4*eps}}};
   assert(!check_lines(larger_gap, eps));
 
+  // P3222 形状：原始整数约束 x^2*A+x*B 在 [y1,y2]，x 可接近 1e9。
+  // 有界候选两两求交，以 __int128 精确验证；取值使中间结果小于 1e38。
+  mt19937_64 trajectory_rng(20260910);
+  using I = __int128_t;
+  struct Row { I a,b,c; };
+  for (int trial=0;trial<3000;++trial) {
+    vector<Row> exact{{1,0,-10000},{-1,0,0},{0,1,0},{0,-1,-10000000000LL}};
+    vector<HP> h{{{1,0},-10000},{{-1,0},0},{{0,1},0},{{0,-1},-1e10L}};
+    int n=1+trajectory_rng()%8;
+    for (int i=0;i<n;++i) {
+      long long x=trial%2 ? 1000000000-trajectory_rng()%100 : 1+trajectory_rng()%1000000000;
+      long long y1=1+trajectory_rng()%1000000, y2=y1+trajectory_rng()%1000000;
+      if (trial%3==0) y2=y1;
+      exact.push_back({(I)x*x,x,y1}); exact.push_back({-(I)x*x,-x,-y2});
+      h.emplace_back(P{(LD)x*x,(LD)x},(LD)y1);
+      h.emplace_back(P{-(LD)x*x,-(LD)x},-(LD)y2);
+    }
+    bool expected=false;
+    for (const Row& a:exact) for (const Row& b:exact) {
+      I d=a.a*b.b-a.b*b.a;
+      if (!d) continue;
+      I x=a.c*b.b-a.b*b.c, y=a.a*b.c-a.c*b.a;
+      if (d<0) d=-d,x=-x,y=-y;
+      bool valid=true;
+      for (const Row& row:exact) if(row.a*x+row.b*y<row.c*d) { valid=false; break; }
+      expected|=valid;
+    }
+    if (hp_feasible(h)!=expected) {
+      cerr<<"trajectory mismatch "<<trial<<" expected "<<expected<<'\n';
+      return 1;
+    }
+  }
+
+  // 已知可行的极近方向等式组：共同经过 (-1, 1e9+100)。
+  vector<HP> pencil;
+  for (long long x=999999900;x<=1000000000;x+=5) {
+    LD intercept=1000000100LL-x;
+    pencil.emplace_back(P{(LD)x,1},intercept);
+    pencil.emplace_back(P{-(LD)x,-1},-intercept);
+  }
+  assert(hp_feasible(pencil));
   mt19937 generator(987654321);
   uniform_int_distribution<int> coordinate(-10,10), count(0,14);
   for (int trial = 0; trial < 20000; ++trial) {
@@ -143,6 +226,7 @@ int main() {
     }
     bool expected = exact_feasible(lines);
     for (int repeat = 0; repeat < 3; ++repeat) {
+      shuffle(lines.begin(), lines.end(), rnd);
       if (check_lines(lines) != expected) {
         cerr << "closed HPI mismatch at trial " << trial << '\n';
         for (cl line : lines)
@@ -156,5 +240,14 @@ int main() {
   vector<L> many(200000, L({0,1},{1,1}));
   many.push_back(L({1,1},{0,1}));
   assert(check_lines(many));
-  cerr << "closed halfplane tests passed (60000 exact-oracle comparisons)\n";
+  // 两侧各有大量不同斜率的包络，交为线段；再加入平行矛盾。
+  vector<HP> envelope_rows;
+  for (int k=-10000;k<=10000;++k) {
+    envelope_rows.push_back({{(LD)-2*k,1},-(LD)k*k});
+    envelope_rows.push_back({{(LD)-2*k,-1},-(LD)k*k});
+  }
+  assert(hp_feasible(envelope_rows));
+  envelope_rows.push_back({{0,1},1});
+  assert(!hp_feasible(envelope_rows));
+  cerr << "closed halfplane tests passed (60000 exact-oracle + 3000 trajectory comparisons)\n";
 }
