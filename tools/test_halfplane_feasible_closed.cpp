@@ -37,6 +37,46 @@ bool exact_feasible(const vector<L>& lines) {
 
 int main() {
   rnd.seed(20260910);
+  // 用户回归：2 1 19 / 10 7 7，含非负 A、B，解退化到线段。
+  vector<L> regression = {{{0,1},{0,0}}, {{0,0},{1,0}}};
+  for (auto [x,c,d] : vector<array<LD,3>>{{2,1,19},{10,7,7}}) {
+    regression.push_back(L({0,c/x},{1,c/x-x}));
+    regression.push_back(L({1,d/x-x},{0,d/x}));
+  }
+  for (int seed = 0; seed < 10000; ++seed) {
+    rnd.seed(seed);
+    assert(halfplane_feasible_closed(regression));
+  }
+  vector<ClosedHalfplane> rows = {
+    {{1,0},0}, {{0,1},0}, {{4,2},1}, {{-4,-2},-19},
+    {{100,10},7}, {{-100,-10},-7}
+  };
+  auto point = rows;
+  point.push_back({{1,0},0.01L});
+  point.push_back({{-1,0},-0.01L}); // 唯一解 (0.01, 0.6)
+  auto impossible = point;
+  impossible.push_back({{0,1},0.61L});
+  auto scaled_impossible = impossible;
+  for (auto& row : scaled_impossible) {
+    row.normal = row.normal * 1e20L;
+    row.bound *= 1e20L;
+  }
+  for (int seed = 0; seed < 10000; ++seed) {
+    rnd.seed(seed);
+    assert(halfplane_feasible_closed_coefficients(rows));
+    assert(halfplane_feasible_closed_coefficients(point));
+    assert(!halfplane_feasible_closed_coefficients(impossible));
+    assert(!halfplane_feasible_closed_coefficients(scaled_impossible));
+  }
+  assert(halfplane_feasible_closed_coefficients({}));
+  assert(halfplane_feasible_closed_coefficients({{{0,0},0},{{0,0},-1}}));
+  assert(!halfplane_feasible_closed_coefficients({{{0,0},1}}));
+  // 方向不经过端点相减：很大的截距也保留原始平行关系。
+  assert(!halfplane_feasible_closed_coefficients({
+    {{10,1},1e18L}, {{-10,-1},-1e18L+100}}));
+  // 非零的小夹角不能简单当平行：交点在远处。
+  assert(halfplane_feasible_closed_coefficients({
+    {{0,1},1}, {{1e-20L,-1},0}}));
   vector<pair<vector<L>, bool>> cases = {
     {{}, true},
     {{{{5,5},{5,5}}}, true}, // 零方向按无约束处理
@@ -59,17 +99,17 @@ int main() {
   for (const auto& [lines, expected] : cases)
     for (int repeat = 0; repeat < 100; ++repeat) {
       assert(halfplane_feasible_closed(lines) == expected);
-      assert(halfplane_feasible_closed(lines, 0) == expected);
+      assert(halfplane_feasible_closed(lines, eps) == expected);
     }
 
   // 容差为距离，与有向边长度无关；零容差不主动放宽边界。
   vector<L> tiny_gap = {{{0,0},{1,0}},{{1,-eps},{0,-eps}}};
-  assert(halfplane_feasible_closed(tiny_gap));
-  assert(!halfplane_feasible_closed(tiny_gap, 0));
+  assert(halfplane_feasible_closed(tiny_gap, eps));
+  assert(!halfplane_feasible_closed(tiny_gap));
   tiny_gap[0].t = P(1e6L,0);
-  assert(halfplane_feasible_closed(tiny_gap));
+  assert(halfplane_feasible_closed(tiny_gap, eps));
   vector<L> larger_gap = {{{0,0},{1,0}},{{1,-4*eps},{0,-4*eps}}};
-  assert(!halfplane_feasible_closed(larger_gap));
+  assert(!halfplane_feasible_closed(larger_gap, eps));
 
   mt19937 generator(987654321);
   uniform_int_distribution<int> coordinate(-10,10), count(0,14);
