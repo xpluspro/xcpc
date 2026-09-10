@@ -6,7 +6,7 @@ using namespace std;
 #include "../src/sections/ComputationalGeometry/assets/Geometry/halfplane_feasible_closed.cpp"
 
 // 小整数输入的精确 oracle：最近点只能是原点、某条线的垂足或两线交点。
-// 用有理数候选和 __int128 叉乘判定，不依赖浮点 HPI 或随机增量。
+// 用有理数候选和 __int128 叉乘判定，不依赖浮点 HPI 或包络。
 bool exact_feasible(const vector<L>& lines) {
   using I = __int128_t;
   struct Inequality { I a, b, c; };
@@ -36,7 +36,7 @@ bool exact_feasible(const vector<L>& lines) {
 }
 
 int main() {
-  rnd.seed(20260910);
+  mt19937 generator(987654321);
   vector<pair<vector<L>, bool>> cases = {
     {{}, true},
     {{{{5,5},{5,5}}}, true}, // 零方向按无约束处理
@@ -55,9 +55,17 @@ int main() {
     {{{{2e9L,0},{2e9L,-1}},{{2e9L,0},{2e9L,1}}}, true},
     {{{{8,7},{-9,-10}},{{2,7},{0,3}},
        {{2,1},{-6,-7}},{{-4,-2},{-6,2}}}, true}, // 同边界不同倍数舍入回归
+    {{{{1,1},{1,0}},{{0,0},{0,1}}}, false}, // 仅竖直边界且 x 区间为空
+    {{{{0,1},{1,1}},{{0,0},{-1,-1e-14L}},
+       {{0,0},{0,1}}}, false}, // 近乎平行的远处可行区被 x <= 0 截掉
+    {{{{0,0},{1,1}},{{0,0},{1,-1}},{{1,0},{0,0}}}, true}, // 包络折点单点
+    {{{{0,0},{1,1}},{{0,0},{1,-1}},{{1,-1},{0,-1}}}, false},
+    {{{{1,0},{1,1}},{{1,1},{1,0}},
+       {{0,0},{1,1}},{{2,1},{1,1}}}, true}, // x 区间单点，闭边界恰好可行
   };
-  for (const auto& [lines, expected] : cases)
+  for (auto [lines, expected] : cases)
     for (int repeat = 0; repeat < 100; ++repeat) {
+      shuffle(lines.begin(), lines.end(), generator);
       assert(halfplane_feasible_closed(lines) == expected);
       assert(halfplane_feasible_closed(lines, 0) == expected);
     }
@@ -71,7 +79,6 @@ int main() {
   vector<L> larger_gap = {{{0,0},{1,0}},{{1,-4*eps},{0,-4*eps}}};
   assert(!halfplane_feasible_closed(larger_gap));
 
-  mt19937 generator(987654321);
   uniform_int_distribution<int> coordinate(-10,10), count(0,14);
   for (int trial = 0; trial < 20000; ++trial) {
     vector<L> lines;
@@ -83,7 +90,9 @@ int main() {
     }
     bool expected = exact_feasible(lines);
     for (int repeat = 0; repeat < 3; ++repeat) {
-      if (halfplane_feasible_closed(lines) != expected) {
+      shuffle(lines.begin(), lines.end(), generator);
+      if (halfplane_feasible_closed(lines) != expected
+          || halfplane_feasible_closed(lines, 0) != expected) {
         cerr << "closed HPI mismatch at trial " << trial << '\n';
         for (cl line : lines)
           cerr << line.s.x << ' ' << line.s.y << ' '
@@ -92,9 +101,22 @@ int main() {
       }
     }
   }
-  // 大量重复约束：退化可行交集，不应退化为每次都扫描前缀。
+  // 大量重复约束：退化可行交集。
   vector<L> many(200000, L({0,1},{1,1}));
   many.push_back(L({1,1},{0,1}));
   assert(halfplane_feasible_closed(many));
-  cerr << "closed halfplane tests passed (60000 exact-oracle comparisons)\n";
+  // 20 万个不同斜率均在包络上；必须完整扫过长包络才能判空。
+  // x <= 0 时 max(k*x-k*k), -N <= k <= -1 的最小值为 -1。
+  vector<L> long_envelope;
+  for (int k = -200000; k < 0; ++k) {
+    LD intercept = -(LD)k * k;
+    long_envelope.push_back(L({0,intercept},{1,intercept+k}));
+  }
+  long_envelope.push_back(L({1,-2},{0,-2})); // y <= -2，矛盾
+  long_envelope.push_back(L({0,0},{0,1})); // x <= 0
+  assert(!halfplane_feasible_closed(long_envelope, 0));
+  long_envelope[long_envelope.size()-2] = L({1,-1},{0,-1}); // 仅点 (0,-1)
+  reverse(long_envelope.begin(), long_envelope.end());
+  assert(halfplane_feasible_closed(long_envelope, 0));
+  cerr << "closed halfplane tests passed (120000 exact-oracle comparisons)\n";
 }
