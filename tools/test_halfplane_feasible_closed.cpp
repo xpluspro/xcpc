@@ -35,6 +35,13 @@ bool exact_feasible(const vector<L>& lines) {
   return false;
 }
 
+// 仅供旧线数据测试使用；正式 API 只有 vector<HP>。
+bool check_lines(const vector<L>& lines, LD tolerance = 0) {
+  vector<HP> h(lines.begin(), lines.end());
+  for (auto& row : h) if (row.n.len2()) row.b -= tolerance;
+  return hp_feasible(h);
+}
+
 int main() {
   rnd.seed(20260910);
   // 用户回归：2 1 19 / 10 7 7，含非负 A、B，解退化到线段。
@@ -45,9 +52,9 @@ int main() {
   }
   for (int seed = 0; seed < 10000; ++seed) {
     rnd.seed(seed);
-    assert(halfplane_feasible_closed(regression));
+    assert(check_lines(regression));
   }
-  vector<ClosedHalfplane> rows = {
+  vector<HP> rows = {
     {{1,0},0}, {{0,1},0}, {{4,2},1}, {{-4,-2},-19},
     {{100,10},7}, {{-100,-10},-7}
   };
@@ -58,24 +65,37 @@ int main() {
   impossible.push_back({{0,1},0.61L});
   auto scaled_impossible = impossible;
   for (auto& row : scaled_impossible) {
-    row.normal = row.normal * 1e20L;
-    row.bound *= 1e20L;
+    row = HP(row.n * 1e20L, row.b * 1e20L);
+  }
+  // 从原始系数分别缩放后再构造，覆盖单位化及非轴对齐单点。
+  for (LD scale : {1e-20L, 1.0L, 1e20L}) {
+    vector<HP> scaled_point = {
+      {{3*scale,4*scale},5*scale}, {{-3,-4},-5},
+      {{4,-3},0}, {{-4*scale,3*scale},0}
+    }; // 唯一解 (0.6, 0.8)
+    auto scaled_empty = scaled_point;
+    scaled_empty.push_back({{1,0},0.61L});
+    for (int seed = 0; seed < 1000; ++seed) {
+      rnd.seed(seed);
+      assert(hp_feasible(scaled_point));
+      assert(!hp_feasible(scaled_empty));
+    }
   }
   for (int seed = 0; seed < 10000; ++seed) {
     rnd.seed(seed);
-    assert(halfplane_feasible_closed_coefficients(rows));
-    assert(halfplane_feasible_closed_coefficients(point));
-    assert(!halfplane_feasible_closed_coefficients(impossible));
-    assert(!halfplane_feasible_closed_coefficients(scaled_impossible));
+    assert(hp_feasible(rows));
+    assert(hp_feasible(point));
+    assert(!hp_feasible(impossible));
+    assert(!hp_feasible(scaled_impossible));
   }
-  assert(halfplane_feasible_closed_coefficients({}));
-  assert(halfplane_feasible_closed_coefficients({{{0,0},0},{{0,0},-1}}));
-  assert(!halfplane_feasible_closed_coefficients({{{0,0},1}}));
+  assert(hp_feasible({}));
+  assert(hp_feasible({{{0,0},0},{{0,0},-1}}));
+  assert(!hp_feasible({{{0,0},1}}));
   // 方向不经过端点相减：很大的截距也保留原始平行关系。
-  assert(!halfplane_feasible_closed_coefficients({
+  assert(!hp_feasible({
     {{10,1},1e18L}, {{-10,-1},-1e18L+100}}));
   // 非零的小夹角不能简单当平行：交点在远处。
-  assert(halfplane_feasible_closed_coefficients({
+  assert(hp_feasible({
     {{0,1},1}, {{1e-20L,-1},0}}));
   vector<pair<vector<L>, bool>> cases = {
     {{}, true},
@@ -98,18 +118,18 @@ int main() {
   };
   for (const auto& [lines, expected] : cases)
     for (int repeat = 0; repeat < 100; ++repeat) {
-      assert(halfplane_feasible_closed(lines) == expected);
-      assert(halfplane_feasible_closed(lines, eps) == expected);
+      assert(check_lines(lines) == expected);
+      assert(check_lines(lines, eps) == expected);
     }
 
   // 容差为距离，与有向边长度无关；零容差不主动放宽边界。
   vector<L> tiny_gap = {{{0,0},{1,0}},{{1,-eps},{0,-eps}}};
-  assert(halfplane_feasible_closed(tiny_gap, eps));
-  assert(!halfplane_feasible_closed(tiny_gap));
+  assert(check_lines(tiny_gap, eps));
+  assert(!check_lines(tiny_gap));
   tiny_gap[0].t = P(1e6L,0);
-  assert(halfplane_feasible_closed(tiny_gap, eps));
+  assert(check_lines(tiny_gap, eps));
   vector<L> larger_gap = {{{0,0},{1,0}},{{1,-4*eps},{0,-4*eps}}};
-  assert(!halfplane_feasible_closed(larger_gap, eps));
+  assert(!check_lines(larger_gap, eps));
 
   mt19937 generator(987654321);
   uniform_int_distribution<int> coordinate(-10,10), count(0,14);
@@ -123,7 +143,7 @@ int main() {
     }
     bool expected = exact_feasible(lines);
     for (int repeat = 0; repeat < 3; ++repeat) {
-      if (halfplane_feasible_closed(lines) != expected) {
+      if (check_lines(lines) != expected) {
         cerr << "closed HPI mismatch at trial " << trial << '\n';
         for (cl line : lines)
           cerr << line.s.x << ' ' << line.s.y << ' '
@@ -135,6 +155,6 @@ int main() {
   // 大量重复约束：退化可行交集，不应退化为每次都扫描前缀。
   vector<L> many(200000, L({0,1},{1,1}));
   many.push_back(L({1,1},{0,1}));
-  assert(halfplane_feasible_closed(many));
+  assert(check_lines(many));
   cerr << "closed halfplane tests passed (60000 exact-oracle comparisons)\n";
 }
