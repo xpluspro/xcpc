@@ -11,6 +11,9 @@
     $2\pi$ 的一对）。若差值为 $d$，取 $\min(d, 2\pi-d)$；等价地，$d>\pi$
     时改取 $2\pi-d$。
   \item 只要数据与运算可以保持整数形式，就优先使用 \texttt{long long}，不要过早转为浮点数。
+  \item 含 \texttt{eps} 的比较器用于 \texttt{std::sort} 时需特别谨慎：
+    “近似相等”可能不具传递性，破坏 strict weak ordering（严格弱序）。
+    能用整数或精确方向排序时，优先使用精确比较，并注意中间运算溢出。
   \item 若答案必为整数且可能超过 $10^{19}$，使用 \texttt{\_\_int128} 计算并输出，
     不要使用 \texttt{long double} 代替整数类型；浮点数无法保证大整数运算的精确性。
 \end{itemize}
