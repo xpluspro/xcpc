@@ -1,75 +1,52 @@
-// 左侧为合法闭半平面；支持无界、线段、单点和空约束，不需要加框。
-// 随机增量：维护离原点最近的可行点；违反新约束时在其边界上解一维区间。
-// 期望 O(n)，最坏 O(n^2)，空间 O(n)。不要用于每次都要求线性上界的场景。
-// tolerance >= 0 是距离容差：默认 0；显式传正数才将边界向外放宽。
-// tolerance = 0 不主动放宽，但浮点运算仍有舍入误差；精确判定需精确算术。
-// 输入及中间运算须为有限数（区间的无穷端点除外）。
-struct ClosedHalfplane { P normal; LD bound; }; // normal * point >= bound
-// 已知不等式系数时优先使用此接口，避免由两点相减重建方向。
-// 例如 x*A+B >= c/x 可直接写 {{x,1},c/x}，x > 0 时也可写 {{x*x,x},c}。
-bool halfplane_feasible_closed_coefficients(vector<ClosedHalfplane> constraints,
-    LD tolerance = 0) {
-  for (auto& row : constraints) {
-    LD length = hypotl(row.normal.x, row.normal.y);
-    if (length == 0 && row.bound > 0) return false;
-    row.bound -= tolerance * length;
+// n * p >= b；按题目原始表示构造：系数用 HP({a,b},c)，两点用 HP(L)。
+// 已知系数不要先造浮点端点再转回来，以免主动丢失平行关系。
+struct HP {
+  P n; LD b;
+  HP(P normal = {}, LD bound = 0) : n(normal), b(bound) {
+    LD d = hypotl(n.x, n.y);
+    if (d) n = n / d, b /= d;
   }
-  shuffle(constraints.begin(), constraints.end(), rnd);
-  // 只补偿点积舍入量级，避免同一边界的不同倍数因舍入被误判为矛盾。
-  auto violated = [](const ClosedHalfplane& row, cp point) {
-    LD x = row.normal.x * point.x, y = row.normal.y * point.y;
-    LD error = 8 * numeric_limits<LD>::epsilon()
-        * (fabsl(x) + fabsl(y) + fabsl(row.bound));
-    return row.bound - (x + y) > error;
-  };
-  P feasible;
-  const LD infinity = numeric_limits<LD>::infinity();
-  for (int i = 0; i < (int)constraints.size(); ++i) {
-    const auto& current = constraints[i];
-    if (!violated(current, feasible)) continue;
-    // 新的最近点必在这条边界上：base + direction * t。
-    P base = fabsl(current.normal.x) >= fabsl(current.normal.y)
-        ? P(current.bound / current.normal.x, 0)
-        : P(0, current.bound / current.normal.y);
-    P direction = current.normal.rot90();
-    // t 随方向长度反比缩放，误差下限也必须相应缩放。
-    LD parameter_unit = 1 / hypotl(direction.x, direction.y);
-    LD lower = -infinity, upper = infinity;
-    for (int j = 0; j < i; ++j) {
-      const auto& previous = constraints[j];
-      LD coefficient = previous.normal * direction;
-      LD residual = previous.bound - previous.normal * base;
-      // 不能用 sgn(coefficient)：极小的非零夹角仍可能在很远处相交。
-      if (coefficient > 0) lower = max(lower, residual / coefficient);
-      else if (coefficient < 0) upper = min(upper, residual / coefficient);
-      else if (violated(previous, base)) return false;
-      if (lower > upper) {
-        // 先排除无穷端点，防止误差尺度变成 inf 而吞掉空区间。
-        if (!isfinite(lower) || !isfinite(upper)) return false;
-        LD error = 64 * numeric_limits<LD>::epsilon()
-            * max({parameter_unit, fabsl(lower), fabsl(upper)});
-        if (lower - upper > error) return false;
-        // clamp 要求 lower <= upper；舍入量级的倒置按单点处理。
-        lower = upper = lower / 2 + upper / 2;
-      }
-    }
-    LD nearest = -(base * direction) / direction.len2();
-    feasible = base + direction * clamp(nearest, lower, upper);
-  }
-  return true;
+  HP(cl l) : HP((l.t - l.s).rot90(), (l.t - l.s).rot90() * l.s) {} // 左侧合法
+};
+
+bool hp_bad(const HP& h, cp p) {
+  LD x = h.n.x * p.x, y = h.n.y * p.y;
+  LD e = 16 * numeric_limits<LD>::epsilon()
+      * (1 + fabsl(x) + fabsl(y) + fabsl(h.b));
+  return h.b - (x + y) > e;
 }
 
-// 两点接口只能处理实际存储的方向，无法恢复端点构造时丢失的平行关系。
-// 不要用固定角度 eps 强行判平行，否则会丢掉远处的真实可行交点。
-// 零长度有向线按 turn == 0 视为无约束。
-bool halfplane_feasible_closed(const vector<L>& h, LD tolerance = 0) {
-  vector<ClosedHalfplane> constraints;
-  constraints.reserve(h.size());
-  for (cl line : h) {
-    P direction = line.t - line.s;
-    if (direction.x == 0 && direction.y == 0) continue;
-    P normal = direction.rot90();
-    constraints.push_back({normal, normal * line.s});
+// 闭半平面交是否非空：支持无界、线段、单点及空约束。
+// 随机增量，期望 O(n)，最坏 O(n^2)，空间 O(n)。
+// 仅补偿浮点舍入，非精确判定；输入及中间运算须有限（区间端点除外）。
+// 若需距离容差，调用前对非零法向量的 HP 手动 b -= tolerance。
+bool hp_feasible(vector<HP> a) {
+  shuffle(a.begin(), a.end(), rnd);
+  const LD inf = numeric_limits<LD>::infinity();
+  P p{};
+  for (int i = 0; i < (int)a.size(); ++i) {
+    if (!a[i].n.len2()) {
+      if (a[i].b > 0) return false;
+      continue;
+    }
+    if (!hp_bad(a[i], p)) continue;
+    P o = a[i].n * a[i].b, v = a[i].n.rot90();
+    LD l = -inf, r = inf;
+    for (int j = 0; j < i; ++j) {
+      LD k = a[j].n * v, c = a[j].b - a[j].n * o;
+      // 不用固定角度 eps 判平行：小夹角可能在远处有解。
+      if (k > 0) l = max(l, c / k);
+      else if (k < 0) r = min(r, c / k);
+      else if (hp_bad(a[j], o)) return false;
+    }
+    if (l > r) {
+      if (!isfinite(l) || !isfinite(r)) return false;
+      LD e = 64 * numeric_limits<LD>::epsilon()
+          * max({1.0L, fabsl(l), fabsl(r)});
+      if (l - r > e) return false;
+      l = r = l / 2 + r / 2;
+    }
+    p = o + v * clamp(0.0L, l, r);
   }
-  return halfplane_feasible_closed_coefficients(move(constraints), tolerance);
+  return true;
 }
