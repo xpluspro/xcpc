@@ -1,4 +1,5 @@
-// n * p >= b；已知系数优先 HP({a,b},c)，避免两点相减丢失平行关系。
+// n * p >= b；按题目原始表示构造：系数用 HP({a,b},c)，两点用 HP(L)。
+// 已知系数不要先造浮点端点再转回来，以免主动丢失平行关系。
 struct HP {
   P n; LD b;
   HP(P normal = {}, LD bound = 0) : n(normal), b(bound) {
