@@ -2,6 +2,7 @@ poly poly_auto_mul(poly a, poly b) { // 自动判断长度的乘法
 	int res_len = (int)a.size() + (int)b.size() - 1;
 	int ntt_n = 1; while (ntt_n < res_len) ntt_n *= 2;
 	a.resize(ntt_n); b.resize(ntt_n);
+	ntt_init(ntt_n);
 	ntt(a.data(), ntt_n, 1); ntt(b.data(), ntt_n, 1);
 	for (int i = 0; i < ntt_n; i++)
 		a[i] = (LL)a[i] * b[i] % p;

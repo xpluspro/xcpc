@@ -21,6 +21,7 @@ poly poly_calc(const poly& u, const poly& v,
 	fill(a + u.size(), a + n, 0);
 	memcpy(b, v.data(), sizeof(int) * v.size());
 	fill(b + v.size(), b + n, 0);
+	ntt_init(n);
 	ntt(a, n, 1); ntt(b, n, 1);
 	for (int i = 0; i < n; i++) c[i] = op(a[i], b[i]);
 	ntt(c, n, -1); return poly(c, c + n); }
