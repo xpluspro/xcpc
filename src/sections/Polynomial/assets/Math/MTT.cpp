@@ -16,6 +16,7 @@ vector<int> multiply(const vector<int>& u,
 	int base = ceil(sqrt(mod));
 	int n = (int)u.size(), m = (int)v.size();
 	int fft_n = 1; while (fft_n < n + m - 1) fft_n *= 2;
+	fft_init(fft_n);
 	for (int i = 0; i < 2; i++) {
 		fill(a[i], a[i] + fft_n, 0);
 		fill(b[i], b[i] + fft_n, 0); }
