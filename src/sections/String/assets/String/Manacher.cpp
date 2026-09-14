@@ -1,11 +1,13 @@
-void read(){ // 两倍空间
+void read(){ // 原串长 L，s 至少开 2 * L + 3
+	n = 0;
 	s[0] = '~', s[++n] = '|';
 	char c = getchar();
 	while(c < 'a' || c > 'z') c = getchar();
 	while('a' <= c && c <= 'z') s[++n] = c, s[++n] = '|', c = getchar();
+	s[n + 1] = '\0';
 }
 void manacher(){
-	int mx = 0, mid = -1, ans = 0;
+	int mx = 0, mid = -1;
 	for(int i=1;i<=n;i++){
 		if(i <= mx) h[i] = min(h[(mid<<1)-i], mx-i+1);
 		else h[i] = 1;

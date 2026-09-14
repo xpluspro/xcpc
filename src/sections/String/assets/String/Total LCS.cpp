@@ -1,6 +1,6 @@
 const int N = 2005; int H[N][N], V[N][N]; string s, t;
 int main() { cin >> s >> t;
-	int n = (int) (s.size() + 1), m = (int) (t.size() + 1); s = " " + s; t = " " + t;
+	int n = (int) s.size(), m = (int) t.size(); s = " " + s; t = " " + t;
 	for (int i = 1; i <= m; ++ i) H[0][i] = i;
 	for (int i = 1; i <= n; ++ i) {
 		for (int j = 1; j <= m; ++ j) {
