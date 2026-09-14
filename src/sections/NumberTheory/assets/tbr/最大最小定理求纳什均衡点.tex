@@ -1,9 +1,16 @@
-\paragraph{最大最小定理求纳什均衡点} 在二人零和博弈中,
-可以用以下方式求出一个纳什均衡点:
-在博弈双方中\textbf{任选}一方,
-求混合策略 $\mathbf{p}$ 使得对方选择任意一个\textbf{纯策略}时,
-己方的最小收益最大(等价于对方的最大收益最小).
-据此可以求出双方在此局面下的最优期望得分,
-分别等于己方最大的最小收益和对方最小的最大收益. 一般而言, 可以得到形如
-$$\max_{\mathbf{p}} \min_i\ \sum_{p_j\in \mathbf{p}}\ p_jw_{i,j}, \mathrm{s.t. } \ p_j\ge 0, \sum p_j=1 $$
-的形式. 当 $\sum p_jw_{i,j}$ 可以表示成只与 $i$ 有关的函数 $f(i)$ 时, 可以令初始时 $p_i=0$, 不断调整 $\sum p_jw_{i,j}$ 最小的那个i的概率 $p_i$, 直至无法调整或者 $\sum p_j=1$ 为止.
+\paragraph{极小极大定理与零和博弈均衡}
+设行玩家选 $i$、列玩家选 $j$ 时，列玩家收益为 $w_{i,j}$。双方的对偶线性规划为
+\[\begin{array}{c@{\qquad}c}
+\begin{aligned}
+\max_{\mathbf p,v}\quad &v\\[-2pt]
+\mathrm{s.t.}\quad &\sum_jw_{i,j}p_j\ge v\ (\forall i),\\[-2pt]
+&p_j\ge0,\ \sum_jp_j=1
+\end{aligned}
+&
+\begin{aligned}
+\min_{\mathbf q,u}\quad &u\\[-2pt]
+\mathrm{s.t.}\quad &\sum_iq_iw_{i,j}\le u\ (\forall j),\\[-2pt]
+&q_i\ge0,\ \sum_iq_i=1.
+\end{aligned}
+\end{array}\]
+极小极大定理保证 $u^*=v^*$；两边的最优策略共同构成纳什均衡。只解其中一边只能得到该玩家的最优策略，一般应使用线性规划而非贪心调整概率。
