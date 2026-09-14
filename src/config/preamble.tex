@@ -27,20 +27,64 @@
 \usepackage{xeCJK}
 \IfFontExistsTF{Source Han Serif SC}
   {\setCJKmainfont{Source Han Serif SC}[Scale=0.8]}
-  {\setCJKmainfont{FandolSong-Regular}[Scale=0.8]}
+  {\IfFontExistsTF{FandolSong-Regular.otf}
+    {\setCJKmainfont{FandolSong-Regular.otf}[
+       Scale=0.8,
+       BoldFont=FandolSong-Bold.otf,
+       ItalicFont=FandolKai-Regular.otf,
+       BoldItalicFont=FandolKai-Regular.otf,
+       BoldItalicFeatures={FakeBold=2}]}
+    {\setCJKmainfont{AR PL SungtiL GB}[Scale=0.8]}}
 \IfFontExistsTF{SimHei}
-  {\setCJKmonofont{SimHei}[Scale=0.8]}
-  {\setCJKmonofont{FandolHei-Regular}[Scale=0.8]}
+  {\setCJKmonofont{SimHei}[Scale=0.8,AutoFakeBold=2,AutoFakeSlant=0.2]}
+  {\IfFileExists{/mnt/c/Windows/Fonts/simhei.ttf}
+    {\setCJKmonofont{simhei.ttf}[
+       Path=/mnt/c/Windows/Fonts/,
+       Scale=0.8,
+       AutoFakeBold=2,
+       AutoFakeSlant=0.2]}
+    {\IfFontExistsTF{FandolHei-Regular.otf}
+      {\setCJKmonofont{FandolHei-Regular.otf}[
+         Scale=0.8,
+         BoldFont=FandolHei-Bold.otf,
+         ItalicFont=FandolKai-Regular.otf,
+         BoldItalicFont=FandolKai-Regular.otf,
+         BoldItalicFeatures={FakeBold=2}]}
+      {\setCJKmonofont{Droid Sans Fallback}[Scale=0.8]}}}
 \IfFontExistsTF{KaiTi}
-  {\setCJKsansfont{KaiTi}[Scale=0.8]}
-  {\setCJKsansfont{FandolKai-Regular}[Scale=0.8]}
+  {\setCJKsansfont{KaiTi}[Scale=0.8,AutoFakeBold=2,AutoFakeSlant=0.2]}
+  {\IfFontExistsTF{FandolKai-Regular.otf}
+       {\setCJKsansfont{FandolKai-Regular.otf}[
+          Scale=0.8,
+          AutoFakeBold=2,
+          AutoFakeSlant=0.2]}
+    {\setCJKsansfont{AR PL KaitiM GB}[Scale=0.8]}}
 
 \IfFontExistsTF{Linux Libertine O}
   {\setmainfont{Linux Libertine O}[Scale=0.925]}
   {\setmainfont{TeX Gyre Termes}[Scale=0.925]}
 \IfFontExistsTF{Consolas}
   {\setmonofont{Consolas}[Scale=0.775]}
-  {\setmonofont{Latin Modern Mono}[Scale=0.775]}
+  {\IfFileExists{/mnt/c/Windows/Fonts/consola.ttf}
+    {\setmonofont{consola.ttf}[
+       Path=/mnt/c/Windows/Fonts/,
+       Scale=0.775,
+       BoldFont=consolab.ttf,
+       ItalicFont=consolai.ttf,
+       BoldItalicFont=consolaz.ttf]}
+    {\setmonofont{Latin Modern Mono Light}[Scale=0.775]}}
+\newcommand{\coverfont}{}
+\IfFileExists{../tools/fusion-pixel-12px-proportional-zh_hans.ttf}
+  {\newfontfamily\coverlatinfont{fusion-pixel-12px-proportional-zh_hans.ttf}[
+     Path=../tools/,AutoFakeBold=2]
+   \newCJKfontfamily\covercjkfont{fusion-pixel-12px-proportional-zh_hans.ttf}[
+     Path=../tools/,AutoFakeBold=2]
+   \renewcommand{\coverfont}{\coverlatinfont\covercjkfont}}
+  {\IfFontExistsTF{Fusion Pixel 12px Proportional zh_hans}
+     {\newfontfamily\coverlatinfont{Fusion Pixel 12px Proportional zh_hans}[AutoFakeBold=2]
+      \newCJKfontfamily\covercjkfont{Fusion Pixel 12px Proportional zh_hans}[AutoFakeBold=2]
+      \renewcommand{\coverfont}{\coverlatinfont\covercjkfont}}
+     {}}
 %\setsansfont{Gill Sans Medium}
 
 \XeTeXlinebreaklocale "zh"
