@@ -19,13 +19,27 @@ void fft(cp* a, int n, int t) {
 				a[i + j] = u + v; a[i + j + k] = u - v; }
 	if (t < 0) for (int i = 0; i < n; i++) a[i] /= n; }
 
-// usage: 整数卷积（a、b 的系数按低次到高次存放）
+// usage: 有符号 32 位整数卷积（答案需在 long long 范围内）
+// const long long B = 1 << 15; // 按数据范围选，使每路卷积可可靠舍入
 // int need = a.size() + b.size() - 1, n = 1;
 // while (n < need) n <<= 1;
-// a.resize(n); b.resize(n); fft_init(n);
-// fft(a.data(), n, 1); fft(b.data(), n, 1);
-// for (int i = 0; i < n; i++) a[i] *= b[i];
-// fft(a.data(), n, -1);
+// vector<cp> a0(n), a1(n), b0(n), b1(n), c0(n), c1(n), c2(n);
+// for (int i = 0; i < (int)a.size(); i++)
+//     a0[i] = a[i] % B, a1[i] = a[i] / B;
+// for (int i = 0; i < (int)b.size(); i++)
+//     b0[i] = b[i] % B, b1[i] = b[i] / B;
+// fft_init(n);
+// fft(a0.data(), n, 1); fft(a1.data(), n, 1);
+// fft(b0.data(), n, 1); fft(b1.data(), n, 1);
+// for (int i = 0; i < n; i++) {
+//     c0[i] = a0[i] * b0[i];
+//     c1[i] = a0[i] * b1[i] + a1[i] * b0[i];
+//     c2[i] = a1[i] * b1[i]; }
+// fft(c0.data(), n, -1); fft(c1.data(), n, -1);
+// fft(c2.data(), n, -1);
 // vector<long long> c(need);
-// for (int i = 0; i < need; i++)
-//     c[i] = llround(real(a[i]));
+// for (int i = 0; i < need; i++) {
+//     __int128 x = llround(c0[i].real());
+//     x += (__int128)llround(c1[i].real()) * B;
+//     x += (__int128)llround(c2[i].real()) * B * B;
+//     c[i] = (long long)x; }
