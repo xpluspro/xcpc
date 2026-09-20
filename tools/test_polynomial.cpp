@@ -67,7 +67,8 @@ int fib(long long n) {
 int main() {
 	inv[1]=1; for(int i=2;i<MAXN;++i) inv[i]=(LL)(p-p/i)*inv[p%i]%p;
 	auto product = poly_mul(poly{1,2,3}, poly{4,5});
-	assert((vector<int>(product.begin(), product.begin()+4) == vector<int>{4,13,22,15}));
+	assert((product == vector<int>{4,13,22,15}));
+	assert((poly_mul(poly{7}, poly{8}) == vector<int>{56}));
 	auto arbitrary_product = arbitrary_mod_convolution::multiply(
 		vector<int>{1,2,3}, vector<int>{4,5}, 1000000007);
 	assert((arbitrary_product == vector<int>{4,13,22,15}));

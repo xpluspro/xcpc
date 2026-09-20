@@ -1,16 +1,27 @@
+// 外部定义 MAXN 作为工作区容量；所有实际 NTT 长度 n 都必须满足：
+// n 是 2 的幂、n <= MAXN、n | (p-1)。omega[25] 最多存到 2^25 层；
+// 例如 p=998244353 时因 p-1 只含 2^23，实际最多只能取 n=2^23。
 vector<int> omega[25]; // 单位根
 // n 是 DFT 的最大长度，例如如果最多有两个长为 m 的多项式相乘，
 // 或者求逆的长度为 m，那么 n 需要 >= 2m
+// init 要预处理 O(n) 个单位根，可能很耗时；n 相同时只调用一次，
+// 不要在每次 ntt 前重复 init
 void ntt_init(int n) { // n = 2^k
-	for (int k = 2, d = 0; k <= n; k *= 2, d++) {
+	assert(n > 0 && (n & (n - 1)) == 0 && n <= MAXN &&
+		n <= (1 << 25) && (p - 1) % n == 0);
+	static int prepared = 1;
+	if (n <= prepared) return; // 已初始化的较大长度也覆盖所有较小长度
+	for (int k = prepared * 2, d = __builtin_ctz(prepared);
+		k <= n; k *= 2, d++) {
 		omega[d].resize(k + 1);
 		int wn = qpow(3, (p - 1) / k), tmp = 1;
 		for (int i = 0; i <= k; i++) { omega[d][i] = tmp;
-			tmp = (LL)tmp * wn % p; } } }
+			tmp = (LL)tmp * wn % p; } }
+	prepared = n; }
 // 传入的数必须是 [0, p) 范围内，不能有负的
 // 否则把 d == 16 改成 d % 8 == 0 之类，多取几次模
 void ntt(int *c, int n, int tp) {
-	static ULL a[N];
+	static ULL a[MAXN];
 	for (int i = 0; i < n; i++) a[i] = c[i];
 	for (int i = 1, j = 0; i < n - 1; i++) {
 		int k = n; do j ^= (k >>= 1); while (j < k);
