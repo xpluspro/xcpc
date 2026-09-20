@@ -1,6 +1,6 @@
 using poly = vector<int>;
 // poly: 系数低次 -> 高次；{1,2,3} = 1 + 2x + 3x^2
-// poly_mul(a,b)       : a*b，结果长度补到 2 的幂
+// poly_mul(a,b)       : a*b，结果长度恰为 a.size()+b.size()-1
 // poly_inv(a)         : 1/a mod x^n；n=a.size()，a[0]!=0
 // poly_sqrt(a)        : sqrt(a) mod x^n；要求 a[0]==1
 // poly_derivative(a)  : a'；返回长度仍为 a.size()
@@ -10,8 +10,18 @@ using poly = vector<int>;
 // poly_div(a,b)       : 商；要求 b 的最高次项非 0
 // poly_mod(a,b)       : {余数, 商}
 // poly_eval(f,x)()    : f 在 x 中各点的值
+// 容量约定：MAXN 是 NTT 工作区容量，不是多项式的逻辑长度。
+// 两个长度为 n,m 的多项式相乘时，need=n+m-1，NTT 长度为不小于 need
+// 的最小 2 的幂，MAXN 必须不小于该长度。
+// 连乘 k 个长度分别为 len[i] 的非空多项式时，最终长度为
+// need=1+sum(len[i]-1)，取 MAXN>=bit_ceil(need) 即可保证所有中间乘法安全；
+// 若每个长度都不超过 L，可直接取 MAXN>=bit_ceil(k*(L-1)+1)。
+// 若每次乘完都截断到 L，但乘法前两个操作数仍可能各有 L 项，则仍需
+// MAXN>=bit_ceil(2L-1)，不能只开到 L。
+// 本模板求长度 L 的逆/根/ln/exp 时，最坏需要 2*bit_ceil(L)；其中
+// bit_ceil(x) 表示不小于 x 的最小 2 的幂。实际 NTT 长度还必须整除 p-1。
 poly poly_calc(const poly& u, const poly& v,
-	function<int(int, int)> op) { // 返回长度补齐到 2 的幂
+	function<int(int, int)> op) {
 	if (u.empty() || v.empty()) return {};
 	static int a[MAXN], b[MAXN], c[MAXN];
 	int n = 1, need = (int)u.size() + (int)v.size() - 1;
@@ -24,10 +34,10 @@ poly poly_calc(const poly& u, const poly& v,
 	ntt_init(n);
 	ntt(a, n, 1); ntt(b, n, 1);
 	for (int i = 0; i < n; i++) c[i] = op(a[i], b[i]);
-	ntt(c, n, -1); return poly(c, c + n); }
+	ntt(c, n, -1); return poly(c, c + need); }
 poly poly_mul(const poly& u, const poly& v) { // 乘法
 	return poly_calc(u, v, [](int a, int b)
-		{ return (LL)a * b % p; }); } // 返回长度补齐到 2 的幂
+		{ return (LL)a * b % p; }); }
 poly poly_inv(const poly& a) { // 求逆，返回长度不变
 	assert(!a.empty() && a[0] % p != 0);
 	int size = (int)a.size(), limit = 1; while (limit < size) limit *= 2;
@@ -36,7 +46,7 @@ poly poly_inv(const poly& a) { // 求逆，返回长度不变
 		c.resize(k); poly b(aa.begin(), aa.begin() + k);
 		c = poly_calc(b, c, [](int bi, int ci) {
 			return ((2 - (LL)bi * ci) % p + p) * ci % p; });
-		memset(c.data() + k, 0, sizeof(int) * k); }
+		c.resize(k); }
 	c.resize(size); return c; }
 poly poly_sqrt(const poly& a) { // 开根，返回长度不变
 	int size = (int)a.size(), limit = 1; while (limit < size) limit *= 2;
@@ -69,5 +79,5 @@ poly poly_exp(const poly& a) { poly c{1};
 		for (int i = 0; i < k; i++)
 			b[i] = (aa[i] - b[i] + p) % p;
 		(++b[0]) %= p; c = poly_mul(b, c);
-		memset(c.data() + k, 0, sizeof(int) * k); }
+		c.resize(k); }
 	c.resize(size); return c; }
