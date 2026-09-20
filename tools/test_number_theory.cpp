@@ -66,6 +66,8 @@ namespace cubic {
 #include "../src/sections/NumberTheory/assets/Math/解一元三次方程.cpp"
 }
 
+#include "../src/sections/NumberTheory/assets/Math/CantorExpansion.cpp"
+
 #include "../src/sections/NumberTheory/assets/Math/min_25筛.cpp"
 
 LL choose_mod(int n, int k, int mod) {
@@ -101,6 +103,24 @@ LL naive_min25_value(int n) {
 }
 
 int main() {
+	ULL permutation_count = 1;
+	for (int n = 0; n <= 9; ++n) {
+		std::vector<int> p(n);
+		std::iota(p.begin(), p.end(), 1);
+		ULL expected_rank = 0;
+		do {
+			assert(cantor::encode(p) == expected_rank);
+			assert(cantor::decode(n, expected_rank) == p);
+			++expected_rank;
+		} while (std::next_permutation(p.begin(), p.end()));
+		assert(expected_rank == permutation_count);
+		permutation_count *= n + 1;
+	}
+	auto fac20 = cantor::factorial(20);
+	auto last_permutation = cantor::decode(20, fac20[20] - 1);
+	assert(std::is_sorted(last_permutation.rbegin(), last_permutation.rend()));
+	assert(cantor::encode(last_permutation) == fac20[20] - 1);
+
 	auto check_cubic = [](long double a, long double b, long double c, long double d) {
 		auto roots = cubic::solveCubic(a, b, c, d);
 		for (auto x : roots)

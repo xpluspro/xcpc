@@ -14,6 +14,10 @@
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/Factorial Mod.cpp}
 				\subsection{类欧几里得 直线下格点统计}
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/直线下格点统计.cpp}
+				\subsection{康拓展开}
+					对排列 $p$，令 $c_i=|\{j>i:p_j<p_i\}|$，则其从 $0$ 开始的字典序排名为
+					$\sum_{i=0}^{n-1}c_i(n-1-i)!$。以下编码、解码均为 $O(n\log n)$。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/CantorExpansion.cpp}
 				\subsection{万能欧几里德}
 					\inputminted{cpp}{sections/NumberTheory/assets/zjj/euclid.cpp}
 				\subsection{平方剩余}
