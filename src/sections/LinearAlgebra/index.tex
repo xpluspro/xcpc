@@ -1,8 +1,39 @@
 \section{线性代数}
 				\subsection{高斯消元}
+					浮点版建议使用 \texttt{long double}，每列选绝对值最大的主元。
+					\texttt{eps} 是主元和无解判断的绝对阈值，需要结合数据尺度调整；
+					量级差异大时可先缩放方程（同一行的系数与常数项一起缩放）。
+					消元只跳过严格为零的系数：小系数乘以主元行的大数仍可能有重要贡献。
+
+					精度敏感时保留原始 $A,b$，将解代回，逐行检查
+					$|\sum_j a_{ij}x_j-b_i| \le
+					\tau_{\rm abs}+\tau_{\rm rel}(|b_i|+\sum_j|a_{ij}x_j|)$，
+					其中绝对、相对容差按题目要求设置。
+					残差小不保证解的误差小；接近奇异的系统可能放大舍入误差，
+					需考虑更高精度，有理数输入也可用精确分数运算。
+					单纯减小 \texttt{eps} 不能消除舍入误差。
+
 					模 $p$ 版本要求 $p$ 为素数，将除法替换为乘逆元；合数模数不能直接套用。
 					\inputminted{cpp}{sections/LinearAlgebra/assets/Math/高斯消元.cpp}
 				\subsection{Simplex 单纯形}
+					求 $\max c^Tx$，约束为 $Ax\le b$、$x\ge0$；要求 $n,m<N$。
+					表中存入 $a_{0j}=c_j$、$a_{i0}=b_i$、$a_{ij}=-A_{ij}$。
+					优化阶段采用 Bland 规则处理退化，最小比值相等时按基变量编号选择；
+					此防循环结论基于精确运算，浮点版本仍需关注数据尺度与误差。
+					\texttt{solve()} 原地修改表，多组数据须清空表后重新填入；变量编号会自动重置。
 					\inputminted{cpp}{sections/LinearAlgebra/assets/Math/Simplex.cpp}
-				\subsection{高斯消元最小范数解}
+				\subsection{最小范数解（QR 分解）}
+					调用 \texttt{minnorm\_qr(a, d, tol)}，$n=a.\mathrm{size}()$ 为方程数，
+					$d$ 为未知数个数；每行 $d+1$ 项表示 $Ax+c=0$，最后一列填 $c=-b$，
+					注意与 6.1 的增广矩阵符号约定不同。返回 \texttt{rank, x, kernel}：
+					数值秩、最小二范数解、标准正交零空间基；通解为
+					$x+\sum_i\lambda_i\,\mathrm{kernel}_i$。
+					\texttt{rank=-1} 表示一致性检查失败（无解或精度不足），另两项为空；
+					本模板不求无解方程组的最小二乘拟合，不修改输入矩阵。
+
+					先按系数范数缩放各方程，再对 $A^T$ 做带列主元的 Householder QR。
+					记秩为 $r$，由 $R_{11}^Ty=(P^Tb)_{1:r}$ 求出 $y$，取 $x=Q_1y$；
+					$Q$ 的其余列构成零空间基，不显式构造 $T^TT$。
+					时间 $O(nd+d^2+(n+d)dr)$，空间 $O(nd+d^2)$。
+					\texttt{tol} 控制缩放后的数值秩和残差检查，近相关约束仍需调整容差或提高精度。
 					\inputminted{cpp}{sections/LinearAlgebra/assets/Geometry/minnorm_gauss.cpp}

@@ -2,7 +2,7 @@ struct poly_eval { poly f; vector<int> x; int query_count; // 函数和询问点
 	vector<poly> gs; vector<int> ans; // gs 是预处理数组
 	poly_eval(poly f_, vector<int> x_) : f(f_), x(x_), query_count(x_.size()) {}
 	void pretreat(int l, int r, int o) { poly& g = gs[o];
-		if (l == r) { g = poly{p - x[l], 1}; return; }
+		if (l == r) { g = poly{(p - x[l]) % p, 1}; return; }
 		int mid = (l + r) / 2; pretreat(l, mid, o * 2);
 		pretreat(mid + 1, r, o * 2 + 1);
 		if (o > 1)
@@ -14,6 +14,7 @@ struct poly_eval { poly f; vector<int> x; int query_count; // 函数和询问点
 		solve(mid + 1, r, o * 2 + 1,
 			poly_mod(rem, gs[o * 2 + 1]).first); }
 	vector<int> operator() () { // 包装好的接口
+		if (f.empty()) return vector<int>(query_count, 0); // 空多项式视为 0
 		int n = (int)f.size(), m = (int)x.size();
 		if (m <= n) x.resize(m = n + 1);
 		else if (n < m - 1) f.resize(n = m - 1);

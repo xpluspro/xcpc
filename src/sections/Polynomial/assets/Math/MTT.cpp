@@ -1,19 +1,23 @@
+// 使用本节时，需将配套复制的 FFT 改为 long double：
+// cp = complex<long double>，PI = acosl(-1.0L)，
+// 单位根用 polar(1.0L, ...)，有效二进制精度需至少 64 位。
+// 下文的 L / il 常量不能与 5.1 节默认的 double 版 cp 直接混用。
 void dft(cp* a, cp* b, int n) { static cp c[MAXN];
 	for (int i = 0; i < n; i++)
 		c[i] = cp(a[i].real(), b[i].real());
 	fft(c, n, 1);
 	for (int i = 0; i < n; i++) { int j = (n - i) & (n - 1);
-		a[i] = (c[i] + conj(c[j])) * 0.5;
-		b[i] = (c[i] - conj(c[j])) * -0.5i; } }
+		a[i] = (c[i] + conj(c[j])) * 0.5L;
+		b[i] = (c[i] - conj(c[j])) * -0.5il; } }
 void idft(cp* a, cp* b, int n) { static cp c[MAXN];
-	for (int i = 0; i < n; i++) c[i] = a[i] + 1i * b[i];
+	for (int i = 0; i < n; i++) c[i] = a[i] + 1il * b[i];
 	fft(c, n, -1);
 	for (int i = 0; i < n; i++) {
 		a[i] = c[i].real(); b[i] = c[i].imag(); } }
 vector<int> multiply(const vector<int>& u,
 		const vector<int>& v, int mod) { // 任意模数卷积
 	static cp a[2][MAXN], b[2][MAXN], c[3][MAXN];
-	int base = ceil(sqrt(mod));
+	int base = ceill(sqrtl(mod));
 	int n = (int)u.size(), m = (int)v.size();
 	int fft_n = 1; while (fft_n < n + m - 1) fft_n *= 2;
 	fft_init(fft_n);
@@ -37,7 +41,7 @@ vector<int> multiply(const vector<int>& u,
 	int base2 = base * base % mod;
 	vector<int> ans(n + m - 1);
 	for (int i = 0; i < n + m - 1; i++)
-		ans[i] = ((LL)(c[0][i].real() + 0.5) +
-			(LL)(c[1][i].real() + 0.5) % mod * base +
-			(LL)(c[2][i].real() + 0.5) % mod * base2) % mod;
+		ans[i] = ((LL)(c[0][i].real() + 0.5L) +
+			(LL)(c[1][i].real() + 0.5L) % mod * base +
+			(LL)(c[2][i].real() + 0.5L) % mod * base2) % mod;
 	return ans; }

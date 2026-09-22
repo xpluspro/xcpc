@@ -18,8 +18,9 @@
 						\input{sections/Polynomial/assets/Math/插值.tex}
 					% \subsubsection*{快速插值}
 					% 	\input{sections/Polynomial/assets/Math/快速插值.tex}
-				\subsection{线性递推}
-					\subsubsection*{$O(k^2 \log n)$}
+					\subsection{线性递推}
+						以下三种实现均从第 $0$ 项计数：初始值为 $a_0,\ldots,a_{k-1}$，查询 $n$ 返回 $a_n$。
+						\subsubsection*{$O(k^2 \log n)$}
 						\inputminted{cpp}{sections/Polynomial/assets/Math/线性递推.cpp}
 					\subsubsection*{$O(k \log k \log n)$ - Bostan-Mori}
 						\inputminted{cpp}{sections/Polynomial/assets/Math/快速线性递推-bostan-mori.cpp}
