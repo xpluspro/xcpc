@@ -2,6 +2,9 @@ int bostan_mori(long long k, poly a, poly b) {
 	int n = (int)a.size(); while (k) { poly c = b;
 		for (int i = 1; i < n; i += 2) c[i] = (p - c[i]) % p;
 		a = poly_mul(a, c); b = poly_mul(b, c);
+		// 自然卷积只有 2n-1 项；下面 k 为奇数时会访问第 2n-1 项，
+		// 该项理论上为 0，需显式补出，不能依赖 poly_mul 返回 NTT 补零尾部。
+		a.resize(2 * n); b.resize(2 * n);
 		for (int i = 0; i < n; i++) {
 			a[i] = a[i * 2 + k % 2]; b[i] = b[i * 2]; }
 		a.resize(n); b.resize(n); k /= 2; }

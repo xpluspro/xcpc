@@ -2,6 +2,8 @@ using cp = complex<double>; const double PI = acos(-1.0);
 vector<cp> omega[25]; // 单位根
 // n 是 DFT 的最大长度，例如如果最多有两个长为 m 的多项式相乘，
 // 或者求逆的长度为 m，那么 n 需要 >= 2m
+// init 要预处理 O(n) 个单位根，可能很耗时；n 相同时只调用一次，
+// 不要在每次 fft 前重复 init
 void fft_init(int n) { // n = 2^k
 	for (int k = 2, d = 0; k <= n; k *= 2, d++) {
 		omega[d].resize(k + 1); 
@@ -18,14 +20,3 @@ void fft(cp* a, int n, int t) {
 				cp u = a[i + j], v = w * a[i + j + k];
 				a[i + j] = u + v; a[i + j + k] = u - v; }
 	if (t < 0) for (int i = 0; i < n; i++) a[i] /= n; }
-
-// usage: 整数卷积（a、b 的系数按低次到高次存放）
-// int need = a.size() + b.size() - 1, n = 1;
-// while (n < need) n <<= 1;
-// a.resize(n); b.resize(n); fft_init(n);
-// fft(a.data(), n, 1); fft(b.data(), n, 1);
-// for (int i = 0; i < n; i++) a[i] *= b[i];
-// fft(a.data(), n, -1);
-// vector<long long> c(need);
-// for (int i = 0; i < need; i++)
-//     c[i] = llround(real(a[i]));

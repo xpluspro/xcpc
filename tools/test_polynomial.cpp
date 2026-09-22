@@ -39,6 +39,14 @@ int inv[MAXN];
 namespace arbitrary_mod_convolution {
 using namespace std;
 using namespace std::complex_literals;
+#include "../src/sections/Polynomial/assets/Math/FFT.cpp"
+#include "../src/sections/Polynomial/assets/Math/FFT卷积.cpp"
+#include "../src/sections/Polynomial/assets/Math/FFT拆系数卷积.cpp"
+}
+
+namespace mtt_convolution {
+using namespace std;
+using namespace std::complex_literals;
 #include "mtt_fft_long_double.hpp"
 #include "../src/sections/Polynomial/assets/Math/MTT.cpp"
 }
@@ -66,10 +74,28 @@ int fib(long long n) {
 int main() {
 	inv[1]=1; for(int i=2;i<MAXN;++i) inv[i]=(LL)(p-p/i)*inv[p%i]%p;
 	auto product = poly_mul(poly{1,2,3}, poly{4,5});
-	assert((vector<int>(product.begin(), product.begin()+4) == vector<int>{4,13,22,15}));
-	auto arbitrary_product = arbitrary_mod_convolution::multiply(
+	assert((product == vector<int>{4,13,22,15}));
+	assert((poly_mul(poly{7}, poly{8}) == vector<int>{56}));
+	auto arbitrary_product = mtt_convolution::multiply(
 		vector<int>{1,2,3}, vector<int>{4,5}, 1000000007);
 	assert((arbitrary_product == vector<int>{4,13,22,15}));
+	vector<std::complex<double>> fft_values{1,2,3,4}, fft_original = fft_values;
+	arbitrary_mod_convolution::fft_init(4);
+	arbitrary_mod_convolution::fft(fft_values.data(), 4, 1);
+	arbitrary_mod_convolution::fft(fft_values.data(), 4, -1);
+	for (int i = 0; i < 4; i++)
+		assert(std::abs(fft_values[i] - fft_original[i]) < 1e-9);
+	auto fft_basic_product = arbitrary_mod_convolution::convolution(
+		vector<int>{1,-2,3}, vector<int>{-4,5});
+	assert((fft_basic_product == vector<long long>{-4,13,-22,15}));
+	auto fft_product = arbitrary_mod_convolution::convolution_ll(
+		vector<int>{1,-2,3}, vector<int>{-4,5});
+	assert((fft_product == vector<long long>{-4,13,-22,15}));
+	auto fft_product_again = arbitrary_mod_convolution::convolution_ll(
+		vector<int>{1000000000,1000000000}, vector<int>{1000000000,-1000000000});
+	assert((fft_product_again == vector<long long>{1000000000000000000LL,0,-1000000000000000000LL}));
+	assert(arbitrary_mod_convolution::convolution_ll(
+		vector<int>{}, vector<int>{1,2,3}).empty());
 	auto inverse = poly_inv(poly{1,1,1,1,1});
 	auto identity = poly_mul(poly{1,1,1,1,1}, inverse);
 	assert(identity[0] == 1); for (int i=1;i<5;++i) assert(identity[i] == 0);
@@ -87,7 +113,7 @@ int main() {
 		assert(result.first == remainder && result.second == quotient);
 	};
 	// poly_mul 的高次补零不能影响除法的次数判断或反转求逆。
-	poly padded_divisor = poly_mul(poly{1,1}, poly{1,1});
+	poly padded_divisor{1,2,1,0};
 	assert((padded_divisor == poly{1,2,1,0}));
 	check_division(poly{1,2,1}, padded_divisor, poly{0,0}, poly{1});
 	check_division(poly{1,0,0,1}, padded_divisor, poly{3,3}, poly{p-2,1});
