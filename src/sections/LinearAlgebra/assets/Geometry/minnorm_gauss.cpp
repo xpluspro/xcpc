@@ -14,16 +14,23 @@ struct MinNormResult {
 MinNormResult minnorm_qr(const vector<Vec>& a, int d, LD tol = 1e-12L) {
     int n = (int)a.size();
     vector<Vec> r(d, Vec(n)), q(d, Vec(d));
-    Vec scale(n, 1), rhs(n);
+    Vec row_max(n, 1), row_norm(n, 1), rhs(n);
     vector<int> perm(n);
     iota(perm.begin(), perm.end(), 0);
     for (int i = 0; i < d; ++i) q[i][i] = 1;
     for (int i = 0; i < n; ++i) {
+        LD largest = 0;
+        for (int j = 0; j < d; ++j) largest = max(largest, abs(a[i][j]));
+        if (largest != 0) row_max[i] = largest;
         LD norm = 0;
-        for (int j = 0; j < d; ++j) norm = hypot(norm, a[i][j]);
-        if (norm != 0) scale[i] = norm;
-        rhs[i] = -a[i][d] / scale[i];
-        for (int j = 0; j < d; ++j) r[j][i] = a[i][j] / scale[i];
+        // 先除以最大系数，避免有限输入的 hypot 本身溢出。
+        for (int j = 0; j < d; ++j)
+            norm = hypot(norm, a[i][j] / row_max[i]);
+        if (norm != 0) row_norm[i] = norm;
+        rhs[i] = -(a[i][d] / row_max[i] / row_norm[i]);
+        if (!isfinite(rhs[i])) return {-1, {}, {}};
+        for (int j = 0; j < d; ++j)
+            r[j][i] = a[i][j] / row_max[i] / row_norm[i];
     }
 
     // 缩放后的 A^T 做带列主元的 Householder QR：A^T P = Q R
@@ -81,7 +88,7 @@ MinNormResult minnorm_qr(const vector<Vec>& a, int d, LD tol = 1e-12L) {
     for (int i = 0; i < n; ++i) {
         LD residual = -rhs[i], magnitude = 1 + abs(rhs[i]);
         for (int j = 0; j < d; ++j) {
-            LD term = (a[i][j] / scale[i]) * x[j];
+            LD term = (a[i][j] / row_max[i] / row_norm[i]) * x[j];
             residual += term;
             magnitude += abs(term);
         }

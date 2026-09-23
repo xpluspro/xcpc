@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <numeric>
 #include <vector>
 
@@ -28,19 +29,22 @@ MinNormResult check(const vector<Vec>& a, int d, int rank, const Vec& expected) 
 	}
 	// 可行性，以及每个基向量确实属于原矩阵的零空间。
 	for (const auto& row : a) {
-		LD scale = 0;
-		for (int j = 0; j < d; j++) scale = hypot(scale, row[j]);
-		if (scale == 0) scale = 1;
-		LD residual = row[d] / scale, magnitude = 1 + abs(residual);
+		LD largest = 0;
+		for (int j = 0; j < d; j++) largest = max(largest, abs(row[j]));
+		if (largest == 0) largest = 1;
+		LD norm = 0;
+		for (int j = 0; j < d; j++) norm = hypot(norm, row[j] / largest);
+		if (norm == 0) norm = 1;
+		LD residual = row[d] / largest / norm, magnitude = 1 + abs(residual);
 		for (int j = 0; j < d; j++) {
-			LD term = (row[j] / scale) * result.x[j];
+			LD term = (row[j] / largest / norm) * result.x[j];
 			residual += term;
 			magnitude += abs(term);
 		}
 		assert(abs(residual) < 1e-9L * magnitude);
 		for (const auto& v : result.kernel) {
 			LD dot = 0;
-			for (int j = 0; j < d; j++) dot += (row[j] / scale) * v[j];
+			for (int j = 0; j < d; j++) dot += (row[j] / largest / norm) * v[j];
 			assert(abs(dot) < 1e-9L);
 		}
 	}
@@ -87,6 +91,9 @@ int main() {
 	// 等价方程缩放很多个数量级，仍应给出相同的秩和最小范数解。
 	check({{1e-20L, 1e-20L, -2e-20L}, {1e20L, 1e20L, -2e20L}, {-3, -3, 6}},
 		2, 1, {1, 1});
+	// 每个输入都有限，但 hypot(max, max) 会溢出；解仍应是 (1/2, 1/2)。
+	LD largest = numeric_limits<LD>::max();
+	check({{largest, largest, -largest}}, 2, 1, {0.5L, 0.5L});
 	check({}, 3, 0, {0, 0, 0});
 	check({{0, 0, 0}}, 2, 0, {0, 0});
 	check({}, 0, 0, {});
