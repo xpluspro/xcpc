@@ -7,8 +7,8 @@ using poly = vector<int>;
 // poly_integrate(a)   : 积分 mod x^n；常数项为 0
 // poly_ln(a)          : ln(a) mod x^n；要求 a[0]==1
 // poly_exp(a)         : exp(a) mod x^n；要求 a[0]==0
-// poly_div(a,b)       : 商；要求 b 的最高次项非 0
-// poly_mod(a,b)       : {余数, 商}
+// poly_div(a,b)       : 商；要求 b 非零，自动忽略高次补零
+// poly_mod(a,b)       : {余数, 商}；对 b 的处理同上
 // poly_eval(f,x)()    : f 在 x 中各点的值
 // 容量约定：MAXN 是 NTT 工作区容量，不是多项式的逻辑长度。
 // 两个长度为 n,m 的多项式相乘时，need=n+m-1，NTT 长度为不小于 need
@@ -70,7 +70,8 @@ poly poly_ln(const poly& a) { // ln，常数项必须是 1，返回长度不变
 	c.resize(a.size()); return poly_integrate(c); }
 // exp，常数项必须是 0，返回长度不变
 // 常数很大并且总代码很长, 一般可以改用分治 FFT
-// 依据: 设 $G(x) = \exp F(x)$, 则 $g_i = \frac{1}{i} \sum_{k=1}^{i-1} g_{i-k} \, k \, f_k$
+// 依据: 设 $G(x) = \exp F(x)$, 则 $g_0 = 1$, 且对 $i \ge 1$,
+// $g_i = \frac{1}{i} \sum_{k=1}^{i} g_{i-k} \, k \, f_k$
 poly poly_exp(const poly& a) { poly c{1};
 	int size = (int)a.size(), limit = 1; while (limit < size) limit *= 2;
 	poly aa = a; aa.resize(limit);

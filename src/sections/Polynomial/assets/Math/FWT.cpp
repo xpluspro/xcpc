@@ -5,6 +5,9 @@ $C[i][j] \times C[i][k] = C[i][j \oplus k]$
 对于不存在FWT矩阵的运算: 通过映射01变成另外一个可行的运算。*/
 const LL XOR[2][2] = {{1, 1}, {1, M-1}};
 const LL i2 = (M+1)/2, iXOR[2][2] = {{i2, i2}, {i2, M-i2}};
+// n 必须是正整数且为 2 的幂，f 至少有 n 个元素。
+// 调用前将数组扩容到 n，并将原长度到 n 之间新增的元素补零。
+// 做卷积时，两数组补到同一个 n：不小于两者原长度的最小 2 的幂。
 void FWT(LL f[], const LL C[2][2], int n) {
   for (int t = 1; t < n; t <<= 1) {
 	for (int l = 0; l < n; l += t + t) {

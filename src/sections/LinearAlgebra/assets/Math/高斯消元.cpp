@@ -1,5 +1,6 @@
 // a 是 m * (n + 1) 的增广矩阵；返回 {秩, 一组解}
 // 秩为 -1 表示无解，秩为 n 表示唯一解，否则有无穷多解
+// LD 建议用 long double；eps 是绝对判零阈值，需结合数据尺度调整
 pair<int, vector<LD>> gauss(vector<vector<LD>> a, LD eps = 1e-12L) {
 	if (a.empty()) return {0, {}};
 	int m = (int)a.size(), n = (int)a[0].size() - 1, row = 0;
@@ -14,7 +15,8 @@ pair<int, vector<LD>> gauss(vector<vector<LD>> a, LD eps = 1e-12L) {
 		for (int j = col; j <= n; j++) a[row][j] /= div;
 		for (int i = 0; i < m; i++) if (i != row) {
 			LD mul = a[i][col];
-			if (abs(mul) <= eps) continue;
+			// mul 很小也可能产生重要更新，不能按 eps 跳过
+			if (mul == 0) continue;
 			a[i][col] = 0;
 			for (int j = col + 1; j <= n; j++)
 				a[i][j] -= mul * a[row][j];
@@ -33,7 +35,8 @@ pair<int, vector<LD>> gauss(vector<vector<LD>> a, LD eps = 1e-12L) {
 	return {row, x};
 }
 
-// 模素数 p 的线性方程组；返回值含义同上
+// 模素数 p 的线性方程组；返回 {秩 r, 一组解}，r = -1 表示无解
+// 有解时共有 p^(n-r) 组模 p 解；r = n 表示唯一解
 // 与浮点版本相比：非零元都能作为主元，除法改成乘逆元
 pair<int, vector<int>> gauss_mod(vector<vector<int>> a, int p) {
 	if (a.empty()) return {0, {}};

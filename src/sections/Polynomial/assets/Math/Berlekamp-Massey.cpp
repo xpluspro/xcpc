@@ -1,3 +1,4 @@
+// 模素数 p，输入项在 [0,p)；返回 {1,c_1,...,c_L}。
 vector<int> berlekamp_massey(const vector<int> &a) {
 	vector<int> v, last; // v is the answer, 0-based
 	int k = -1, delta = 0;
@@ -21,5 +22,5 @@ vector<int> berlekamp_massey(const vector<int> &a) {
 			last = u; k = i; delta = a[i] - tmp;
 			if (delta < 0) delta += p; } }
 	for (auto &x : v) x = (p - x) % p;
-	v.insert(v.begin(), 1); //一般是需要最小递推式的, 处理一下
-	return v; } // $\forall i, \sum_{j = 0} ^ m a_{i - j} v_j = 0$
+	v.insert(v.begin(), 1); // c_1,...,c_L 是递推系数的相反数
+	return v; } // $i\ge L:\ \sum_{j=0}^{L}a_{i-j}v_j=0,\ L=v.size()-1$

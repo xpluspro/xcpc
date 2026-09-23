@@ -4,6 +4,7 @@
 #include <complex>
 #include <cstring>
 #include <functional>
+#include <limits>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -41,6 +42,12 @@ using namespace std::complex_literals;
 #include "../src/sections/Polynomial/assets/Math/FFT.cpp"
 #include "../src/sections/Polynomial/assets/Math/FFT卷积.cpp"
 #include "../src/sections/Polynomial/assets/Math/FFT拆系数卷积.cpp"
+}
+
+namespace mtt_convolution {
+using namespace std;
+using namespace std::complex_literals;
+#include "mtt_fft_long_double.hpp"
 #include "../src/sections/Polynomial/assets/Math/MTT.cpp"
 }
 
@@ -69,7 +76,7 @@ int main() {
 	auto product = poly_mul(poly{1,2,3}, poly{4,5});
 	assert((product == vector<int>{4,13,22,15}));
 	assert((poly_mul(poly{7}, poly{8}) == vector<int>{56}));
-	auto arbitrary_product = arbitrary_mod_convolution::multiply(
+	auto arbitrary_product = mtt_convolution::multiply(
 		vector<int>{1,2,3}, vector<int>{4,5}, 1000000007);
 	assert((arbitrary_product == vector<int>{4,13,22,15}));
 	vector<std::complex<double>> fft_values{1,2,3,4}, fft_original = fft_values;
@@ -99,20 +106,87 @@ int main() {
 	auto square = poly_mul(square_root, square_root);
 	assert((vector<int>(square.begin(), square.begin()+5) == square_input));
 
+	auto check_division = [](const poly& dividend, const poly& divisor,
+		const poly& remainder, const poly& quotient) {
+		assert(poly_div(dividend, divisor) == quotient);
+		auto result = poly_mod(dividend, divisor);
+		assert(result.first == remainder && result.second == quotient);
+	};
+	// poly_mul 的高次补零不能影响除法的次数判断或反转求逆。
+	poly padded_divisor{1,2,1,0};
+	assert((padded_divisor == poly{1,2,1,0}));
+	check_division(poly{1,2,1}, padded_divisor, poly{0,0}, poly{1});
+	check_division(poly{1,0,0,1}, padded_divisor, poly{3,3}, poly{p-2,1});
+	check_division(poly{2}, padded_divisor, poly{2}, poly{});
+	check_division(poly{}, padded_divisor, poly{}, poly{});
+	check_division(poly{0,0,0}, padded_divisor, poly{0,0}, poly{0});
+	// 常数除数、低次端为零的除数，以及被除式自身的高次补零。
+	check_division(poly{2,4,6}, poly{2,0,0}, poly{}, poly{1,2,3});
+	check_division(poly{3,4,5}, poly{0,1,0}, poly{3}, poly{4,5});
+	check_division(poly{1,2,1,0,0}, padded_divisor, poly{0,0}, poly{1,0,0});
+	// 大量无效补零也不应扩大取模内部的 NTT 长度。
+	padded_divisor.resize(N + 1);
+	check_division(poly{1,2,1}, padded_divisor, poly{0,0}, poly{1});
+	poly zero_remainder = poly_mod(poly{7}, poly{1,0}).first;
+	assert(poly_auto_mul(zero_remainder, zero_remainder).empty());
+	assert(poly_auto_mul(poly{}, poly{1,2}).empty());
+	assert(poly_auto_mul(poly{1,2}, poly{}).empty());
+
 	linear_recurrence at0(poly{0,1,1},0), at1(poly{0,1,1},1);
 	assert(at0(vector<int>{0,1}) == 0);
 	assert(at1(vector<int>{0,1}) == 1);
 
-	poly_eval evaluation(poly{1,2,3,4}, vector<int>{1,2});
-	assert((evaluation() == vector<int>{10,49}));
-	assert((evaluation() == vector<int>{10,49}));
+	auto check_evaluation = [](const poly& f, const vector<int>& xs,
+		const vector<int>& expected) {
+		poly_eval evaluation(f, xs);
+		assert(evaluation() == expected);
+		assert(evaluation() == expected);
+	};
+	check_evaluation(poly{1,2,3,4}, vector<int>{1,2}, vector<int>{10,49});
+	// 空向量表示零多项式；空询问、单点询问也必须安全。
+	check_evaluation(poly{}, vector<int>{}, vector<int>{});
+	check_evaluation(poly{}, vector<int>{7}, vector<int>{0});
+	check_evaluation(poly{}, vector<int>{0,0,7}, vector<int>{0,0,0});
+	check_evaluation(poly{0}, vector<int>{}, vector<int>{});
+	check_evaluation(poly{0}, vector<int>{0,7}, vector<int>{0,0});
+	check_evaluation(poly{5}, vector<int>{0,0,7}, vector<int>{5,5,5});
+	// 零点、重复点及 -1 的模 p 表示；也覆盖内部补询问点的情况。
+	check_evaluation(poly{1,2,3}, vector<int>{0}, vector<int>{1});
+	check_evaluation(poly{1,2,3}, vector<int>{0,1,0,p-1}, vector<int>{1,6,1,2});
 
 	const long long index = 1000000000000LL;
 	assert(linear_recurrance(index, poly{0,1,1}, poly{0,1}) == fib(index));
 	static_assert(std::is_same_v<decltype(&LinearRec::calc), int (LinearRec::*)(long long)>);
-	poly fib_first{1,1}, fib_transition{1,1};
+	poly fib_first{0,1}, fib_transition{1,1};
 	LinearRec fib_recurrence(fib_first, fib_transition);
 	assert(fib_recurrence.calc(index) == fib(index));
+	// 三种接口统一查询从 0 开始的第 n 项，与逐项递推核对。
+	auto check_recurrence_indices = [](poly first, poly trans) {
+		poly c{0}; c.insert(c.end(), trans.begin(), trans.end());
+		LinearRec rec(first, trans);
+		poly expected = first;
+		for (int n = (int)first.size(); n <= 32; ++n) {
+			int value = 0;
+			for (int j = 0; j < (int)trans.size(); ++j)
+				value = (value + (LL)trans[j] * expected[n - 1 - j]) % p;
+			expected.push_back(value);
+		}
+		for (int n = 0; n <= 32; ++n) {
+			assert(rec.calc(n) == expected[n]);
+			assert(linear_recurrance(n, c, first) == expected[n]);
+			linear_recurrence at_n(c, n);
+			assert(at_n(first) == expected[n]);
+		}
+	};
+	check_recurrence_indices(poly{1,3}, poly{2,1});
+	check_recurrence_indices(poly{5}, poly{3});
+	check_recurrence_indices(poly{7}, poly{0});
+	check_recurrence_indices(poly{2,4,8}, poly{1,0,1});
+	// 下标平移不能通过 k+1 引入 long long 溢出。
+	poly geometric_first{5}, geometric_transition{3};
+	LinearRec geometric(geometric_first, geometric_transition);
+	const long long max_index = std::numeric_limits<long long>::max();
+	assert(geometric.calc(max_index) == (LL)5 * qpow(3, max_index) % p);
 
 	kth_fwt::n=3; kth_fwt::omega[0]=1;
 	kth_fwt::omega[1]=kth_fwt::power(13,(kth_fwt::MOD-1)/3);
