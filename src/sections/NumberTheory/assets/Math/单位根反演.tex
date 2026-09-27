@@ -1,17 +1,16 @@
-$$\sum_{i=0}^{\left\lfloor \frac{n}{k} \right\rfloor} {C_n^{ik}}$$
-
-\paragraph*{引理}
-
-$$\frac{1}{k} \sum_{i=0}^{k-1} \omega_{k}^{in} = [k \mid n]$$
-
-\paragraph*{反演}
-
-$$\begin{aligned}
-Ans =& \sum_{i=0}^n{C_n^i [k \mid i]} \\
-=& \sum_{i=0}^n{C_n^i(\frac{1}{k}\sum_{j=0}^{k-1}{\omega_k^{ij}})} \\
-=& \frac{1}{k} {\sum_{i=0}^{n}C_n^i \sum_{j=0}^{k-1} \omega_k^{ij}} \\
-=& \frac{1}{k} {\sum_{j=0}^{k-1}(\sum_{i=0}^n C_n^i(\omega_k^j)^i)} \\
-=& \frac{1}{k} \sum_{j=0}^{k-1} (1+\omega_k^j)^n
-\end{aligned}$$
-
-另,如果要求的是 $\left[n \% k = t\right]$, 其实就是 $\left[k \mid (n-t)\right]$. 同理推式子即可.
+\[
+\omega_k=e^{2\pi\mathrm{i}/k},\qquad
+\frac1k\sum_{j=0}^{k-1}\omega_k^{jr}=[k\mid r].
+\]
+\[
+\begin{aligned}
+A_t
+&=\sum_{\substack{0\le i\le n\\i\equiv t\pmod k}}\binom ni
+=\sum_{i=0}^n\binom ni[k\mid(i-t)]\\
+&=\frac1k\sum_{j=0}^{k-1}\omega_k^{-jt}
+	\sum_{i=0}^n\binom ni(\omega_k^j)^i\\
+&=\boxed{\frac1k\sum_{j=0}^{k-1}
+	\omega_k^{-jt}(1+\omega_k^j)^n}
+\qquad(0\le t<k).
+\end{aligned}
+\]

@@ -1,5 +1,8 @@
 \section{计算几何}
 
+\subsection{数值与实现注意事项}
+	\input{sections/ComputationalGeometry/assets/numerical-pitfalls.tex}
+
 \subsection{二维几何基础}
 	\subsubsection{声明与宏}
 		\inputminted{cpp}{sections/ComputationalGeometry/assets/Geometry/8.1-declarations.cpp}
@@ -51,6 +54,9 @@
 		\inputminted{cpp}{sections/ComputationalGeometry/assets/Geometry/闵可夫斯基和.cpp}
 	\subsubsection{直线半平面交}
 		\inputminted{cpp}{sections/ComputationalGeometry/assets/Geometry/半平面交.cpp}
+	\subsubsection{半平面可行性（退化、无界与参数区间）}
+        \input{sections/ComputationalGeometry/assets/halfplane-usage.tex}
+		\inputminted{cpp}{sections/ComputationalGeometry/assets/Geometry/halfplane_feasible_closed.cpp}
 	\subsubsection{整数半平面交}
 		\inputminted{cpp}{sections/ComputationalGeometry/assets/Geometry/integral_hpi.cpp}
 	% \subsubsection{直线与凸包交点}

@@ -1,34 +1,19 @@
-/*Chinese remainder theroem :
-bool crt::solve(const std::vector <std::pair<long long, long long>> &input, std::pair<long long, long long> &output):
-solves for an integer set x=output.first + k*output.second
-that satisfies x % input[i].second = input[i].first.
-Returns whether a solution exists.
-*/
-void euclid (const long long &a, const long long &b, long long &x, long long &y) {
-	if (b == 0) x = 1, y = 0;
-	else euclid (b, a % b, y, x), y -= a / b * x;
+#include <bits/stdc++.h>
+using namespace std;
+constexpr int N = 10 + 5;
+int n, a[N], b[N];
+long long M = 1, ans;
+void exgcd(int a, int b, int &x, int &y) {
+	if(!b) return x = 1, y = 0, void();
+	exgcd(b, a % b, y, x), y -= a / b * x;
 }
-long long inverse (long long x, long long m) {
-	long long a, b;
-	euclid (x, m, a, b);
-	return (a % m + m) % m;
+int inv(int x, int p) {
+  return exgcd(x, p, x, *new int), (x % p + p) % p;
 }
-struct crt {
-long long fix (const long long &a, const long long &b) {
-	return (a % b + b) % b;
+int main() {
+	cin >> n;
+	for(int i = 1; i <= n; i++) cin >> a[i] >> b[i], M *= a[i];
+	for(int i = 1; i <= n; i++) ans = (ans + (__int128)b[i] * (M / a[i]) * inv(M / a[i] % a[i], a[i])) % M;
+	cout << ans << endl;
+	return 0;
 }
-bool solve(const std::vector<std::pair <long long, long long>> &input, std::pair<long long, long long> &output) {
-	output = std::make_pair (1, 1);
-	for (int i = 0; i < (int) input.size (); ++i) {
-		long long number, useless;
-		euclid (output.second, input[i].second, number, useless);
-		long long divisor = gcd (output.second, input[i].second);
-		if ((input[i].first - output.first) % divisor) return false;
-		number *= (input[i].first - output.first) / divisor;
-		number = fix (number, input[i].second);
-		output.first += output.second * number;
-		output.second *= input[i].second / divisor;
-		output.first = fix (output.first, output.second);
-	}
-	return true;
-}};

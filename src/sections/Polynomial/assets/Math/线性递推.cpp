@@ -1,7 +1,9 @@
 // Complexity: init O(n^2log) query O(n^2logk)
 // Requirement: const LOG const MOD
+// first={a_0,...,a_{n-1}}，trans={c_1,...,c_n}。
+// a_k=sum_{i=1}^n c_i*a_{k-i} (k>=n)，calc(k) 返回 a_k。
 // Example: In: {1, 3} {2, 1} an = 2an-1 + an-2
-//		  Out: calc(3) = 7
+//		  Out: calc(0) = 1, calc(1) = 3, calc(3) = 17
 typedef vector<int> poly;
 struct LinearRec {
 	int n; poly first, trans; vector<poly> bin;
@@ -23,7 +25,8 @@ LinearRec(poly &first_, poly &trans_): first(first_), trans(trans_) {
 	n = first.size(); poly a(n + 1, 0); a[1] = 1;
 	bin.push_back(a); for (int i = 1; i < LOG; ++i)
 		bin.push_back(add(bin[i - 1], bin[i - 1])); }
-int calc(long long k) { poly a(n + 1, 0); a[0] = 1;
+// 基底 x^(i+1) 对应 first[i]，初始多项式为 x。
+int calc(long long k) { poly a(n + 1, 0); a[1] = 1;
 	for (int i = 0; i < LOG; ++i)
 		if (k >> i & 1) a = add(a, bin[i]);
 	int ret = 0; for (int i = 0; i < n; ++i)

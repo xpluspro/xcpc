@@ -29,8 +29,10 @@
 					\inputminted{cpp}{sections/String/assets/String/Runs.cpp}
 				\subsection{字符串 Hash 类}
 				\texttt{\input{|"python3 sections/String/assets/Miscellany/randomprimes.py 1e12 1e13 2e13 1e15 1e17 1e18"}}
-				\inputminted[highlightlines={6}]{cpp}{sections/String/assets/String/hash_check.cpp}
-				\inputminted[highlightlines={6}]{cpp}{sections/String/assets/String/hash.cpp}
+				下面的 \texttt{check} 用于判断两个 \texttt{i128} 是否模一个奇数同余；模数可替换为上表中的随机奇质数。已经取模的 Hash 值直接比较即可，不需要再次调用 \texttt{check}。
+				\inputminted{cpp}{sections/String/assets/String/hash_check.cpp}
+				\texttt{StringHash::get(l,r)} 使用 1-based 闭区间。默认使用 64 位大质数和进程内共享的随机 base；自定义参数时，参与比较的 Hash 必须使用相同的 base 和模数。
+				\inputminted{cpp}{sections/String/assets/String/hash.cpp}
 				\subsection{String Conclusions}
 					\input{sections/String/assets/String/string-Conclusions.tex}
 			\newpage

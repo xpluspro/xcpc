@@ -10,7 +10,7 @@ void fwt(int* a, int k, int type) {
 		  int x = j + t * i + low;
 		  long long s = 0;
 		  for (int y = 0; y < k; y++)
-			s = (s + 1ll * tmp[y] * omega[(k + type) * t * y % k]) % MOD;
+			s = (s + 1ll * tmp[y] * omega[1LL * (k + type) * t * y % k]) % MOD;
 		  a[x] = (int)s;
 		}
 	  }

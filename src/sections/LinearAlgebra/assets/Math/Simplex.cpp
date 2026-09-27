@@ -1,4 +1,4 @@
-const LD eps = 1e-9, INF = 1e9; const int N = 105;
+const LD eps = 1e-9L; const int N = 105;
 namespace Simplex {
 int n, m, id[2*N], tp[N]; LD a[N][N];
 void pivot(int r, int c) {
@@ -9,7 +9,8 @@ void pivot(int r, int c) {
 		t = a[i][c]; a[i][c] = 0; 
 		for (int j = 0; j <= n; j++) a[i][j] += t*a[r][j];}}
 bool solve() {
-	for (int i = 1; i <= n; i++) id[i] = i;
+	// 原变量编号 1..n，松弛变量编号 n+1..n+m
+	for (int i = 1; i <= n + m; i++) id[i] = i;
 	for ( ; ; ) {
 		int i = 0, j = 0; LD w = -eps;
 		for (int k = 1; k <= m; k++)
@@ -21,21 +22,25 @@ bool solve() {
 		if (!j) { printf("Infeasible"); return 0;}
 		pivot(i, j);}
 	for ( ; ; ) {
-		int i = 0, j = 0; LD w = eps, t;
+		int i = 0, j = 0; LD w = 0;
+		// Bland 规则：按变量编号选择入基变量
 		for (int k = 1; k <= n; k++)
-			if (a[0][k] > w) w = a[0][j = k]; 
+			if (a[0][k] > eps && (!j || id[k] < id[j])) j = k;
 		if (!j) break;
-		w = INF;
-		for (int k = 1; k <= m; k++)
-			if (a[k][j] < -eps && (t = -a[k][0]/a[k][j]) < w)
-				w = t, i = k; 
+		for (int k = 1; k <= m; k++) if (a[k][j] < -eps) {
+			LD t = -a[k][0] / a[k][j];
+			// 首个候选不受有限 INF 限制；比值相等时按基变量编号选择
+			if (!i || t < w || (t == w && id[n+k] < id[n+i]))
+				w = t, i = k;
+		}
 		if (!i) { printf("Unbounded"); return 0;}
 		pivot(i, j);}
 	return 1;}
 LD ans() {return a[0][0];}
 void output() {
 	fill(tp, tp + n + 1, 0);
-	for (int i = n + 1; i <= n + m; i++) tp[id[i]] = i - n;
+	for (int i = n + 1; i <= n + m; i++)
+		if (id[i] <= n) tp[id[i]] = i - n;
 	for (int i = 1; i <=n; i++) printf("%.9Lf ", tp[i] ? a[tp[i]][0] : (LD)0);}
 }using namespace Simplex;
 int main() { int K; cin >> n >> m >> K;
@@ -45,4 +50,4 @@ for (int i = 1; i <= m; i++) {LD x;
 	cin >> x; a[i][0] = x;}
 if (solve()) { printf("%.9Lf\n", ans()); if (K) output();} return 0;}
 // 标准型: maximize $\bf c^Tx$, subject to $\bf Ax\leq b$ and $\bf x\geq 0$
-// 对偶型: minimize $\bf b^Ty$, subject to $\bf A^Tx\geq c$ and $\bf y\geq 0$
+// 对偶型: minimize $\bf b^Ty$, subject to $\bf A^Ty\geq c$ and $\bf y\geq 0$

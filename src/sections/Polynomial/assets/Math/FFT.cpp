@@ -2,6 +2,8 @@ using cp = complex<double>; const double PI = acos(-1.0);
 vector<cp> omega[25]; // 单位根
 // n 是 DFT 的最大长度，例如如果最多有两个长为 m 的多项式相乘，
 // 或者求逆的长度为 m，那么 n 需要 >= 2m
+// init 要预处理 O(n) 个单位根，可能很耗时；n 相同时只调用一次，
+// 不要在每次 fft 前重复 init
 void fft_init(int n) { // n = 2^k
 	for (int k = 2, d = 0; k <= n; k *= 2, d++) {
 		omega[d].resize(k + 1); 

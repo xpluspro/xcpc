@@ -22,7 +22,8 @@ miller_rabin is_prime;
 LL get_factor (LL a, LL seed) {//$O(n ^ {1/4} \cdot \log n \cdot \mathrm{mul})$
 	LL x = rand() % (a - 1) + 1, y = x;
 	for (int head = 1, tail = 2; ; ) {
-		x = mul (x, x, a); x = (x + seed) % a;
+		x = mul (x, x, a);
+		x = (LL)(((__int128)x + seed) % a);
 		if (x == y) return a;
 		LL ans = gcd (abs (x - y), a);
 		if (ans > 1 && ans < a) return ans;

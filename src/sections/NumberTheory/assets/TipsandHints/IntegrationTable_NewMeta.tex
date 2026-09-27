@@ -7,6 +7,7 @@
 
 $ \int \frac{\md x}{ax^2+bx+c} = \begin{cases}
 \frac{2}{\sqrt{4ac-b^2}}\arctan\frac{2ax+b}{\sqrt{4ac-b^2}} + C & (b^2 < 4ac) \\
+ -\frac{2}{2ax+b} + C & (b^2 = 4ac) \\
 \frac{1}{\sqrt{b^2-4ac}}\ln\left| \frac{2ax+b-\sqrt{b^2-4ac}}{2ax+b+\sqrt{b^2-4ac}} \right| + C & (b^2 > 4ac)
 \end{cases} $
 \\ $ \int \frac{x}{ax^2+bx+c} \md x = \frac{1}{2a} \ln |ax^2+bx+c| - \frac{b}{2a} \int \frac{\md x}{ax^2+bx+c} $
@@ -18,16 +19,16 @@ $ \int \frac{\md x}{\sqrt{ax^2+bx+c}} = \frac{1}{\sqrt{a}} \ln | 2ax+b+2\sqrt{a}
 	\frac{4ac-b^2}{8\sqrt{a^3}}\ln |2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}| + C $
 \\ $ \int \frac{x}{\sqrt{ax^2+bx+c}} \md x = \frac{1}{a}\sqrt{ax^2+bx+c} -
 	\frac{b}{2\sqrt{a^3}}\ln | 2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c} | + C $
-\\ $ \int \frac{\md x}{\sqrt{c+bx-ax^2}} = -\frac{1}{\sqrt{a}} \arcsin \frac{2ax-b}{\sqrt{b^2+4ac}} + C  $
+\\ $ \int \frac{\md x}{\sqrt{c+bx-ax^2}} = \frac{1}{\sqrt{a}} \arcsin \frac{2ax-b}{\sqrt{b^2+4ac}} + C  $
 \\ $ \int \sqrt{c+bx-ax^2} \md x = \frac{2ax-b}{4a}\sqrt{c+bx-ax^2} +
 	\frac{b^2+4ac}{8\sqrt{a^3}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}} + C $
 \\ $ \int \frac{x}{\sqrt{c+bx-ax^2}} \md x = -\frac{1}{a}\sqrt{c+bx-ax^2} + \frac{b}{2\sqrt{a^3}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}} + C $
 
 
 \subsubsection*{$\cdot$ $\sqrt{\pm\frac{x-a}{x-b}}$或$\sqrt{(x-a)(x-b)}$, $(a<b)$}
-$ \int \frac{\md x}{\sqrt{(x-a)(b-x)}} = 2\arcsin\sqrt\frac{x-a}{b-x} + C$
+$ \int \frac{\md x}{\sqrt{(x-a)(b-x)}} = 2\arcsin\sqrt\frac{x-a}{b-a} + C$
 \\ $\int \sqrt{(x-a)(b-x)} \md x = \frac{2x-a-b}{4}\sqrt{(x-a)(b-x)} +
-	\frac{(b-a)^2}{4}\arcsin\sqrt\frac{x-a}{b-x} + C$
+		\frac{(b-a)^2}{4}\arcsin\sqrt\frac{x-a}{b-a} + C$
 
 \subsubsection*{三角函数的积分 (省略 $+C$)}
 
@@ -49,15 +50,18 @@ $ \int \frac{\md x}{\sqrt{(x-a)(b-x)}} = 2\arcsin\sqrt\frac{x-a}{b-x} + C$
 	\\ $ \int \frac{\md x}{\cos^n x} = \frac{1}{n-1} \frac{\sin x}{\cos^{n-1}x} + \frac{n-2}{n-1} \int \frac{\md x}{\cos^{n-2}x} $
 	\[ \begin{split} {} & \int \cos^m x \sin^n x \md x \\
 		= & \frac{1}{m+n} \cos^{m-1} x \sin^{n+1}x + \frac{m-1}{m+n}\int\cos^{m-2}x\sin^nx\md x \\
-		= & -\frac{1}{m+n} \cos^{m+1} x \sin^{n-1}x + \frac{n-1}{m+1} \int \cos^m x\sin^{n-2} x \md x \end{split} \]
+		= & -\frac{1}{m+n} \cos^{m+1} x \sin^{n-1}x + \frac{n-1}{m+n} \int \cos^m x\sin^{n-2} x \md x \end{split} \]
 	\\ $ \int \frac{\md x}{a + b \sin x} = \begin{cases}
-	\frac{2}{\sqrt{a^2-b^2}}\arctan\frac{a\tan\frac{x}{2}+b}{\sqrt{a^2-b^2}} & (a^2 > b^2) \\
-	\frac{1}{\sqrt{b^2-a^2}}\ln \left| \frac{a\tan\frac{x}{2}+b-\sqrt{b^2-a^2}}{a\tan\frac{x}{2}+b+\sqrt{b^2-a^2}} \right| & (a^2 < b^2)
+		\frac{2}{\sqrt{a^2-b^2}}\arctan\frac{a\tan\frac{x}{2}+b}{\sqrt{a^2-b^2}} & (a^2 > b^2) \\
+		-\frac{2}{a\tan\frac{x}{2}+b} & (a^2 = b^2 \ne 0) \\
+		\frac{1}{\sqrt{b^2-a^2}}\ln \left| \frac{a\tan\frac{x}{2}+b-\sqrt{b^2-a^2}}{a\tan\frac{x}{2}+b+\sqrt{b^2-a^2}} \right| & (a^2 < b^2)
 	\end{cases} $
 	\\ $ \int \frac{\md x}{a + b \cos x} = \begin{cases}
-	\frac{2}{a+b}\sqrt\frac{a+b}{a-b} \arctan\left(\sqrt\frac{a-b}{a+b}\tan\frac{x}{2}\right) & (a^2 > b^2) \\
-	\frac{1}{a+b}\sqrt\frac{a+b}{a-b} \ln \left| \frac{\tan\frac{x}{2}+\sqrt\frac{a+b}{b-a}}{\tan\frac{x}{2}-\sqrt\frac{a+b}{b-a}} \right|
-	& (a^2 < b^2)
+		\frac{2}{a+b}\sqrt\frac{a+b}{a-b} \arctan\left(\sqrt\frac{a-b}{a+b}\tan\frac{x}{2}\right) & (a^2 > b^2) \\
+		\frac{1}{a}\tan\frac{x}{2} & (a=b\ne0) \\
+		-\frac{1}{a}\cot\frac{x}{2} & (a=-b\ne0) \\
+		\frac{1}{a+b}\sqrt\frac{a+b}{b-a} \ln \left| \frac{\tan\frac{x}{2}+\sqrt\frac{a+b}{b-a}}{\tan\frac{x}{2}-\sqrt\frac{a+b}{b-a}} \right|
+		& (a^2 < b^2)
 	\end{cases} $
 	\\ $ \int \frac{\md x}{a^2\cos^2x+b^2\sin^2x} = \frac{1}{ab} \arctan\left( \frac{b}{a}\tan x \right) $
 	\\ $ \int \frac{\md x}{a^2\cos^2x-b^2\sin^2x} = \frac{1}{2ab}\ln\left|\frac{b\tan x+a}{b\tan x-a}\right| $
@@ -72,7 +76,7 @@ $ \int \frac{\md x}{\sqrt{(x-a)(b-x)}} = 2\arcsin\sqrt\frac{x-a}{b-x} + C$
 
  $ \int \arcsin \frac{x}{a} \md x = x \arcsin \frac{x}{a} + \sqrt{a^2-x^2}+C $
 
- $ \int x \arcsin \frac{x}{a} \md x= (\frac{x^2}{2}-\frac{a^2}{4})\arcsin \frac{x}{a} + \frac{x}{4} \sqrt{x^2-x^2}+C$
+ $ \int x \arcsin \frac{x}{a} \md x= (\frac{x^2}{2}-\frac{a^2}{4})\arcsin \frac{x}{a} + \frac{x}{4} \sqrt{a^2-x^2}+C$
 
  $ \int x^2 \arcsin \frac{x}{a} \md x = \frac{x^3}{3}\arcsin \frac{x}{a}+\frac{1}{9}(x^2+2 a^2)\sqrt{a^2-x^2}+C $
 
@@ -94,9 +98,9 @@ $ \int \frac{\md x}{\sqrt{(x-a)(b-x)}} = 2\arcsin\sqrt\frac{x-a}{b-x} + C$
 
  $ \int a^x \md x= \frac{1}{\ln a} a^x + C$
 
- $ \int \me ^{ax}\md x=\frac{1}{a}a^{ax}+C $ 
+ $ \int \me ^{ax}\md x=\frac{1}{a}\me^{ax}+C $
 
- $ \int x \me  ^ {ax} \md x=\frac{1}{a^2}(ax-1)a^{ax} +C $
+ $ \int x \me  ^ {ax} \md x=\frac{1}{a^2}(ax-1)\me^{ax} +C $
 
  $ \int x^n \me ^{ax} \md x=\frac{1}{a}x^n \me ^{ax}-\frac{n}{a} \int x^{n-1} \me ^ {ax} \md x $
 

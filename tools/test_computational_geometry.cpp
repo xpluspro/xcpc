@@ -12,6 +12,7 @@ const int MAXN = 200005;
 #include "../src/sections/ComputationalGeometry/assets/Geometry/旋转卡壳.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/多边形基础.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/半平面交.cpp"
+#include "../src/sections/ComputationalGeometry/assets/Geometry/halfplane_feasible_closed.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/integral_hpi.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/convex_findmax.cpp"
 #include "../src/sections/ComputationalGeometry/assets/Geometry/AirportConstruction.cpp"
@@ -40,8 +41,27 @@ int main() {
 	assert(cc_intersection_count(C(P(0,0),0), C(P(0,0),0)) == 1);
 	assert(cc_intersection(C(P(0,0),0), C(P(0,0),0)) == vp{P(0,0)});
 	assert(cc_intersection_count(C(P(0,0),1), C(P(0,0),2)) == 0);
+	assert(cc_intersection_count(C(P(0,0),1), C(P(3,0),1)) == 0);
+	assert(cc_intersection_count(C(P(0,0),3), C(P(1,0),1)) == 0);
+	assert(cc_intersection_count(C(P(0,0),3), C(P(2,0),1)) == 1);
 	assert(cc_intersection_count(C(P(0,0),1), C(P(2,0),1)) == 1);
 	assert(cc_intersection_count(C(P(0,0),2), C(P(2,0),2)) == 2);
+	assert((incenter(P(0,0), P(6,0), P(0,8)) - P(2,2)).len() < 1e-12L);
+	assert(tangent(P(0,0), C(P(),1)).empty());
+	assert(tangent(P(1,0), C(P(),1)) == vp{P(1,0)});
+	LD test_radius = 1e3L;
+	P just_outside(test_radius + 5e-13L, 0);
+	assert(just_outside.x > test_radius);
+	assert(tangent(just_outside, C(P(), test_radius)).size() == 2);
+	LD large_radius = 1e9L;
+	P near_outside(large_radius + 5e-10L, 0);
+	assert(near_outside.x > large_radius);
+	vp near_tangents = tangent(near_outside, C(P(), large_radius));
+	assert(near_tangents.size() == 2);
+	for (cp p : near_tangents) {
+		assert(fabsl(p.len2() - large_radius * large_radius) < 0.2L);
+		assert(fabsl((near_outside - p) * p) < 0.1L);
+	}
 	bool empty_at_threw = false;
 	try { ConvexQuery().at(0); }
 	catch (const out_of_range &) { empty_at_threw = true; }
@@ -119,9 +139,47 @@ int main() {
 	assert(close(polygon_circle_intersection_area(
 		vp{{0,0},{2,0},{0,2}},C(P(),1)),pi/4));
 	assert(close(PolygonChordSolver(rect).solve(), sqrtl(20.0L)));
-	vp square_hpi = hpi({{{0,0},{1,0}},{{1,0},{1,1}},
+	vp square_hpi = hpi_polygon({{{0,0},{1,0}},{{1,0},{1,1}},
 		{{1,1},{0,1}},{{0,1},{0,0}}});
 	assert(square_hpi.size() == 4 && close(polygon_area(square_hpi),1));
+	// 点判定含边界，deque 判定必须严格在左侧。
+	L bottom({0,0},{1,0});
+	assert(on_left(bottom, P(0.75L,0)));
+	assert(!on_left(bottom, P(0,-1)));
+	assert(!hpi_inside(bottom, L({0,0},{0,1}), bottom));
+	assert(hpi_polygon({}).empty());
+	vector<L> boxed;
+	add_box(boxed, 0, 2e9L, 0, 2e9L);
+	for (cl line : boxed) assert(close((line.t-line.s).len(),1));
+	assert(close(polygon_area(hpi_polygon(boxed)) / 4e18L,1));
+	// 同向弱约束、重复边，以及排序后按 id 筛选的子序列。
+	vector<L> all;
+	add_box(all, 0, 2, 0, 2);
+	all.push_back(L({1,0},{1,1})); // x <= 1
+	all.push_back(L({1,0},{1,1}));
+	all.push_back(L({0,1},{1,1})); // y >= 1
+	vector<pair<L,int>> ordered;
+	for (int i=0; i<(int)all.size(); ++i) ordered.push_back({all[i],i});
+	sort(ordered.begin(),ordered.end(),[](const auto& a,const auto& b) {
+		return cmp(a.first,b.first);
+	});
+	for (int k=3; k<(int)all.size(); ++k) {
+		vector<L> cur;
+		for (const auto& [line,id] : ordered) if (id<=k) cur.push_back(line);
+		vp poly=hpi_sorted(cur);
+		assert(close(polygon_area(poly), k==3 ? 4 : (k==6 ? 1 : 2)));
+		vector<L> prefix(all.begin(),all.begin()+k+1);
+		assert(poly==hpi_polygon(prefix));
+	}
+	// 闭交集分别为空、线段、单点；本接口均返回空。
+	for (int kind=0; kind<3; ++kind) {
+		vector<L> degenerate;
+		add_box(degenerate,0,2,0,2);
+		LD x=kind==0 ? -1 : 0;
+		degenerate.push_back(L({x,0},{x,1}));
+		if (kind==2) degenerate.push_back(L({1,0},{0,0}));
+		assert(hpi_polygon(degenerate).empty());
+	}
 	IL ix{1,0,0}, iy{0,1,0}, idiag{-1,-1,1};
 	assert(close(triangle_area(ix,iy,idiag),0.5L));
 	assert(cc_intersection(C(P(0,0),1),C(P(2,0),1)).size()==1);

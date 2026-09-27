@@ -1,0 +1,12 @@
+\noindent
+判定闭约束 $ax+by\ge c$ 是否有解，支持无界、线段和单点。
+\texttt{Range} 可附加横轴开闭范围；不支持其他严格半平面。
+时间 $O(n\log n)$，空间 $O(n)$；浮点近退化不保证精确。
+\begin{minted}{cpp}
+HP h1({a,b}, c); // ax + by >= c
+HP h2(line);    // 有向线左侧
+hp_feasible(h);          // 闭约束
+hp_feasible(h, x_lt(t)); // 额外要求 x < t
+hp_feasible(h, x_gt(t)); // 额外要求 x > t
+// 一般范围：Range{l, r, lo, ro}
+\end{minted}
