@@ -10,13 +10,58 @@
 \subsubsection{环境与 OJ 检查}
 \begin{itemize}[leftmargin=5mm]
   \setlength{\itemsep}{0pt}
-  \item 测试所有可能的提交方式，找到题面与排行榜入口。
+  \item 测试所有可能的提交方式(包括submit和domjudge提交)，找到题面与排行榜入口。
   \item 测试 \texttt{-fsanitize=address,undefined} 与 \texttt{-D\_GLIBCXX\_DEBUG}。
-  \item 测试 \texttt{/usr/bin/time -v ./a.out} 能否显示内存占用。
-  \item 测试编译器版本以及 \texttt{bits/stdc++.h}、\texttt{pb\_ds}、\texttt{\_\_int128}、\texttt{\_\_float128} 和 \texttt{long double}。
+  \item 测试 \texttt{/usr/bin/time -v ./a} 能否显示内存占用。
+  \item 测试编译器版本（比如c++20语法）以及 \texttt{bits/stdc++.h}、\texttt{pb\_ds}、\texttt{\_\_int128}、\texttt{\_\_float128} 和 \texttt{long double}。
   \item 检查 pragma target 是否 CE、代码长度限制，以及 NO-OUTPUT、OLE、MLE 的行为。
-  \item 检查提交频率限制与队列规则，并测试 \texttt{clock()}、\texttt{make} 和本地/提交性能。
+  \item 检查提交频率限制与队列规则，并测试 \texttt{clock()}、\texttt{make} 和本地/提交性能（NTT测速）。
+  \item 测试printfile工具，观察从打印到送达的时间
 \end{itemize}
+
+\begin{minted}{C++}
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+// #define TARGET
+// #define NO_OUTPUT
+// #define OLE
+// #define MLE
+#ifdef TARGET
+#pragma GCC target("avx2")
+#endif
+int main(){
+#ifdef NO_OUTPUT
+    return 0;
+#elif defined(OLE)
+    for(;;) cout<<"x\n";
+#elif defined(MLE)
+    vector<vector<char>> v;
+    for(;;) v.emplace_back(64u<<20,1);
+#else
+    // C++20
+    static_assert([]{return true;}());
+    // PBDS
+    tree<int,null_type,less<int>,rb_tree_tag,tree_order_statistics_node_update> t;
+    t.insert(1);
+    // __int128
+    __int128 a=(__int128(1)<<100);
+    // __float128
+    __float128 b=1.0Q;
+    // long double
+    volatile long double c=1.0L/3;
+    cout<<"OK\n"
+        <<"__cplusplus = "<<__cplusplus<<'\n'
+        <<"long double = "<<sizeof(long double)<<" bytes, "
+        <<numeric_limits<long double>::digits<<" bits\n"
+        <<"PBDS = "<<t.size()<<'\n'
+        <<"__int128 = "<<(a>0)<<'\n'
+        <<"__float128 = "<<(b>0)<<'\n'
+        <<setprecision(20)<<"long double value = "<<c<<'\n';
+#endif
+}
+\end{minted}
 
 \begin{minted}{C++}
 #include <ext/rope>
