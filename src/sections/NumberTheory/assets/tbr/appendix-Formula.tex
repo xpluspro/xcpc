@@ -338,6 +338,37 @@ $$\begin{aligned}
 \sum_{n = 0} ^ \infty \stirlingtwo{n}{k} x ^ n &= x ^ k \prod_{i = 1} ^ k (1 - i x) ^ {-1}
 \end{aligned}$$
 \end{multicols*}
+\subsubsection{十二重计数}
+将 $n$ 个球放入固定的 $m$ 个盒子；不可区分的盒子之间交换不产生新方案。
+下表先取 $n,m\ge1$；“至多一个”“至少一个”均指每个盒子。
+记 $S(n,k)=\stirlingtwo{n}{k}$，$p_k(n)$ 为将 $n$ 拆成恰好 $k$ 个正整数的无序拆分数，
+$p_{\le m}(n)=\sum_{k=0}^{m}p_k(n)$。
+\par\smallskip
+\begingroup
+\renewcommand{\arraystretch}{1.8}
+\setlength{\tabcolsep}{2pt}
+\noindent\begin{tabularx}{\linewidth}{|c|c|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
+\hline
+球 & 盒 & 无限制 & 至多一个 & 至少一个 \\
+\hline
+异 & 异 & $m^n$ & $\dfrac{m!}{(m-n)!}$ & $m!S(n,m)$ \\
+\hline
+异 & 同 & $\sum_{k=0}^{m}S(n,k)$ & $[n\le m]$ & $S(n,m)$ \\
+\hline
+同 & 异 & $\binom{n+m-1}{m-1}$ & $\binom{m}{n}$ & $\binom{n-1}{m-1}$ \\
+\hline
+同 & 同 & $p_{\le m}(n)$ & $[n\le m]$ & $p_m(n)$ \\
+\hline
+\end{tabularx}
+\endgroup
+\par “异”表示可区分，“同”表示不可区分，$[P]$ 为条件 $P$ 的示性函数。
+当 $n>m$ 时，“至多一个”列全为 $0$（不计算负数阶乘）；
+当 $n<m$ 时，“至少一个”列全为 $0$。组合数下标越界取 $0$。
+\par 边界：$n=0$ 时，无限制、至多一个均为 $1$；至少一个仅在 $m=0$ 时为 $1$。
+$n>0,m=0$ 时均为 $0$。约定 $S(0,0)=p_0(0)=1$，$p_0(n)=0\ (n>0)$。
+\par 拆分数可用 $p_k(n)=p_{k-1}(n-1)+p_k(n-k)$（$n,k\ge1$）递推，负参数取 $0$；
+亦有 $p_{\le m}(n)=p_m(n+m)$。更多生成函数见“求拆分数”。
+
 \subsubsection{Eulerian Numbers}
 以下 $n\ge1$，显式公式中 $0\le m<n$；约定
 $\bangle{n}{k}=0$ 当 $k\notin[0,n-1]$。
