@@ -59,6 +59,11 @@ int inv(int x) { return power(x, MOD - 2); }
 #include "../src/sections/Polynomial/assets/tbr/fwt.cpp"
 }
 
+namespace fwht_test {
+const int MOD = p;
+#include "../src/sections/Polynomial/assets/Math/FWHT.cpp"
+}
+
 int fib(long long n) {
 	if (!n) return 0;
 	auto rec = [](auto&& self, long long k) -> pair<int,int> {
@@ -94,6 +99,14 @@ int main() {
 	auto fft_product_again = arbitrary_mod_convolution::convolution_ll(
 		vector<int>{1000000000,1000000000}, vector<int>{1000000000,-1000000000});
 	assert((fft_product_again == vector<long long>{1000000000000000000LL,0,-1000000000000000000LL}));
+	int fwht_values[8] = {1, 4, 2, 8, 5, 7, 3, 6};
+	int fwht_original[8]; std::copy(fwht_values, fwht_values + 8, fwht_original);
+	fwht_test::FWHT(fwht_values, 8);
+	fwht_test::FWHT(fwht_values, 8, true);
+	assert(std::equal(fwht_values, fwht_values + 8, fwht_original));
+	int xor_a[4] = {1, 2, 3, 4}, xor_b[4] = {5, 6, 7, 8};
+	fwht_test::xor_convolution(xor_a, xor_b, 4);
+	assert((vector<int>(xor_a, xor_a + 4) == vector<int>{70, 68, 62, 60}));
 	assert(arbitrary_mod_convolution::convolution_ll(
 		vector<int>{}, vector<int>{1,2,3}).empty());
 	auto inverse = poly_inv(poly{1,1,1,1,1});
