@@ -1,11 +1,11 @@
 \section{图论}
-				\subsection{Hopcroft-Karp $O(\sqrt{V} E)$}
+				\subsection{Hopcroft-Karp \texorpdfstring{$O(\sqrt{V} E)$}{O(sqrt(V) E)}}
 					多源最广路 BFS 匹配，以及二分图最小点覆盖和边覆盖
 					\inputminted[highlightlines={5,9}]{cpp}{sections/GraphTheory/assets/graph/hk_skip2004.cpp}
-				\subsection{Hungarian $O(V E / w)$}
+				\subsection{Hungarian \texorpdfstring{$O(V E / w)$}{O(V E / w)}}
 					bitset 优化匈牙利算法，$w$ 为 bitset 的宽度
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/Hungarian.cpp}
-				\subsection{Shuffle 一般图最大匹配 $O(V E)$}
+				\subsection{Shuffle 一般图最大匹配 \texorpdfstring{$O(V E)$}{O(V E)}}
 					不保证正确性
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/一般图最大匹配-shuffle.cpp}
 				\subsection{极大团计数}
@@ -14,11 +14,11 @@
 				% 	可重集合 Hash, 一个子树要换一种 Hash 做打包.
 				% 	通常 sort rolling hash, 然后 xorshift 打包.
 				% 	如果使用 xor hash, 注意相同子树贡献不应该抵消.
-				\subsection{KM 最大权匹配 $O(V^3)$}
+				\subsection{KM 最大权匹配 \texorpdfstring{$O(V^3)$}{O(V³)}}
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/KM.cpp}
 				\subsection{欧拉回路}
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/欧拉回路.cpp}
-				\subsection{Blossom 一般图最大匹配 $O(|V||E|)$}
+				\subsection{Blossom 一般图最大匹配 \texorpdfstring{$O(|V||E|)$}{O(|V||E|)}}
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/Blossom_Tree.cpp}
 				\subsection{2-SAT, 强连通分量 / Bitset Kosaraju}
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/2-sat.cpp}
@@ -48,14 +48,14 @@
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/最小乘积生成树.cpp}
 				\subsection{网络流总结}
 					\input{sections/GraphTheory/assets/graph/网络流总结.tex}
-				\subsection{Gomory-Hu 无向图最小割树\,$O(V ^ 3 E)$}
+				\subsection{Gomory-Hu 无向图最小割树 \texorpdfstring{$O(V ^ 3 E)$}{O(V³ E)}}
 					\input{sections/GraphTheory/assets/graph/Gomory-Hu.tex}
-				\subsection{Stoer-Wagner\,无向图最小割\,$O(VE + V ^ 2 \log V)$}
+				\subsection{Stoer-Wagner 无向图最小割 \texorpdfstring{$O(VE + V ^ 2 \log V)$}{O(VE + V² log V)}}
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/Stoer-Wagner.cpp}
 				\subsection{弦图}
 					\input{sections/GraphTheory/assets/graph/chordal-graph.tex}
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/弦图.cpp}
-				\subsection{Minimum Mean Cycle 最小平均值环 $O(n^2)$}
+				\subsection{Minimum Mean Cycle 最小平均值环 \texorpdfstring{$O(n^2)$}{O(n²)}}
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/MeanCycle.cpp}
 				\subsection{斯坦纳树}
 					\inputminted{cpp}{sections/GraphTheory/assets/graph/斯坦纳树.cpp}

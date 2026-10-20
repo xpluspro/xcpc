@@ -17,7 +17,8 @@ FMPoly FMpolyshift(const FMPoly &a,FMU64 delta){
 	int n=(int)a.size();FMPoly res(n,0);
 	for(int i=0;i<n;++i){FMU64 d=1;
 		for(int j=0;j<=i;++j){
-			res[i-j]=FMadd(res[i-j],FMmul(FMmul(a[i],FMchoo[i][j]),d));
+			res[i-j]=FMadd(res[i-j],
+					FMmul(FMmul(a[i],FMchoo[i][j]),d));
 			d=FMmul(d,delta);}}
 	return res;
 }

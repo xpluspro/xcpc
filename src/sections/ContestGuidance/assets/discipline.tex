@@ -19,7 +19,7 @@
   \item 测试printfile工具，观察从打印到送达的时间
 \end{itemize}
 
-\begin{minted}{C++}
+\begin{minted}{cpp}
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 using namespace std;
@@ -43,7 +43,8 @@ int main(){
     // C++20
     static_assert([]{return true;}());
     // PBDS
-    tree<int,null_type,less<int>,rb_tree_tag,tree_order_statistics_node_update> t;
+    tree<int,null_type,less<int>,rb_tree_tag,
+        tree_order_statistics_node_update> t;
     t.insert(1);
     // __int128
     __int128 a=(__int128(1)<<100);
@@ -63,7 +64,7 @@ int main(){
 }
 \end{minted}
 
-\begin{minted}{C++}
+\begin{minted}{cpp}
 #include <ext/rope>
 using namespace __gnu_cxx;
 rope<int> R; R.insert(y, x); R[x]; R.erase(x, 1);
@@ -75,7 +76,7 @@ tree_order_statistics_node_update> s;
 s.insert(1); s.find_by_order(0); s.order_of_key(5);
 \end{minted}
 
-\begin{minted}{C++}
+\begin{minted}{cpp}
 const int N = 1 << 20;
 for (int T = 4; T; T--) {
     int a[N], b[N], c[N];
@@ -87,7 +88,7 @@ for (int T = 4; T; T--) {
 // CF: 1050+-100ms (1s T = 3.9)
 \end{minted}
 
-\begin{minted}{python3}
+\begin{minted}{python}
 import sys
 sys.set_int_max_str_digits(0) # >= Python 3.11
 for _ in range(3):
