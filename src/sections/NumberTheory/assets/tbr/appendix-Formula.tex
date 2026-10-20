@@ -164,6 +164,28 @@ S(n)&=\sum_{k=1}^n(f\cdot g)(k),\quad g\text{ 完全积性},\\
 \sum_{k=0}^{n}\binom{r+k}{k}=\binom{r+n+1}{n} \]
 \[ \binom{n_1+\cdots+n_p}{m}
 =\sum_{k_1+\cdots+k_p=m}\binom{n_1}{k_1}\cdots\binom{n_p}{k_p}\]
+\subsubsection{Binomial Inversion}
+设 $a_n,b_n$ 为数列（$n\ge0$）。二项式反演为
+\[
+b_n=\sum_{k=0}^{n}\binom{n}{k}a_k
+\quad\Longleftrightarrow\quad
+a_n=\sum_{k=0}^{n}(-1)^{n-k}\binom{n}{k}b_k.
+\]
+令 $A_n=a_n/n!$、$B_n=b_n/n!$，则上式可写成普通卷积
+\[
+B_n=\sum_{k=0}^{n}A_k\frac{1}{(n-k)!},
+\qquad
+A_n=\sum_{k=0}^{n}B_k\frac{(-1)^{n-k}}{(n-k)!}.
+\]
+因此在模数允许 NTT（或使用任意卷积）时，令
+\[
+P_i=\frac1{i!},\qquad Q_i=\frac{(-1)^i}{i!},
+\]
+有
+\[
+B=A*P,\qquad A=B*Q,
+\]
+其中 $*$ 表示普通多项式卷积；先乘以各项阶乘的逆元，再做一次卷积即可完成二项式变换或其逆变换。
 \subsubsection{Fibonacci Numbers, Lucas Numbers}
 约定 $f_0=0,f_1=1$；整型变量非负，且各式所涉下标和运算均有定义。
 \begin{multicols*}{2}
