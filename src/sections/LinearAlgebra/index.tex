@@ -14,7 +14,18 @@
 					单纯减小 \texttt{eps} 不能消除舍入误差。
 
 					模 $p$ 版本要求 $p$ 为素数，将除法替换为乘逆元；合数模数不能直接套用。
+					\subsubsection{浮点与模素数版}
 					\inputminted{cpp}{sections/LinearAlgebra/assets/Math/高斯消元.cpp}
+					\subsubsection{简洁浮点版（另一实现）}
+					使用从 $0$ 开始的 $n\times(n+1)$ 增广矩阵 \texttt{a}，常数项放在第 $n$ 列；需提供 \texttt{n}、\texttt{a} 和 \texttt{eps}。
+					返回 $-1$ 表示无解，$0$ 表示唯一解，正数表示自由元个数；唯一解写回常数列。
+					\inputminted{cpp}{sections/LinearAlgebra/assets/Math/高斯消元-简洁版.cpp}
+				\subsection{矩阵行列式（任意正模数）}
+					欧几里得消元，模数 \texttt{p} 可以是合数。
+					\inputminted{cpp}{sections/LinearAlgebra/assets/Math/矩阵求行列式.cpp}
+				\subsection{矩阵求逆（模素数）}
+					固定模数 $10^9+7$，不可逆时输出 \texttt{No Solution}。
+					\inputminted{cpp}{sections/LinearAlgebra/assets/Math/矩阵求逆.cpp}
 				\subsection{Simplex 单纯形}
 					求 $\max c^Tx$，约束为 $Ax\le b$、$x\ge0$；要求 $n,m<N$。
 					表中存入 $a_{0j}=c_j$、$a_{i0}=b_i$、$a_{ij}=-A_{ij}$。
