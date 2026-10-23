@@ -2,14 +2,41 @@
 					\subsection{Long Long \texorpdfstring{$O(1)$}{O(1)} 乘, Barrett}
 					\inputminted{cpp}{sections/NumberTheory/assets/Miscellany/LLFPM.cpp}
 				\subsection{exgcd, 逆元}
+					\subsubsection{64 位整数版}
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/exgcd.cpp}
 					递推逆元: $\operatorname{inv}(i) \equiv (P - P / i) \cdot \operatorname{inv}(P \bmod i)$
+					\subsubsection{int 递归版}
+					\texttt{inv(x,p)} 要求 $x$ 与 $p$ 互质。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/exgcd-int.cpp}
+				\subsection{在线 \texorpdfstring{$O(1)$}{O(1)} 逆元}
+					固定模数 $998244353$，先调用 \texttt{init} 预处理，再用 \texttt{inv(w)} 查询非零元素的逆元。
+					原评测接口头文件 \texttt{inv.h} 不在本库中，独立使用时移除该引用。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/在线O(1)逆元.cpp}
 				\subsection{CRT 中国剩余定理}
+					\subsubsection{两式合并（支持非互质模数）}
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/CRT_lbn.cpp}
+					\subsubsection{互质模数（完整程序）}
+					输入各组模数与余数，要求模数两两互质。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/CRT.cpp}
+					\subsubsection{扩展 CRT（完整程序）}
+					逐式合并非互质模数；本实现要求输入的同余方程组有解。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/EXCRT.cpp}
 				\subsection{Miller Rabin, Pollard Rho}
+					\subsubsection{原实现}
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/Miller Rabin And Pollard Rho.cpp}
+					\subsubsection{随机 Miller--Rabin（另一实现）}
+					需提供 \texttt{ll} 类型别名和三参数模幂函数 \texttt{ksm(a,b,p)}。
+					\inputminted[breakanywhere=true]{cpp}{sections/NumberTheory/assets/Math/高速判断是否质数.cpp}
+					\subsubsection{Pollard Rho（最大质因子完整程序）}
+					\inputminted[breakanywhere=true]{cpp}{sections/NumberTheory/assets/Math/高速分解质因子.cpp}
+				\subsection{卢卡斯定理}
+					模数 \texttt{p} 为素数，需提供小范围组合数函数 \texttt{binom(n,m)}。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/Lucas.cpp}
 				\subsection{扩展卢卡斯}
+					\subsubsection{函数版}
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/扩展卢卡斯.cpp}
+					\subsubsection{完整程序版}
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/EXLucas.cpp}
 				\subsection{阶乘取模}
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/Factorial Mod.cpp}
 				\subsection{类欧几里得 直线下格点统计}
@@ -21,9 +48,20 @@
 				\subsection{万能欧几里德}
 					\inputminted{cpp}{sections/NumberTheory/assets/zjj/euclid.cpp}
 				\subsection{平方剩余}
+					\subsubsection{函数版}
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/平方剩余.cpp}
-				% \subsection{BSGS 离散对数}
-				% \inputminted{cpp}{sections/NumberTheory/assets/Math/BSGS.cpp}
+					\subsubsection{Cipolla（完整程序）}
+					模数为奇素数，输出模平方根或无解标记。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/二次剩余.cpp}
+				\subsection{BSGS 离散对数}
+					\subsubsection{BSGS 与 exBSGS（函数版）}
+					需提供 \texttt{LL} 类型别名以及 \texttt{gcd}、\texttt{inv} 函数。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/BSGS.cpp}
+					\subsubsection{BSGS（完整程序）}
+					求 $a^x\equiv b\pmod p$，要求 $a$ 与 $p$ 互质。
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/BSGS-独立程序.cpp}
+					\subsubsection{exBSGS（完整程序）}
+					\inputminted{cpp}{sections/NumberTheory/assets/Math/exBSGS.cpp}
 				\subsection{原根}
 					\inputminted{cpp}{sections/NumberTheory/assets/Math/原根.cpp}
 					\input{sections/NumberTheory/assets/tbr/阶和原根.tex}
